@@ -1,0 +1,771 @@
+@import '../../../app.wxss';
+
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  background: var(--bg-secondary);
+}
+
+.role-banner {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 32rpx;
+  padding: 28rpx 32rpx;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+/* 三档各有专属浅渐变底；文字保持深色 token，浅底上对比稳定 */
+.role-banner.super {
+  background: linear-gradient(135deg, var(--primary-tint-25), var(--primary-tint-05));
+}
+
+.role-banner.founder {
+  background: linear-gradient(135deg, var(--warning-tint-20), var(--gold-tint-30));
+}
+
+.role-banner.normal {
+  background: linear-gradient(135deg, var(--info-blue-tint-12), var(--bg-primary));
+}
+
+/* 左侧图标底衬：半透明白底让三档 banner 共用同一套图标容器 */
+.role-banner-icon {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--overlay-white-45);
+  color: var(--text-primary);
+}
+
+.role-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.role-title {
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.role-desc {
+  margin-top: 6rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.share-tip {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 0 32rpx 24rpx;
+  padding: 20rpx 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--primary-tint-06);
+}
+
+.share-tip-text {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.add-section {
+  margin-bottom: 24rpx;
+  padding: 0 32rpx;
+}
+
+.add-card {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  border: 2rpx dashed var(--primary-tint-35);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, var(--primary-tint-08), var(--bg-primary));
+}
+
+.add-icon-wrap {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72rpx;
+  height: 72rpx;
+  margin-right: 24rpx;
+  border-radius: 50%;
+  background: var(--primary-cta-gradient, var(--primary-color));
+  color: var(--primary-cta-text);
+}
+
+.add-icon {
+  color: var(--primary-cta-text);
+  font-size: 44rpx;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.add-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-text {
+  color: var(--primary-color);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.add-sub {
+  margin-top: 4rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 0 32rpx;
+}
+
+.section-label {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.section-count {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.admin-list {
+  padding: 0 32rpx;
+}
+
+.admin-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20rpx;
+  padding: 28rpx;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+/* 主行：头像 + 名称/角色/账号 + 复制按钮 */
+.admin-item-main {
+  display: flex;
+  align-items: center;
+}
+
+.admin-avatar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 84rpx;
+  height: 84rpx;
+  margin-right: 20rpx;
+  border-radius: 50%;
+  box-shadow: var(--shadow-xs);
+  color: var(--bg-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.avatar-super {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.avatar-founder {
+  background: linear-gradient(135deg, var(--accent-gold), var(--warning-color));
+}
+
+.avatar-normal {
+  background: linear-gradient(135deg, var(--info-color), var(--info-light));
+}
+
+.admin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.admin-display-name {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* inline-block：text 默认行内，垂直 padding 不占布局高度（iOS 真机会高度塌陷，
+   旧实现用内联 style 固定 43rpx 兜底，这里改为标准写法） */
+.admin-role-tag {
+  display: inline-block;
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
+  font-size: 20rpx;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.admin-role-tag.super {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+/* 金底深字：不引入新色值，沿用 --gold-tint-35 + 主文字色保证对比 */
+.admin-role-tag.founder {
+  background: var(--gold-tint-35);
+  color: var(--text-primary);
+}
+
+.admin-role-tag.normal {
+  background: var(--info-blue-tint-15);
+  color: var(--info-color);
+}
+
+.admin-self-tag {
+  display: inline-block;
+  padding: 4rpx 14rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-tertiary);
+  font-size: 20rpx;
+  line-height: 1.4;
+}
+
+/* 账号行：账号 + 绑定状态小胶囊 */
+.admin-account-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 10rpx;
+  color: var(--text-tertiary);
+}
+
+.admin-account-text {
+  max-width: 220rpx;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bind-pill {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 2rpx 12rpx 2rpx 8rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-warm);
+  color: var(--text-tertiary);
+  font-size: 20rpx;
+}
+
+.bind-pill.on {
+  background: var(--success-tint-12);
+  color: var(--success-color);
+}
+
+.bind-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--border-color);
+}
+
+.bind-pill.on .bind-dot {
+  background: var(--success-color);
+}
+
+.admin-copy {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 72rpx;
+  height: 72rpx;
+  margin-left: 12rpx;
+  border-radius: 50%;
+  background: var(--bg-warm);
+  color: var(--text-secondary);
+}
+
+.admin-copy:active {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+/* 元信息块：权限用量条 + 最后登录 */
+.admin-meta-block {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--border-light);
+}
+
+.admin-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  color: var(--text-tertiary);
+}
+
+.admin-meta-row + .admin-meta-row {
+  margin-top: 12rpx;
+}
+
+.admin-meta-label {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.admin-meta-text {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 权限用量条：13 项入口的开通占比 */
+.perm-track {
+  flex: 1;
+  height: 10rpx;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--bg-warm);
+}
+
+.perm-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+  transition: width 0.3s ease;
+}
+
+.perm-count {
+  display: inline-block;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.perm-all {
+  display: inline-block;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--success-tint-12);
+  color: var(--success-color);
+  font-size: 20rpx;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* 操作按钮行：整卡底部一行，统一胶囊形态降低视觉噪音 */
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12rpx;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--border-light);
+}
+
+.action-btn {
+  min-width: 104rpx;
+  padding: 10rpx 24rpx;
+  border-radius: var(--radius-pill);
+  font-size: 24rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.action-btn.edit {
+  background: var(--info-blue-tint-12);
+  color: var(--info-color);
+}
+
+.action-btn.perm {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.action-btn.unbind {
+  background: var(--warm-tint-18);
+  color: var(--text-accent);
+}
+
+.action-btn.remove {
+  background: var(--danger-tint-10);
+  color: var(--danger-color);
+}
+
+.action-hover {
+  opacity: 0.7;
+  transform: scale(0.95);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.empty-text {
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}
+
+/* 加载失败态的重试按钮 */
+.retry-btn {
+  margin-top: 24rpx;
+  padding: 12rpx 48rpx;
+  border: none;
+
+  /* 非正方形：用 --radius-pill（50% 会变成椭圆） */
+  border-radius: var(--radius-pill);
+  background: var(--primary-color);
+
+  /* 用 --primary-cta-text 而不是 #fff：深色下底色提亮成 #F5A593，
+     白字只有 1.68:1 —— token 会翻成深字（2026-10-14 全项目检查修复） */
+  color: var(--primary-cta-text);
+  font-size: 26rpx;
+}
+
+.skeleton-container {
+  padding: 0 32rpx;
+}
+
+.skeleton-container.visible {
+  display: block;
+}
+
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 24rpx 28rpx;
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--overlay-white-60) 37%, var(--bg-tertiary) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.form-group {
+  margin-bottom: 28rpx;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 12rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.form-required {
+  color: var(--danger-color);
+}
+
+.form-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 80rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+.form-input.input-error {
+  border-color: var(--danger-color);
+  background: var(--danger-tint-04);
+}
+
+.form-error {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--danger-color);
+  font-size: 24rpx;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.password-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  padding-right: 88rpx;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64rpx;
+  height: 64rpx;
+  font-size: 32rpx;
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.strength-bar {
+  width: 120rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  transition: background 0.3s ease;
+}
+
+.strength-bar.weak {
+  background: var(--danger-color);
+}
+
+.strength-bar.medium {
+  background: var(--warning-color);
+}
+
+.strength-bar.strong {
+  background: var(--success-color);
+}
+
+.strength-text {
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.strength-bar.weak + .strength-text {
+  color: var(--danger-color);
+}
+
+.strength-bar.medium + .strength-text {
+  color: var(--warning-color);
+}
+
+.strength-bar.strong + .strength-text {
+  color: var(--success-color);
+}
+
+.edit-account-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding: 16rpx 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+}
+
+.edit-account-label {
+  margin-right: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.edit-account-value {
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* 编辑弹窗：角色行（提升为超管） */
+.role-select-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.role-chip {
+  padding: 8rpx 20rpx;
+  border-radius: var(--radius-xs);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.role-chip.super {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.role-chip.normal {
+  background: var(--info-blue-tint-15);
+  color: var(--info-color);
+}
+
+.role-promote-btn,
+.role-promote-cancel {
+  padding: 8rpx 20rpx;
+  border: 2rpx solid var(--danger-tint-15);
+  border-radius: var(--radius-xs);
+  color: var(--danger-color);
+  font-size: 24rpx;
+}
+
+.role-promote-cancel {
+  border-color: var(--border-color);
+  color: var(--text-tertiary);
+}
+
+.role-hint {
+  color: var(--danger-color);
+}
+
+.remove-warning {
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx;
+  border: 2rpx solid var(--danger-tint-15);
+  border-radius: var(--radius-md);
+  background: var(--danger-tint-05);
+}
+
+.remove-warning-text {
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+/* ===== 功能权限弹窗 ===== */
+
+.perm-target {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 16rpx 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+}
+
+.perm-target-label {
+  margin-right: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.perm-target-name {
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.perm-toolbar {
+  margin-bottom: 16rpx;
+  padding: 20rpx 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--primary-tint-06);
+}
+
+.perm-toolbar-tip {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.perm-all-btn {
+  display: inline-block;
+  margin-top: 12rpx;
+  padding: 10rpx 28rpx;
+  border-radius: var(--radius-pill);
+  background: var(--primary-color);
+  color: var(--primary-cta-text);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.perm-group {
+  margin-bottom: 20rpx;
+}
+
+.perm-group-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.perm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.perm-row:last-child {
+  border-bottom: none;
+}
+
+.perm-label {
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+.perm-switch {
+  transform: scale(0.85);
+  transform-origin: right center;
+}
+
+.page-enter {
+  animation: pageEnter 0.3s ease;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

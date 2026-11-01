@@ -1,0 +1,132 @@
+<!--pages/gallery/gallery.wxml - 简洁浏览版（仅相册列表）-->
+<view class="page page-enter">
+  <!-- 温馨头部（沉浸式自定义导航） -->
+  <view class="warm-header">
+    <!-- 状态栏安全占位 -->
+    <view class="status-bar-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <!-- 猫爪底纹 SVG -->
+    <view class="header-paw-bg"></view>
+    <view class="header-content">
+      <view class="inline-row"><icon name="camera" size="36" /><text class="header-greeting">猫咪相册</text></view>
+      <text class="header-subtitle">记录每一只可爱的校园猫咪</text>
+    </view>
+  </view>
+
+  <!-- 骨架屏加载状态 -->
+  <block wx:if="{{loading}}">
+    <view class="skeleton-grid visible">
+      <view class="skeleton-card" wx:for="{{skeletonItems}}" wx:key="*this">
+        <view class="skeleton-cover"></view>
+        <view class="skeleton-info">
+          <view class="skeleton-text skeleton-name"></view>
+          <view class="skeleton-text skeleton-count"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 相册网格（加载完成后显示） -->
+  <block wx:elif="{{!loading}}">
+    <view class="albums-grid fade-in" id="coach-gallery-grid" wx:if="{{albums.length > 0}}">
+      <view
+        class="album-card"
+        wx:for="{{albums}}"
+        wx:key="catId"
+        bindtap="onEnterCatAlbum"
+        hover-class="card-hover"
+        data-cat-id="{{item.catId}}"
+        data-cat-name="{{item.catName || item.name}}"
+        data-photo-count="{{item.photoCount}}"
+        data-avatar="{{item.coverUrl || item.catAvatar}}"
+      >
+        <!-- 使用懒加载组件 -->
+        <lazy-image
+          class="album-cover"
+          src="{{item.coverUrl || item.catAvatar}}"
+          type="thumbnail"
+          lazy="{{true}}"
+          mode="aspectFill"
+          radius="16"
+          showLoading="{{true}}"
+          bind:error="onImageError"
+          data-index="{{index}}"
+          data-type="album"
+        />
+        <view class="album-info">
+          <view class="album-name">{{item.catName || item.name}}</view>
+          <view class="album-count">{{item.photoCount}} 张照片</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载失败错误态 -->
+    <empty-state
+      wx:if="{{albums.length === 0 && loadError}}"
+      icon="warning"
+      title="加载失败了"
+      subtitle="网络似乎不太顺畅，稍后再试试"
+      showAction="{{true}}"
+      actionText="重新加载"
+      bindaction="onRetryLoad"
+    />
+
+    <!-- 空状态 -->
+    <empty-state
+      wx:if="{{albums.length === 0 && !loadError}}"
+      icon="camera-outline"
+      title="喵~ 相册还是空的"
+      subtitle="快去给主子们拍几张照片吧！"
+      showAction="{{true}}"
+      actionText="去看猫咪"
+      bindaction="onGoHome"
+    />
+  </block>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{albums.length > 0 && hasMoreAlbums && !albumsLoading}}">
+    <view class="load-more-btn" bindtap="onLoadMoreAlbums" hover-class="btn-hover">
+      <text>↓</text>
+      <text>加载更多</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="load-more" wx:if="{{albumsLoading}}">
+    <view class="loading-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+    <text class="load-text">加载中…</text>
+  </view>
+
+  <!-- 到底提示 -->
+  <view class="load-more no-more" wx:if="{{albums.length > 0 && !hasMoreAlbums && !loading}}">
+    <view class="no-more-line"></view>
+    <view class="inline-row no-more-text">
+      <text>已经到底啦</text>
+      <icon name="paw" size="28" />
+    </view>
+    <view class="no-more-line"></view>
+  </view>
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+
+  <coach-mark
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    selector="{{guideTour.selector}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    placement="{{guideTour.placement}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    bind:ready="onGuideTourReady"
+    bind:missing="onGuideTourMissing"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+</view>

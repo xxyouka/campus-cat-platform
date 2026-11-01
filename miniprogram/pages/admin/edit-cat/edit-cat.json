@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "编辑猫咪",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#F5F2EE",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "custom-navbar": "../../../components/custom-navbar/custom-navbar",
+    "lazy-image": "/components/lazy-image/lazy-image"
+  }
+}

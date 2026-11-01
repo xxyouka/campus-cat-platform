@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: miniprogram
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: miniprogram/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 版本号一致性
+        run: npm run version:check
+
+      - name: 小程序包体积门禁
+        run: npm run check:pack
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Stylelint
+        run: npm run stylelint
+
+      - name: 单元测试 + 覆盖率
+        run: npm test
+
+      - name: 图标门禁
+        run: npm run check:icons
+
+      - name: 引导门禁
+        run: npm run check:guidance
+
+      - name: 云函数公共模块一致性
+        run: npm run build-cloud:verify
+
+      - name: 云函数 utils 同步一致性
+        run: npm run build-cloud:verify-sync
+
+  check-bom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: WXSS 文件不得带 BOM
+        run: |
+          cd "./miniprogram"
+          bom_files=$(find . -name "*.wxss" -exec grep -rl $'\xEF\xBB\xBF' {} \;)
+          if [ -n "$bom_files" ]; then
+            echo "::error::BOM detected in files: $bom_files"
+            echo "Run 'npm run remove-bom' to fix"
+            exit 1
+          fi
+          echo "No BOM issues found"

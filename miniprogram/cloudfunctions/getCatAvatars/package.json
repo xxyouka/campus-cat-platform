@@ -1,0 +1,9 @@
+{
+  "name": "getCatAvatars",
+  "version": "1.0.0",
+  "description": "获取猫咪头像临时链接",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

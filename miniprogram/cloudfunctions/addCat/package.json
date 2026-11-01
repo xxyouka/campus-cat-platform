@@ -1,0 +1,1 @@
+{"name": "add-cat", "version": "1.0.0", "description": "添加猫咪云函数（服务端权限校验）", "main": "index.js", "dependencies": {"wx-server-sdk": "~2.6.3", "node-cache": "^5.1.2"}}

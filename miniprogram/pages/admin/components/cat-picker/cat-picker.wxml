@@ -1,0 +1,42 @@
+<view class="cat-picker">
+  <!-- 选中态：带头像 + 花色的回执，避免「选错无从发现」 -->
+  <view wx:if="{{value}}" class="picked">
+    <image wx:if="{{value.avatar}}" class="picked-avatar" src="{{value.avatar}}" mode="aspectFill"></image>
+    <view wx:else class="picked-avatar picked-avatar-ph">{{value.initialName}}</view>
+    <text class="picked-name">{{value.name}}</text>
+    <text wx:if="{{value.color}}" class="picked-color">{{value.color}}</text>
+    <view class="picked-x" catchtap="onClear" hover-class="btn-hover">×</view>
+  </view>
+
+  <block wx:else>
+    <view class="picker-box">
+      <view class="picker-search">
+        <icon name="search" size="26" />
+        <input class="picker-input" placeholder="{{placeholder}}" value="{{keyword}}" bindinput="onInput" focus="{{inputFocus}}" cursor-spacing="24" />
+        <view wx:if="{{keyword}}" class="picker-clear" catchtap="onClearKeyword" hover-class="btn-hover">×</view>
+      </view>
+
+      <view class="picker-list" wx:if="{{options.length > 0}}">
+        <view
+          class="opt {{item._id === excludeId ? 'opt-used' : ''}}"
+          wx:for="{{options}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="onPick"
+          hover-class="opt-hover"
+        >
+          <image wx:if="{{item.avatar}}" class="opt-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+          <view wx:else class="opt-avatar opt-avatar-ph">{{item.initialName}}</view>
+          <text class="opt-name">{{item.name}}</text>
+          <text wx:if="{{item.color}}" class="opt-color">{{item.color}}</text>
+          <text wx:if="{{item._id === excludeId}}" class="opt-used-tip">对端已选</text>
+        </view>
+      </view>
+
+      <view wx:elif="{{loading}}" class="picker-tip">加载中…</view>
+      <view wx:else class="picker-tip">输入名字或花色搜索，或直接浏览全部档案</view>
+    </view>
+
+    <view class="browse-btn" bindtap="onToggleBrowse" hover-class="btn-hover">{{browsing ? '收起列表' : '浏览全部'}}</view>
+  </block>
+</view>

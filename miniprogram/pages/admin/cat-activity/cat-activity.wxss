@@ -1,0 +1,334 @@
+/* 猫咪行动分析 · 选猫列表 */
+.page {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+/* ========== 说明卡 ========== */
+.intro-card {
+  margin: 24rpx 32rpx 0;
+  padding: 28rpx 32rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.intro-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.intro-text {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.intro-note {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.7;
+}
+
+/* ========== 总轨迹入口 ========== */
+.trail-entry {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 32rpx 0;
+  padding: 24rpx 28rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.trail-entry-icon {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: 24rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-tertiary));
+  color: var(--primary-color);
+}
+
+.trail-entry-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.trail-entry-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.trail-entry-sub {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.trail-entry-arrow {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 48rpx;
+  color: var(--text-light);
+}
+
+/* ========== 搜索 ========== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  height: 80rpx;
+  margin: 24rpx 32rpx 0;
+  padding: 0 28rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 40rpx;
+  background: var(--bg-primary);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+.search-placeholder {
+  color: var(--text-light);
+}
+
+.search-clear {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+/* ========== 列表头 ========== */
+.list-header {
+  padding: 32rpx 32rpx 16rpx;
+}
+
+.list-count {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* ========== 猫咪列表 ========== */
+.activity-list {
+  padding: 0 32rpx 48rpx;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 24rpx 28rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  transition: transform 0.2s ease;
+}
+
+.item-avatar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: 24rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-tertiary));
+}
+
+.item-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.item-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.item-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  overflow: hidden;
+}
+
+.item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.item-status {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: var(--warning-tint-08);
+  color: var(--warning-color);
+  font-size: 22rpx;
+}
+
+.item-campus {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.item-last {
+  color: var(--text-light);
+  font-size: 22rpx;
+}
+
+.item-meet {
+  color: var(--primary-color);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.item-arrow {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 48rpx;
+  height: 48rpx;
+  color: var(--text-light);
+  font-size: 36rpx;
+}
+
+/* ========== 列表footer ========== */
+.list-footer {
+  display: flex;
+  justify-content: center;
+  padding: 16rpx 0 32rpx;
+}
+
+.reveal-btn {
+  padding: 16rpx 56rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 40rpx;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.list-end {
+  color: var(--text-light);
+  font-size: 24rpx;
+}
+
+/* ========== 骨架屏 ========== */
+.skeleton-section {
+  padding: 40rpx 32rpx;
+}
+
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.skeleton-avatar {
+  flex-shrink: 0;
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: 24rpx;
+  border-radius: 50%;
+}
+
+.skeleton-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.skeleton-name {
+  width: 55%;
+  height: 28rpx;
+  border-radius: 12rpx;
+}
+
+.skeleton-count {
+  width: 35%;
+  height: 24rpx;
+  border-radius: 10rpx;
+}
+
+/* ========== 加载失败态（与「暂无猫咪」空态区分） ========== */
+.load-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 48rpx;
+}
+
+.load-failed-title {
+  margin-top: 24rpx;
+  margin-bottom: 32rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.retry-btn {
+  padding: 16rpx 56rpx;
+  border-radius: 40rpx;
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  font-size: 28rpx;
+}

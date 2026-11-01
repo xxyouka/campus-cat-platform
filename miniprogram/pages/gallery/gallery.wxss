@@ -1,0 +1,282 @@
+/* 相册页样式 - 温馨高级风（仅相册列表） */
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+  background-blend-mode: normal;
+}
+
+.warm-header {
+  position: relative;
+  padding: 0 48rpx 80rpx;
+  overflow: hidden;
+  border-radius: 0 0 64rpx 64rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.status-bar-placeholder {
+  width: 100%;
+}
+
+/* .header-paw-bg 已抽到 styles/utilities.wxss 全局复用 */
+
+.warm-header::before {
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 600rpx; height: 600rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-12);
+  content: '';
+}
+
+.warm-header::after {
+  position: absolute;
+  bottom: -30%; left: -10%;
+  width: 400rpx; height: 400rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-08);
+  content: '';
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 32rpx;
+}
+
+.header-greeting {
+  display: block;
+  margin-bottom: 16rpx;
+  color: var(--bg-primary);
+  font-size: 56rpx;
+  font-weight: 700;
+  letter-spacing: -1rpx;
+}
+
+.header-subtitle {
+  display: block;
+  color: var(--overlay-white-85);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.albums-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+  padding: 40rpx 24rpx 0;
+}
+
+.album-card {
+  overflow: hidden;
+  border-radius: 40rpx;
+  box-shadow: 0 8rpx 40rpx var(--warm-tint-07), 0 4rpx 12rpx var(--warm-tint-04);
+  background: var(--bg-primary);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.album-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 12rpx 40rpx var(--warm-tint-10), 0 4rpx 16rpx var(--warm-tint-06);
+}
+
+.album-cover {
+  display: block;
+  width: 100%;
+  height: 280rpx;
+  min-height: 280rpx;
+  overflow: hidden;
+  transition: transform 0.35s ease;
+}
+
+.album-card:active .album-cover {
+  transform: scale(1.08);
+}
+
+.album-info {
+  padding: 24rpx;
+}
+
+.album-name {
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.album-count {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.skeleton-grid.visible {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.albums-grid.fade-in {
+  animation: albumsSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes albumsSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+  padding: 40rpx 24rpx 0;
+}
+
+.skeleton-card {
+  overflow: hidden;
+  border: 2rpx solid var(--skeleton-border);
+  border-radius: 40rpx;
+  box-shadow:
+    0 8rpx 40rpx var(--warm-tint-06),
+    0 2rpx 6rpx var(--warm-tint-03);
+  background: var(--bg-primary);
+}
+
+.skeleton-cover {
+  position: relative;
+  width: 100%;
+  height: 280rpx;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+}
+
+.skeleton-cover::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg, transparent 0%, var(--overlay-white-50) 50%, transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmerEnhanced 2s ease-in-out infinite;
+  content: '';
+}
+
+.skeleton-info {
+  padding: 24rpx;
+}
+
+.skeleton-text {
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, var(--border-light), var(--border-color));
+}
+
+.skeleton-name {
+  width: 60%;
+  height: 56rpx;
+  margin-bottom: 20rpx;
+}
+
+.skeleton-count {
+  width: 45%;
+  height: 48rpx;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 160rpx 48rpx;
+  text-align: center;
+}
+
+.empty-illus {
+  position: relative;
+  width: 192rpx;
+  height: 192rpx;
+  margin: 0 auto 40rpx;
+}
+
+.empty-illus-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 192rpx;
+  height: 192rpx;
+  border-radius: 56rpx;
+  box-shadow: 0 16rpx 48rpx var(--primary-tint-15);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+}
+
+.empty-illus-paw {
+  position: absolute;
+  right: -12rpx;
+  bottom: -8rpx;
+  font-size: 44rpx;
+  animation: paw-bounce 2.4s ease-in-out infinite;
+}
+
+.load-more .load-more-btn text {
+  color: var(--primary-color);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.no-more {
+  padding: 48rpx 40rpx;
+}
+
+.no-more-line {
+  width: 100rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+.no-more-text {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  color: var(--text-light);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  /* 深色模式下头部渐变变浅，副标题需用暖底深色字 */
+  .header-subtitle {
+    color: var(--dark-warm-text-85);
+  }
+
+  .album-card {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .album-card:active {
+    background: var(--bg-warm);
+  }
+
+  .album-info {
+    color: var(--text-secondary);
+  }
+
+  .album-name {
+    color: var(--text-primary);
+  }
+
+  .album-count {
+    color: var(--text-tertiary);
+  }
+}

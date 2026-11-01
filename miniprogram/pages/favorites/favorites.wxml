@@ -1,0 +1,153 @@
+<!-- 我的关注页面 -->
+<view class="page page-enter">
+
+  <custom-navbar title="我的关注" theme="warm" showBack="{{true}}" />
+
+  <!-- ==================== 统计卡片 ==================== -->
+  <view class="stats-section" id="coach-favorites-stats" wx:if="{{!loading}}">
+    <view class="stat-card stat-card-main" bindtap="onGoHome" hover-class="card-hover">
+      <icon name="cat" size="36" customClass="stat-icon-wrap stat-icon-brand" />
+      <view class="stat-info">
+        <text class="stat-number">{{favoriteCount}}</text>
+        <text class="stat-label">只关注</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 主内容区域 ==================== -->
+
+  <!-- 加载骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="cat-list skeleton-list visible">
+      <view class="cat-card skeleton" wx:for="{{skeletonItems}}" wx:key="*this">
+        <view class="cat-image-wrap skeleton-box shimmer"></view>
+        <view class="cat-info">
+          <view class="cat-name-row"><view class="skeleton-text name"></view></view>
+          <view class="cat-tags"><view class="skeleton-text tag"></view><view class="skeleton-text tag short"></view></view>
+          <view class="cat-meta"><view class="skeleton-text location"></view></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 猫咪卡片列表 -->
+  <block wx:elif="{{!loading && favoriteCats.length > 0}}">
+    <view class="cat-list fade-in">
+      <view class="section-header">
+        <text class="section-title">关注的猫咪</text>
+        <text class="section-count">已显示 {{favoriteCats.length}} / 共 {{favoriteCount}} 只</text>
+      </view>
+      <!-- 关注数（读本地 storage 的条数）与实际取回数（云端查回的猫咪对象）不等时必须说明。
+   否则顶部「只关注 3」与列表「共 2 只」两个数字自相矛盾，用户完全无法理解。
+   成因：某只猫在 cats 集合里查不到（已删除 / 删除中），云函数静默少返回。
+   注意：本块整体依赖 favoriteCats.length>0，全部关注的猫都被移除时不会渲染 ——
+   该场景由下方 :122 空态的 missingCount 分支单独说明（见那里注释）。 -->
+      <view class="missing-hint" wx:if="{{missingCount > 0}}">
+        <icon name="info" size="24" />
+        <text>已关注 {{favoriteCount}} 只，其中 {{missingCount}} 只已从档案移除</text>
+      </view>
+
+      <view
+        class="cat-card"
+        wx:for="{{favoriteCats}}"
+        wx:key="_id"
+        bindtap="onGoToDetail"
+        data-id="{{item._id}}"
+        data-index="{{index}}"
+        hover-class="card-hover"
+        role="button"
+        aria-label="查看{{item.name}}的详细信息"
+      >
+        <view class="cat-image-wrap">
+          <lazy-image custom-class="cat-image-inner" class="cat-image" src="{{item.avatar || (item.images && item.images[0]) || ''}}" type="avatar" mode="aspectFill" lazy="{{true}}" />
+          <icon name="cat" size="48" customClass="cat-image cat-emoji" wx:if="{{!item.avatar && (!item.images || item.images.length === 0)}}" />
+        </view>
+
+        <view class="cat-info">
+          <view class="cat-name-row">
+            <text class="cat-name">{{item.name}}</text>
+            <view class="cat-follow-btn" catchtap="onQuickUnfavorite" data-id="{{item._id}}" data-name="{{item.name}}" data-index="{{index}}">
+              <icon name="heart" size="28" customClass="cat-follow-heart" />
+              <text class="cat-follow-label">已关注</text>
+            </view>
+          </view>
+
+          <view class="cat-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text class="cat-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag" wx:if="{{index < 3}}">{{tag}}</text>
+          </view>
+
+          <view class="cat-meta">
+            <view class="cat-location-chip" wx:if="{{item.campus}}">
+              <view class="inline-row cat-location-text"><icon name="pin" size="28" /><text>{{item.campus}}</text></view>
+            </view>
+            <view class="cat-duration" wx:if="{{item._followDuration}}">
+              <icon class="cat-duration-icon" name="stopwatch" size="20" />
+              <text class="cat-duration-text">{{item._followDuration}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分页加载（loadingMore 期间禁用 hover 反馈并改文案，避免重复点击） -->
+    <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMore" hover-class="{{loadingMore ? 'none' : 'btn-hover'}}">
+      <text class="load-more-icon">↓</text>
+      <text>{{loadingMore ? '加载中…' : '加载更多'}}</text>
+    </view>
+    <view class="load-more no-more" wx:elif="{{!hasMore}}">
+      <view class="no-more-line"></view>
+      <view class="inline-row no-more-text"><text>已展示全部 {{favoriteCats.length}} 只猫咪</text><icon name="paw" size="28" /></view>
+      <view class="no-more-line"></view>
+    </view>
+  </block>
+
+  <!-- 空状态：必须区分「加载失败」与「真的没关注」。
+       原实现两者共用同一个空态，云端未部署/OPENID 取不到时用户看到的是
+       「还没有关注任何猫咪」，与真实空列表完全同形，故障被彻底隐藏。 -->
+  <view class="empty-state" wx:if="{{!loading && loadError}}">
+    <icon name="warning" size="48" />
+    <text class="empty-title">关注列表加载失败</text>
+    <text class="empty-desc">请检查网络后重试<br/>若持续失败请下拉刷新</text>
+    <view class="empty-btn" bindtap="onRetry" hover-class="btn-hover">
+      <view class="inline-row"><icon name="refresh" size="32" /><text>重新加载</text></view>
+    </view>
+  </view>
+
+  <!-- 全部关注的猫都已从档案移除：列表 block（:34）依赖 favoriteCats.length>0，
+       不会渲染，:43 的 missing-hint 也就跟着被吞掉。此处必须单独兜住，
+       否则顶部「N 只关注」与正文「还没有关注任何猫咪」自相矛盾。 -->
+  <view class="empty-state" wx:elif="{{!loading && missingCount > 0}}">
+    <icon name="info" size="48" />
+    <text class="empty-title">关注的猫咪已全部移除</text>
+    <text class="empty-desc">你关注的 {{favoriteCount}} 只猫咪都已从档案移除<br/>去首页看看现在有哪些毛孩子吧</text>
+    <view class="empty-btn" bindtap="onGoHome" hover-class="btn-hover">
+      <view class="inline-row"><icon name="home" size="32" /><text>去逛逛首页</text></view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:elif="{{!loading && favoriteCats.length === 0}}">
+    <icon name="cat" size="48" />
+    <text class="empty-title">还没有关注任何猫咪</text>
+    <text class="empty-desc">去首页发现你喜欢的毛孩子吧~<br/>关注后可以在这里快速查看它们的最新动态哦</text>
+    <view class="empty-btn" bindtap="onGoHome" hover-class="btn-hover">
+      <view class="inline-row"><icon name="home" size="32" /><text>去逛逛首页</text></view>
+    </view>
+  </view>
+
+  <coach-mark
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    selector="{{guideTour.selector}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    placement="{{guideTour.placement}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    bind:ready="onGuideTourReady"
+    bind:missing="onGuideTourMissing"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+
+</view>

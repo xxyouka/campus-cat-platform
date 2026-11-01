@@ -1,0 +1,26 @@
+<!-- components/custom-navbar/custom-navbar.wxml - 通用自定义导航栏组件 -->
+<!-- 支持主题: default / transparent / gradient / warm / light -->
+<view class="navbar {{theme}}" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 猫爪底纹（仅 warm 主题显示） -->
+  <view class="header-paw-bg" wx:if="{{theme === 'warm'}}"></view>
+  <view class="navbar-content" style="height: {{navBarHeight}}px;">
+    <!-- 左侧：返回按钮 -->
+    <view class="navbar-left" wx:if="{{showBack}}">
+      <view class="back-btn" bindtap="onBack" hover-class="back-btn-hover" role="button" aria-label="返回上一页">
+        <text class="back-arrow-icon"></text>
+        <text class="back-text" wx:if="{{showBackText}}">返回</text>
+      </view>
+    </view>
+
+    <!-- 中间：标题 -->
+    <view class="navbar-center">
+      <text class="navbar-title">{{title}}</text>
+      <text class="navbar-subtitle" wx:if="{{subtitle}}">{{subtitle}}</text>
+    </view>
+
+    <!-- 右侧：操作区域（插槽） -->
+    <view class="navbar-right">
+      <slot name="right"></slot>
+    </view>
+  </view>
+</view>

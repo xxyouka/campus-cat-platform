@@ -1,0 +1,420 @@
+/* 编辑猫咪页面样式 */
+page {
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+}
+
+/* 加载 */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 240rpx;
+}
+
+.loading-spinner {
+  width: 72rpx;
+  height: 72rpx;
+  margin-bottom: 24rpx;
+  border: 8rpx solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* 卡片 */
+.section-card {
+  margin: 24rpx 32rpx;
+  overflow: hidden;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 40rpx;
+  box-shadow: var(--shadow-warm-lg3);
+  background: var(--bg-primary);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+  padding: 32rpx 32rpx 0;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 表单项 */
+.form-item {
+  padding: 32rpx;
+  border-bottom: 2rpx solid var(--border-color);
+}
+
+.form-item.last {
+  border-bottom: none;
+}
+
+.form-item.no-border {
+  padding-bottom: 16rpx;
+  border-bottom: none;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 24rpx;
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.required {
+  color: var(--danger-color);
+}
+
+/* 好猫星级等可选字段的说明小字：表单提示，非报错文案 */
+.form-hint {
+  margin-top: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.char-count {
+  color: var(--text-light);
+  font-size: 24rpx;
+}
+
+/* 输入框 */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 92rpx;
+  padding: 0 32rpx;
+  border: 2rpx solid var(--warm-tint-10);
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 32rpx;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  background: var(--bg-primary);
+}
+
+.input-count {
+  position: absolute;
+  right: 16rpx;
+  color: var(--text-light);
+  font-size: 24rpx;
+  pointer-events: none;
+}
+
+/* 多行文本 */
+.form-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 180rpx;
+  padding: 32rpx;
+  border: 2rpx solid var(--warm-tint-10);
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 24rpx;
+  line-height: 1.65;
+  transition: border-color 0.2s;
+}
+
+.form-textarea:focus {
+  border-color: var(--primary-color);
+  background: var(--bg-primary);
+}
+
+.form-textarea.short {
+  min-height: 128rpx;
+}
+
+/* 选项按钮组 */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.btn-opt {
+  padding: 16rpx 32rpx;
+  border: 2rpx solid transparent;
+  border-radius: 40rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.btn-opt:active {
+  transform: scale(0.96);
+}
+
+.btn-opt.active {
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  font-weight: 600;
+}
+
+.btn-opt.warn {
+  color: var(--warning-color);
+}
+
+.btn-opt.active.warn {
+  background: var(--warning-color);
+  color: var(--bg-primary);
+}
+
+.btn-opt.danger {
+  color: var(--danger-color);
+}
+
+.btn-opt.active.danger {
+  background: var(--danger-color);
+  color: var(--bg-primary);
+}
+
+/* 状态详情框 */
+.status-detail {
+  margin: 0 32rpx 32rpx;
+  overflow: hidden;
+  border-radius: 20rpx;
+}
+
+.warn-bg {
+  border: 2rpx solid var(--warning-tint-20);
+  background: var(--warning-tint-08);
+}
+
+.danger-bg {
+  border: 2rpx solid var(--danger-tint-20);
+  background: var(--danger-tint-08);
+}
+
+/* 日期选择 */
+.picker-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 92rpx;
+  padding: 0 32rpx;
+  border: 2rpx solid var(--warm-tint-10);
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+}
+
+.picker-val {
+  color: var(--text-primary);
+  font-size: 32rpx;
+}
+
+.picker-arrow {
+  color: var(--text-light);
+  font-size: 32rpx;
+}
+
+/* 健康提示 */
+.health-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  margin: 0 32rpx 32rpx;
+  padding: 24rpx 32rpx;
+  border-radius: 20rpx;
+}
+
+.health-alert.danger {
+  border: 2rpx solid var(--danger-tint-20);
+  background: var(--danger-tint-08);
+}
+
+.health-alert.warn {
+  border: 2rpx solid var(--warning-tint-20);
+  background: var(--warning-tint-08);
+}
+
+.alert-text {
+  flex: 1;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.health-alert.warn .alert-text {
+  color: var(--text-secondary);
+}
+
+/* 底部占位 */
+.bottom-space {
+  height: calc(200rpx + env(safe-area-inset-bottom));
+}
+
+/* 底部操作栏 */
+.bottom-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 24rpx;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid var(--border-color);
+  box-shadow: 0 -8rpx 32rpx var(--warm-tint-08);
+  background: var(--bg-primary);
+  transition: transform 0.2s ease;
+}
+
+.bottom-bar.hidden {
+  transform: translateY(100%);
+}
+
+.btn-cancel {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  height: 96rpx;
+  border: none;
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 96rpx;
+  text-align: center;
+}
+
+.btn-save {
+  display: flex;
+  flex: 2;
+  justify-content: center;
+  align-items: center;
+  height: 96rpx;
+  border: none;
+  border-radius: 20rpx;
+  box-shadow: var(--shadow-primary-md);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--bg-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 96rpx;
+  text-align: center;
+}
+
+/* 大头照上传 */
+.avatar-upload-wrapper {
+  padding: 32rpx 0 8rpx;
+  text-align: center;
+}
+
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 大头照上传：圆形裁切交给 image 自己 —— 容器一旦 overflow: hidden，
+   压在圆外的删除按钮（.remove-btn top/right -8rpx）会被一起裁掉（2026-10-12 修复） */
+.avatar-preview {
+  position: relative;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+
+.avatar-preview image {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.avatar-preview .remove-btn {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: var(--mask-bg-heavy);
+  color: var(--bg-primary);
+  font-size: 24rpx;
+  line-height: 32rpx;
+}
+
+.avatar-add {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+  width: 160rpx;
+  height: 160rpx;
+  border: 2rpx dashed var(--primary-tint-50);
+  border-radius: 50%;
+  background: var(--primary-light);
+}
+
+.avatar-add .add-icon {
+  color: var(--primary-color);
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.avatar-add .add-text {
+  color: var(--primary-dark);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.change-btn {
+  padding: 8rpx 0;
+  color: var(--primary-color);
+  font-size: 24rpx;
+  text-decoration: underline;
+}
+
+.btn-save.disabled {
+  box-shadow: none;
+  opacity: 0.6;
+}

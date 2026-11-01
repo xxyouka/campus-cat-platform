@@ -1,0 +1,49 @@
+/* subpackages/map/components/campus-map/campus-map.wxss */
+.cmap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--map-paper);
+}
+
+.cmap-canvas {
+  display: block;
+  width: 100%;
+}
+
+/* 撑满外层舞台 */
+.cmap.filling {
+  height: 100%;
+}
+
+/* 选点模式：给一点暗示，让用户知道现在点下去会落�? */
+.cmap.selecting .cmap-canvas {
+  cursor: crosshair;
+}
+
+.cmap-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--map-paper);
+}
+
+.cmap-mask-t {
+  margin-bottom: 8px;
+  color: var(--map-mask-title);
+  font-size: 15px;
+}
+
+.cmap-mask-s {
+  padding: 0 40px;
+  color: var(--map-mask-sub);
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}

@@ -1,0 +1,15 @@
+{
+  "navigationBarTitleText": "猫咪详情",
+  "navigationStyle": "custom",
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "lazy-image": "/components/lazy-image/lazy-image",
+    "empty-state": "/components/empty-state/empty-state",
+    "custom-navbar": "/components/custom-navbar/custom-navbar"
+  }
+}

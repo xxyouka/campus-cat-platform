@@ -1,0 +1,116 @@
+<!-- 猫咪行动分析 · 选猫列表（仅超级管理员，只读分析） -->
+<view class="page page-enter">
+  <custom-navbar title="猫咪行动分析" theme="warm" showBack="{{true}}" />
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-item" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-avatar shimmer"></view>
+      <view class="skeleton-info">
+        <view class="skeleton-name shimmer"></view>
+        <view class="skeleton-count shimmer"></view>
+      </view>
+    </view>
+  </view>
+
+  <block wx:else>
+    <!-- 说明卡：这是什么、数据从哪来、局限在哪，一次讲清 -->
+    <view class="intro-card">
+      <view class="inline-row">
+        <icon name="target" size="32" />
+        <text class="intro-title">自动整理的行动规律</text>
+      </view>
+      <text class="intro-text">用大家的相遇打卡推算每只猫常在的时段、活动范围与常出没的地点。只读分析，不改动任何数据，每次打开都按最新打卡现算。</text>
+      <text class="intro-note">地图轨迹依赖打卡时选的「地图位置」，2026 年 10 月起才有样本，会随打卡越来越准。</text>
+    </view>
+
+    <!-- 总轨迹入口：一张图看所有猫的活动路线（activity-all，同一套只读分析） -->
+    <view class="trail-entry" wx:if="{{!loadFailed}}" bindtap="onGoAllTrails" hover-class="btn-press">
+      <view class="trail-entry-icon"><icon name="pin" size="36" /></view>
+      <view class="trail-entry-body">
+        <text class="trail-entry-title">全部小猫的总轨迹</text>
+        <text class="trail-entry-sub">一张图看所有猫的活动路线</text>
+      </view>
+      <view class="trail-entry-arrow"><icon name="arrow-right" size="28" /></view>
+    </view>
+
+    <!-- 搜索：客户端筛选，不打网络 -->
+    <view class="search-bar" wx:if="{{!loadFailed && (total > 0 || keyword)}}">
+      <icon name="search" size="32" />
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索猫名 / 花色 / 常驻地点"
+        placeholder-class="search-placeholder"
+        confirm-type="search"
+        bindinput="onSearchInput"
+      />
+      <view class="search-clear" wx:if="{{keyword}}" bindtap="onClearKeyword" hover-class="btn-press">
+        <icon name="close" size="28" />
+      </view>
+    </view>
+
+    <!-- 加载失败：必须与「还没有猫咪档案」分开，否则故障会被伪装成业务空 -->
+    <view class="load-failed" wx:if="{{loadFailed}}">
+      <icon name="warning" size="48" />
+      <text class="load-failed-title">猫咪列表加载失败</text>
+      <view class="retry-btn" bindtap="onRetryLoad">重新加载</view>
+    </view>
+
+    <block wx:else>
+      <view class="list-header" wx:if="{{total > 0}}">
+        <text class="list-count">{{headerText}}</text>
+      </view>
+
+      <view class="activity-list" wx:if="{{cats.length > 0}}">
+        <view
+          class="activity-item"
+          wx:for="{{cats}}"
+          wx:key="id"
+          bindtap="onGoToDetail"
+          data-cat-id="{{item.id}}"
+          data-cat-name="{{item.name}}"
+          hover-class="item-hover"
+        >
+          <view class="item-avatar">
+            <image
+              wx:if="{{item.avatar}}"
+              src="{{item.avatar}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+            />
+            <icon wx:else name="cat" size="36" />
+          </view>
+
+          <view class="item-info">
+            <view class="item-name-row">
+              <text class="item-name">{{item.name}}</text>
+              <text class="item-status" wx:if="{{item.statusText !== '在校'}}">{{item.statusText}}</text>
+              <text class="item-campus" wx:if="{{item.campus}}">{{item.campus}}</text>
+            </view>
+            <view class="item-meta">
+              <text class="item-last" wx:if="{{item.lastMeetText}}">最近相遇 {{item.lastMeetText}}</text>
+              <text class="item-last" wx:else>还没有相遇记录</text>
+              <text class="item-meet" wx:if="{{item.meetCount > 0}}">累计 {{item.meetCount}} 次</text>
+            </view>
+          </view>
+
+          <view class="item-arrow"><text>›</text></view>
+        </view>
+
+        <!-- 展开更多只是客户端切片：列表已按最近相遇时间排好，翻页不会打乱顺序 -->
+        <view class="list-footer">
+          <view class="reveal-btn" wx:if="{{hasMore}}" bindtap="onRevealMore" hover-class="btn-press">显示更多</view>
+          <text class="list-end" wx:else>已显示全部 {{total}} 只</text>
+        </view>
+      </view>
+
+      <empty-state
+        wx:else
+        icon="{{emptyIcon}}"
+        title="{{emptyTitle}}"
+        subtitle="{{emptySubtitle}}"
+      />
+    </block>
+  </block>
+</view>

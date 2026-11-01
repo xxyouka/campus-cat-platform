@@ -1,0 +1,140 @@
+<!--pages/gallery/cat-album.wxml - 单个猫咪相册独立页面-->
+<view class="page page-enter">
+  <!-- 自定义导航栏 -->
+  <custom-navbar
+    title="{{catInfo.name ? catInfo.name + ' 的相册' : '猫咪相册'}}"
+    theme="light"
+    showBack="{{true}}"
+    bind:heightchange="onNavHeightChange"
+  />
+
+  <!-- 内容区域（添加顶部占位，避免被导航栏遮挡） -->
+  <view class="content-wrapper" style="padding-top: {{navTotalHeight}}px;">
+    <scroll-view class="scroll-content" scroll-y="true" bindscroll="onPhotoScroll" enhanced="true" show-scrollbar="{{false}}" scroll-into-view="{{scrollIntoView}}" scroll-with-animation="{{true}}" lower-threshold="300" bindscrolltolower="onScrollToLower">
+  <!-- 回到顶部的定位锚点：scroll-into-view 只能指向 scroll-view 的子节点 id -->
+  <view id="album-top"></view>
+  <!-- 骨架屏加载状态（首次加载时显示） -->
+  <block wx:if="{{loading}}">
+    <view class="skeleton-container">
+      <view class="skeleton-cat-header">
+        <view class="skeleton-avatar shimmer"></view>
+        <view class="skeleton-cat-info">
+          <view class="skeleton-text name shimmer"></view>
+          <view class="skeleton-text count shimmer"></view>
+        </view>
+      </view>
+      <view class="skeleton-photo-grid">
+        <view class="skeleton-photo shimmer" wx:for="{{skeletonItems}}" wx:key="*this"></view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 加载完成后显示内容 -->
+  <block wx:elif="{{!loading}}">
+    <!-- 猫咪信息 -->
+    <view class="cat-header" id="coach-album-grid" wx:if="{{catInfo}}">
+      <lazy-image
+        class="cat-avatar"
+        src="{{catInfo.avatarUrl}}"
+        type="avatar"
+        lazy="{{false}}"
+        mode="aspectFill"
+        radius="50"
+        showLoading="{{true}}"
+      />
+      <view class="cat-info">
+        <view class="cat-name">{{catInfo.name}}</view>
+        <view class="cat-count">{{catInfo.photoCount}} 张照片</view>
+      </view>
+    </view>
+
+    <!-- 照片网格 -->
+    <view class="photos-section" wx:if="{{photos.length > 0}}">
+      <view class="photo-grid">
+        <view class="photo-item" wx:for="{{photos}}" wx:key="_id" bindtap="onPreviewPhoto" data-url="{{item.displayUrl || item.url}}" data-id="{{item._id}}" hover-class="card-hover">
+          <lazy-image
+            class="photo-image"
+            src="{{item.displayUrl || item._cloudFileID || item.url}}"
+            type="gallery"
+            lazy="{{true}}"
+            mode="aspectFill"
+            radius="12"
+            showLoading="{{true}}"
+          />
+        </view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="load-more" wx:if="{{hasMore && !photosLoading}}">
+        <view class="load-more-btn" bindtap="onLoadMore" hover-class="btn-hover">
+          <text>↓</text>
+          <text>{{loadMoreError ? '加载失败，点击重试' : '加载更多'}}</text>
+        </view>
+      </view>
+
+      <!-- 加载中 -->
+      <view class="load-more" wx:if="{{photosLoading}}">
+        <view class="loading-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+        <text class="load-text">加载中…</text>
+      </view>
+
+      <!-- 到底提示 -->
+      <view class="load-more no-more" wx:if="{{!hasMore && !photosLoading}}">
+        <view class="no-more-line"></view>
+        <view class="inline-row no-more-text">
+          <text>已经到底啦</text>
+          <icon name="paw" size="28" />
+        </view>
+        <view class="no-more-line"></view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <empty-state
+      wx:if="{{!photosLoading && photos.length === 0 && !loadError}}"
+      icon="cat"
+      title="暂无照片"
+    />
+
+    <!-- 加载失败（区别于「暂无照片」：给重试入口，避免把网络故障误报成没有内容） -->
+    <empty-state
+      wx:elif="{{!photosLoading && photos.length === 0 && loadError}}"
+      icon="cat-sad"
+      title="{{errorMessage ? '无法打开' : '照片加载失败'}}"
+      subtitle="{{errorMessage || '网络或服务开了小差，点下面再试一次'}}"
+      showAction="{{true}}"
+      actionText="重新加载"
+      bind:action="onRetryLoad"
+    />
+  </block>
+
+  <!-- 底部占位 -->
+  <view class="bottom-placeholder"></view>
+    </scroll-view>
+  </view>
+
+  <coach-mark
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    selector="{{guideTour.selector}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    placement="{{guideTour.placement}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    bind:ready="onGuideTourReady"
+    bind:missing="onGuideTourMissing"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+</view>
+
+<!-- 回到顶部按钮 -->
+<view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover">
+  <text class="back-to-top-icon">↑</text>
+</view>

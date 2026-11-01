@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "custom-navbar": "../../../components/custom-navbar/custom-navbar",
+    "lazy-image": "/components/lazy-image/lazy-image",
+    "empty-state": "/components/empty-state/empty-state",
+    "icon": "/components/icon/icon"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

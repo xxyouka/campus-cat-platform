@@ -1,0 +1,9 @@
+{
+  "name": "getAdminStats",
+  "version": "1.0.0",
+  "description": "获取管理后台统计数据（管理员权限校验）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

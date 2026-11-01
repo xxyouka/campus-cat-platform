@@ -1,0 +1,273 @@
+/* pages/help/help.wxss - 使用帮助 */
+.help-page {
+  min-height: 100vh;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+  background: var(--bg-secondary);
+}
+
+.help-hero {
+  margin: 30rpx 30rpx 0;
+  padding: 36rpx 32rpx;
+  border-radius: var(--radius-lg);
+  background: var(--primary-cta-gradient);
+  color: var(--primary-cta-text);
+}
+
+.hero-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.hero-sub {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.help-group {
+  margin: 24rpx 30rpx 0;
+}
+
+.group-title {
+  margin: 0 8rpx 14rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.faq-list {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.faq-item {
+  padding: 28rpx 30rpx;
+  border-bottom: 2rpx solid var(--border-color);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-hover {
+  background: var(--bg-secondary);
+}
+
+.faq-q {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.faq-q-text {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.faq-arrow {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-size: 32rpx;
+  line-height: 1.2;
+}
+
+.faq-a {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.8;
+}
+
+.release {
+  padding: 28rpx 30rpx;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.release + .release {
+  margin-top: 20rpx;
+}
+
+.release-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.release-title {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.release-version {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.release-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  margin-top: 14rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.release-dot {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.release-text {
+  flex: 1;
+}
+
+.contact-card {
+  padding: 28rpx 30rpx;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 14rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+.contact-row:last-of-type {
+  margin-bottom: 0;
+}
+
+.contact-tip {
+  display: block;
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx solid var(--border-color);
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.help-footer {
+  margin-top: 40rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  text-align: center;
+}
+
+/* ===== 功能导览 ===== */
+.group-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16rpx;
+  margin: 0 8rpx 14rpx;
+}
+
+.group-title-row .group-title {
+  margin: 0;
+}
+
+.tour-intro {
+  display: block;
+  margin: 0 8rpx 18rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.tour-group + .tour-group {
+  margin-top: 22rpx;
+}
+
+.tour-group-label {
+  display: block;
+  margin: 0 8rpx 10rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.tour-list {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.tour-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx 26rpx;
+  border-bottom: 2rpx solid var(--border-color);
+}
+
+.tour-item:last-child {
+  border-bottom: none;
+}
+
+.tour-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.tour-label {
+  display: block;
+  color: var(--text-primary);
+  font-size: 27rpx;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.tour-desc {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--text-tertiary);
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.tour-action {
+  flex-shrink: 0;
+  padding: 10rpx 22rpx;
+  border-radius: var(--radius-pill);
+  background: var(--primary-tint-10);
+  color: var(--primary-color);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.tour-action-hover {
+  opacity: 0.7;
+}
+
+.tour-action.is-muted {
+  background: transparent;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}

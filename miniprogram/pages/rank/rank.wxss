@@ -1,0 +1,318 @@
+/* 猫咪排行榜 */
+.page {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+/* Tab 切换 */
+.rank-tabs {
+  display: flex;
+  margin: 24rpx 32rpx 0;
+  padding: 8rpx;
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.rank-tab {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0;
+  border-radius: 26rpx;
+  transition: all 0.25s ease;
+}
+
+.rank-tab.active {
+  /* 品牌面 + 白字（口径同主按钮，2026-10-14 维护者定）；
+     容器自身也要给 color —— 标签与图标都靠它继承 */
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+}
+
+.tab-hover {
+  opacity: 0.7;
+}
+
+.tab-icon {
+  margin-bottom: 4rpx;
+  font-size: 36rpx;
+}
+
+.tab-label {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+.rank-tab.active .tab-label {
+  color: var(--primary-cta-text);
+  font-weight: 600;
+}
+
+.tab-underline {
+  position: absolute;
+  bottom: 6rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: var(--primary-color);
+}
+
+/* 选中标签整体已是品牌实底，下划线在同色上不可见 —— 直接收掉（2026-10-14） */
+.rank-tab.active .tab-underline {
+  display: none;
+}
+
+/* 区块标题 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 40rpx 32rpx 24rpx;
+}
+
+.section-title {
+  color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.section-desc {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* 排行榜列表 */
+.rank-list {
+  padding: 0 32rpx 48rpx;
+}
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 24rpx 28rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  transition: transform 0.2s ease;
+}
+
+.rank-item.item-hover {
+  transform: scale(0.98);
+}
+
+.rank-item.gold {
+  border-color: var(--secondary-color);
+  background: linear-gradient(135deg, var(--bg-warm) 0%, var(--primary-light) 100%);
+}
+
+.rank-item.silver {
+  border-color: var(--text-light);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+}
+
+.rank-item.bronze {
+  border-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--bg-warm) 0%, var(--primary-light) 100%);
+}
+
+/* 排名数字 */
+.rank-num {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 64rpx;
+  height: 64rpx;
+  font-size: 38rpx;
+}
+
+.rank-text {
+  color: var(--text-light);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.rank-item.top3 .rank-text {
+  color: var(--text-secondary);
+  font-size: 36rpx;
+}
+
+/* 头像 */
+.rank-avatar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0 24rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-tertiary));
+}
+
+.rank-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-placeholder {
+  font-size: 48rpx;
+}
+
+/* 信息区 */
+.rank-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.rank-name-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  overflow: hidden;
+}
+
+.rank-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rank-campus {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.rank-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.rank-count {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.count-num {
+  /* 行内数字（不加底）：同「大数字」口径走品牌珊瑚 */
+  color: var(--primary-color);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* 箭头 */
+.rank-arrow {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 48rpx;
+  height: 48rpx;
+  color: var(--text-light);
+  font-size: 36rpx;
+}
+
+/* 骨架屏 */
+.skeleton-section {
+  padding: 40rpx 32rpx;
+}
+
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.skeleton-rank {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+}
+
+.skeleton-avatar {
+  flex-shrink: 0;
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0 24rpx;
+  border-radius: 50%;
+}
+
+.skeleton-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.skeleton-name {
+  width: 55%;
+  height: 28rpx;
+  border-radius: 12rpx;
+}
+
+.skeleton-count {
+  width: 35%;
+  height: 24rpx;
+  border-radius: 10rpx;
+}
+
+/* ========== 加载更多 / 到底提示 ========== */
+.no-more-line {
+  width: 100rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+.no-more-text {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  color: var(--text-light);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  .rank-item { border-color: var(--border-color); background: var(--bg-card); }
+  .rank-item:active { background: var(--bg-warm); }
+  .rank-tabs { border-bottom-color: var(--border-color); background: var(--bg-card); }
+  .rank-tab { color: var(--text-secondary); }
+
+  /* 选中标签已铺品牌底 / 行内数字直接用品牌珊瑚：均随 --primary-color 自动翻转 */
+  .rank-tab.active { color: var(--primary-cta-text); }
+  .rank-tab.active .tab-label { color: var(--primary-cta-text); }
+}

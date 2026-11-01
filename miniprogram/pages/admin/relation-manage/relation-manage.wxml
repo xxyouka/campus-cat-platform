@@ -1,0 +1,354 @@
+<view class="container">
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px">
+    <!-- padding-right 由 JS 按胶囊实测宽度下发（见 _getMenuSafeRight）：
+         原实现把「+」放在 32rpx 边距处，正好落在系统胶囊下方，实际点不到。 -->
+    <view class="nav-content" style="padding-right: {{menuSafeRight}}px">
+      <view class="nav-back" bindtap="onBack" hover-class="btn-hover">
+        <text class="back-arrow"></text>
+        <text class="back-label">返回</text>
+      </view>
+      <view class="nav-title">关系管理</view>
+    </view>
+  </view>
+
+  <view class="main-content">
+    <view class="toolbar">
+      <view class="search-bar">
+        <view class="search-icon"></view>
+        <input class="search-input" placeholder="搜索猫咪名称 / 花色" value="{{searchKeyword}}" bindinput="onSearchInput" />
+        <view wx:if="{{searchKeyword}}" class="search-clear" bindtap="onClearSearch" hover-class="btn-hover">×</view>
+      </view>
+      <view class="add-btn" bindtap="onOpenAddPanel" hover-class="btn-hover">
+        <text class="add-plus">+</text>
+        <text class="add-label">添加关系</text>
+      </view>
+    </view>
+
+    <!-- 概览 + 分组段筛选：一猫一卡后，看「有哪些猫有血缘关系」从肉眼扫描变成点一下计数 -->
+    <view class="stats-line">{{statsText}}</view>
+    <scroll-view scroll-x class="filter-scroll" enhanced show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <view
+          class="filter-chip {{activeSegment === item.key ? 'chip-active' : ''}}"
+          wx:for="{{segments}}"
+          wx:key="key"
+          data-seg="{{item.key}}"
+          bindtap="onFilterSegment"
+          hover-class="btn-hover"
+        >{{item.label}} {{item.count}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 增删改后的重查提示（细条，不刷骨架） -->
+    <view wx:if="{{refreshing}}" class="filter-hint">正在刷新…</view>
+
+    <view wx:if="{{loading}}" class="loading-box">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中…</text>
+    </view>
+
+    <view wx:elif="{{loadFailed}}" class="empty-box">
+      <icon name="warning" size="48" />
+      <text class="empty-text">关系记录加载失败</text>
+      <view class="empty-btn" bindtap="onRetryLoad" hover-class="btn-hover">重新加载</view>
+    </view>
+
+    <!-- 全库一条关系都没有（区别于筛选后为空：这里不该出现「清除筛选」） -->
+    <view wx:elif="{{hasNoRelations}}" class="empty-box">
+      <icon name="link" size="48" />
+      <text class="empty-text">暂无关系记录</text>
+      <view class="empty-btn" bindtap="onOpenAddPanel" hover-class="btn-hover">添加第一条关系</view>
+    </view>
+
+    <scroll-view
+      wx:else
+      scroll-y
+      class="card-list"
+      scroll-into-view="{{scrollIntoView}}"
+      scroll-with-animation
+    >
+      <!-- 一猫一卡：这只猫的全部关系按 血缘 / 同辈 / 社交 分组内聚在卡内。
+           原平铺句式列表里「查一只猫的完整关系」要靠搜索 + 肉眼扫，卡片把这件事变成零成本。 -->
+      <view
+        class="cat-card {{flashCatId === card.catId ? 'card-flash' : ''}}"
+        wx:for="{{cards}}"
+        wx:for-item="card"
+        wx:key="catId"
+        id="card-{{card.catId}}"
+      >
+        <view class="cc-head">
+          <view class="cc-cat" data-id="{{card.catId}}" bindtap="onCatTap" hover-class="btn-hover">
+            <image wx:if="{{card.avatar}}" class="cc-avatar" src="{{card.avatar}}" mode="aspectFill"></image>
+            <view wx:else class="cc-avatar cc-avatar-ph">{{card.initialName}}</view>
+            <view class="cc-info">
+              <text class="cc-name">{{card.name}}</text>
+              <text class="cc-meta">{{card.color ? card.color + ' · ' : ''}}{{card.count}} 条关系</text>
+            </view>
+          </view>
+          <view class="cc-add" data-cat-id="{{card.catId}}" bindtap="onOpenAddPanel" hover-class="btn-hover">＋ 添加</view>
+        </view>
+
+        <view class="cc-group" wx:for="{{card.groups}}" wx:for-item="group" wx:key="name">
+          <text class="cc-gname">{{group.name}}</text>
+          <view class="cc-chips">
+            <!-- chip = 一条关系：角色胶囊（类型配色）+ 对方猫名。
+                 点 chip 打开编辑面板（改类型 / 备注 / 删除）；× 直接删（6 秒撤销条兜底）。 -->
+            <view
+              class="rel-chip"
+              wx:for="{{group.chips}}"
+              wx:for-item="chip"
+              wx:key="relId"
+              style="border-color: {{chip.color}}59; background: {{chip.color}}14"
+            >
+              <view
+                class="chip-main"
+                data-id="{{chip.relId}}"
+                data-owner="{{card.catId}}"
+                bindtap="onEditChip"
+                hover-class="btn-hover"
+              >
+                <text class="chip-role" style="background: {{chip.color}}">{{chip.label}}</text>
+                <text class="chip-name">{{chip.otherName}}</text>
+              </view>
+              <view class="chip-x" data-id="{{chip.relId}}" catchtap="onDeleteChip" hover-class="btn-hover">×</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 筛选后为空：说清是「条件没命中」而不是「没有数据」，并给复位出口 -->
+      <view wx:if="{{cards.length === 0}}" class="empty-box slim">
+        <icon name="search" size="48" />
+        <text class="empty-text">没有符合当前条件的猫咪</text>
+        <view class="empty-btn" bindtap="onClearFilters" hover-class="btn-hover">清除筛选</view>
+      </view>
+
+      <!-- 关系数为 0 的猫不会出现在卡片里：这里给一个明确的补充入口，
+           而不是让人以为「列表里没有 = 加不了」 -->
+      <view wx:if="{{cards.length > 0}}" class="list-footer">
+        <text class="list-footer-hint">同一条关系会在双方卡片各出现一次，删除任意一侧即整条删除。</text>
+        <view class="list-footer-btn" bindtap="onOpenAddPanel" hover-class="btn-hover">＋ 给其他猫咪添加关系</view>
+      </view>
+
+      <view class="list-bottom-pad"></view>
+    </scroll-view>
+  </view>
+
+  <!-- 删除撤销条：chip 上的 × 不弹确认框，这里就是唯一的安全网
+       （恢复用删除瞬间抓下来的原始字段，6 秒后自动消失）。 -->
+  <view wx:if="{{undoBar}}" class="undo-bar">
+    <view class="undo-text">
+      <text class="undo-title">已删除「{{undoBar.relatedCatName}} 与 {{undoBar.catName}}」的关系</text>
+      <text wx:if="{{undoBar.note}}" class="undo-note">{{undoBar.note}}</text>
+    </view>
+    <view class="undo-action" bindtap="onUndoDelete" hover-class="btn-hover">撤销</view>
+    <view class="undo-close" bindtap="onDismissUndo" hover-class="btn-hover">×</view>
+  </view>
+
+  <view wx:if="{{showAddPanel}}" class="panel-overlay" bindtap="onCloseAddPanel">
+    <view class="add-panel" catchtap="stopProp">
+      <view class="panel-header">
+        <text class="panel-title">添加关系</text>
+        <view class="panel-close" bindtap="onCloseAddPanel" hover-class="btn-hover">×</view>
+      </view>
+
+      <!-- 方向预览：把「B 是 A 的 T」这句人话提前摊开给用户看。
+           基准猫名可点（清空并聚焦选猫器）；对方那一端点开多选面板。 -->
+      <view class="sentence">
+        <view class="s-edit {{catAName ? '' : 's-ph'}}" bindtap="onEditCatA" hover-class="s-edit-hover">
+          <text class="s-name">{{catAName || '基准猫'}}</text>
+        </view>
+        <text class="s-word">的</text>
+        <view class="relation-type-tag" style="background: {{addFormTypeColor}}">
+          <text>{{addFormTypeLabel}}</text>
+        </view>
+        <text class="s-word">是</text>
+        <view class="s-edit s-multi {{catBSummary ? '' : 's-ph'}}" bindtap="onOpenCatPicker" hover-class="s-edit-hover">
+          <text class="s-name">{{catBSummary || '选猫咪（可多选）'}}</text>
+        </view>
+      </view>
+
+      <scroll-view scroll-y class="panel-body" scroll-top="{{panelScrollTop}}" scroll-with-animation>
+        <view class="form-section">
+          <view class="section-head">
+            <text class="step">1</text>
+            <text class="section-label">基准猫咪</text>
+            <text class="section-tip">从谁出发</text>
+          </view>
+          <cat-picker
+            value="{{catAObj}}"
+            placeholder="搜索要建立关系的猫咪"
+            focus-token="{{focusTokenA}}"
+            bind:change="onPickCatA"
+            bind:clear="onClearCatA"
+          />
+        </view>
+
+        <view class="form-section">
+          <view class="section-head">
+            <text class="step">2</text>
+            <text class="section-label">关系类型</text>
+          </view>
+          <!-- 平铺网格（2 行 × 4）：四组分组把面板顶出屏幕是「添加难用」的主因，
+               分组语义由各类型固有配色保留，列表页的卡片分组承担分组语义的主责。 -->
+          <view class="type-grid">
+            <view
+              class="type-btn {{addForm.type === item.key ? 'type-active' : ''}}"
+              wx:for="{{flatTypes}}"
+              wx:key="key"
+              style="{{addForm.type === item.key ? 'border-color:' + item.color + ';background:' + item.color + '2E' : ''}}"
+              data-type="{{item.key}}"
+              bindtap="onSelectType"
+              hover-class="card-hover"
+            >
+              <text class="type-label">{{item.label}}</text>
+            </view>
+          </view>
+          <!-- 只在选了「子女」时出现：平时这一行是噪音，还把备注顶出屏幕 -->
+          <text wx:if="{{addForm.type === 'child'}}" class="section-hint">对方猫咪的页面会按性别显示为「妈妈 / 爸爸」。</text>
+        </view>
+
+        <view class="form-section">
+          <view class="section-head">
+            <text class="step">3</text>
+            <text class="section-label">对方猫咪</text>
+            <text class="section-tip">可多选</text>
+          </view>
+          <view wx:if="{{pickedCats.length > 0}}" class="picked-row">
+            <view class="picked-chip" wx:for="{{pickedCats}}" wx:key="_id">
+              <image wx:if="{{item.avatar}}" class="picked-chip-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+              <view wx:else class="picked-chip-avatar picked-chip-avatar-ph">{{item.initialName}}</view>
+              <text class="picked-chip-name">{{item.name}}</text>
+              <view class="picked-chip-x" data-id="{{item._id}}" bindtap="onRemovePickedCat" hover-class="btn-hover">×</view>
+            </view>
+            <view class="picked-more" bindtap="onOpenCatPicker" hover-class="btn-hover">＋ 继续选</view>
+          </view>
+          <view wx:else class="pick-entry" bindtap="onOpenCatPicker" hover-class="btn-hover">
+            <text class="pick-entry-plus">＋</text>
+            <text class="pick-entry-text">选择猫咪（可多选）</text>
+          </view>
+        </view>
+
+        <view class="form-section">
+          <view class="section-head">
+            <text class="section-label">备注（选填）</text>
+          </view>
+          <input class="form-input" placeholder="例如：同一窝出生" value="{{addForm.note}}" bindinput="onNoteInput" maxlength="100" />
+        </view>
+      </scroll-view>
+
+      <view class="panel-footer">
+        <!-- 提交成功后不关面板：回执放在按钮上方，保证一眼能看到，并保留基准猫与类型接着加 -->
+        <view wx:if="{{addSuccessText}}" class="add-success">{{addSuccessText}}，可继续选猫添加。</view>
+        <view class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="onSubmit" hover-class="btn-hover">
+          <text>{{submitting ? '提交中…' : (pickedCats.length > 1 ? '添加 ' + pickedCats.length + ' 条关系' : '添加关系')}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 选猫面板（多选）：叠在添加面板之上，靠它把「选猫」从两次盲搜变成一次点选 -->
+  <view wx:if="{{showCatPicker}}" class="panel-overlay picker-overlay" bindtap="onCloseCatPicker">
+    <view class="add-panel picker-panel" catchtap="stopProp">
+      <view class="panel-header">
+        <text class="panel-title">选择猫咪</text>
+        <text class="picker-counter">已选 {{pickerSelected.length}}</text>
+        <view class="panel-close" bindtap="onCloseCatPicker" hover-class="btn-hover">×</view>
+      </view>
+
+      <view class="picker-search">
+        <view class="search-icon"></view>
+        <input class="picker-input" placeholder="搜索名称 / 花色" value="{{pickerKeyword}}" bindinput="onPickerSearchInput" />
+        <view wx:if="{{pickerKeyword}}" class="search-clear" catchtap="onPickerClearSearch" hover-class="btn-hover">×</view>
+      </view>
+
+      <scroll-view scroll-y class="picker-scroll" bindscrolltolower="onPickerLoadMore">
+        <view
+          class="picker-opt {{item.disabled ? 'is-disabled' : ''}} {{item.selected ? 'is-selected' : ''}}"
+          wx:for="{{pickerOptions}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="onPickerToggle"
+          hover-class="card-hover"
+        >
+          <image wx:if="{{item.avatar}}" class="picker-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+          <view wx:else class="picker-avatar picker-avatar-ph">{{item.initialName}}</view>
+          <view class="picker-info">
+            <text class="picker-name">{{item.name}}</text>
+            <text wx:if="{{item.color}}" class="picker-color">{{item.color}}</text>
+          </view>
+          <text wx:if="{{item.disabled}}" class="picker-badge">已有关系</text>
+          <view wx:else class="picker-check {{item.selected ? 'is-checked' : ''}}"></view>
+        </view>
+
+        <view wx:if="{{pickerLoading}}" class="picker-tip">加载中…</view>
+        <view wx:elif="{{pickerOptions.length === 0}}" class="picker-tip">没有匹配的猫咪</view>
+        <view wx:elif="{{!pickerHasMore}}" class="picker-tip">没有更多了</view>
+        <view class="list-bottom-pad"></view>
+      </scroll-view>
+
+      <view class="panel-footer">
+        <view class="submit-btn {{pickerSelected.length ? '' : 'disabled'}}" bindtap="onConfirmCatPicker" hover-class="btn-hover">
+          <text>{{pickerSelected.length ? '确定（已选 ' + pickerSelected.length + ' 只）' : '请选择猫咪'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑面板：点卡片里的 chip 打开。主语 = 当前卡片的猫 -->
+  <view wx:if="{{showEditPanel}}" class="panel-overlay" bindtap="onCloseEditPanel">
+    <view class="add-panel" catchtap="stopProp">
+      <view class="panel-header">
+        <text class="panel-title">修改关系</text>
+        <view class="panel-close" bindtap="onCloseEditPanel" hover-class="btn-hover">×</view>
+      </view>
+
+      <view class="sentence">
+        <text class="s-name">{{editRel.subjectName}}</text>
+        <text class="s-word">的</text>
+        <view class="relation-type-tag" style="background: {{editTypeColor}}">
+          <text>{{editTypeLabel}}</text>
+        </view>
+        <text class="s-word">是</text>
+        <text class="s-name">{{editRel.objectName}}</text>
+      </view>
+      <view wx:if="{{editDirNote}}" class="edit-note">{{editDirNote}}</view>
+
+      <scroll-view scroll-y class="panel-body edit-body">
+        <view class="form-section">
+          <view class="section-head">
+            <text class="section-label">关系类型</text>
+          </view>
+          <view class="type-grid">
+            <view
+              class="type-btn {{editForm.type === item.key ? 'type-active' : ''}}"
+              wx:for="{{flatTypes}}"
+              wx:key="key"
+              style="{{editForm.type === item.key ? 'border-color:' + item.color + ';background:' + item.color + '2E' : ''}}"
+              data-type="{{item.key}}"
+              bindtap="onEditSelectType"
+              hover-class="card-hover"
+            >
+              <text class="type-label">{{item.label}}</text>
+            </view>
+          </view>
+          <text wx:if="{{editForm.type === 'child'}}" class="section-hint">对方猫咪的页面会按性别显示为「妈妈 / 爸爸」。</text>
+        </view>
+
+        <view class="form-section">
+          <view class="section-head">
+            <text class="section-label">备注（选填）</text>
+          </view>
+          <input class="form-input" placeholder="例如：同一窝出生" value="{{editForm.note}}" bindinput="onEditNoteInput" maxlength="100" />
+        </view>
+      </scroll-view>
+
+      <view class="panel-footer edit-footer">
+        <view class="edit-delete" bindtap="onDeleteFromEdit" hover-class="btn-hover">删除</view>
+        <view class="submit-btn edit-save {{editSaving ? 'disabled' : ''}}" bindtap="onSaveEdit" hover-class="btn-hover">
+          <text>{{editSaving ? '保存中…' : '保存'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

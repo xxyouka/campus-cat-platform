@@ -1,0 +1,79 @@
+<!-- 相遇打卡排行榜 -->
+<view class="page page-enter">
+  <custom-navbar title="相遇排行榜" theme="warm" showBack="{{true}}" />
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-item" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-rank shimmer"></view>
+      <view class="skeleton-avatar shimmer"></view>
+      <view class="skeleton-info">
+        <view class="skeleton-name shimmer"></view>
+        <view class="skeleton-count shimmer"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 排行榜列表 -->
+  <view class="rank-section" wx:if="{{!loading}}">
+    <view class="section-header">
+      <view class="inline-row"><icon name="paw" size="36" /><text class="section-title">被相遇次数排名</text></view>
+      <text class="section-desc">共 {{list.length}} 只猫咪上榜</text>
+    </view>
+
+    <view class="rank-list" wx:if="{{list.length > 0}}">
+      <view
+        class="rank-item {{item.rank <= 3 ? 'top3' : ''}} {{item.rank === 1 ? 'gold' : ''}} {{item.rank === 2 ? 'silver' : ''}} {{item.rank === 3 ? 'bronze' : ''}}"
+        wx:for="{{list}}"
+        wx:key="catId"
+        bindtap="onGoToDetail"
+        data-cat-id="{{item.catId}}"
+        hover-class="item-hover"
+      >
+        <view class="rank-num">
+          <icon wx:if="{{item.rank === 1}}" name="medal-gold" size="32" />
+          <icon wx:elif="{{item.rank === 2}}" name="medal-silver" size="32" />
+          <icon wx:elif="{{item.rank === 3}}" name="medal-bronze" size="32" />
+          <text wx:else class="rank-text">{{item.rank}}</text>
+        </view>
+        <view class="rank-avatar">
+          <image
+            wx:if="{{item.avatar}}"
+            src="{{item.avatar}}"
+            mode="aspectFill"
+            lazy-load="{{true}}"
+          />
+          <icon wx:else name="cat" size="32" />
+        </view>
+        <view class="rank-info">
+          <view class="rank-name-row">
+            <text class="rank-name">{{item.catName}}</text>
+            <text class="rank-campus" wx:if="{{item.campus}}">{{item.campus}}</text>
+          </view>
+          <view class="rank-meta">
+            <text class="rank-count">被相遇 <text class="count-num">{{item.count}}</text> 次</text>
+            <text class="rank-last" wx:if="{{item.lastMeetTime}}">最近：{{item.lastMeetTime}}</text>
+          </view>
+        </view>
+        <view class="rank-arrow">
+          <text>›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载失败：必须与「暂无记录」区分，否则故障被伪装成业务空 -->
+    <view class="load-failed" wx:if="{{loadFailed}}">
+      <icon name="warning" size="48" />
+      <text class="load-failed-title">相遇记录加载失败</text>
+      <view class="retry-btn" bindtap="onRetryLoad">重新加载</view>
+    </view>
+
+    <!-- 空状态 -->
+    <empty-state
+      wx:elif="{{list.length === 0}}"
+      icon="paw"
+      title="暂无相遇记录"
+      subtitle="还没有同学打卡过猫咪"
+    />
+  </view>
+</view>

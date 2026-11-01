@@ -1,0 +1,488 @@
+/* 运营数据面板 · 管理端只读 */
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+}
+
+/* ========== 骨架屏 ========== */
+.skeleton-section {
+  padding: 24rpx 32rpx;
+}
+
+.skeleton-intro {
+  height: 180rpx;
+  border-radius: 32rpx;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin-top: 24rpx;
+}
+
+.skeleton-card {
+  height: 250rpx;
+  border-radius: 28rpx;
+}
+
+.skeleton-list {
+  height: 420rpx;
+  margin-top: 24rpx;
+  border-radius: 32rpx;
+}
+
+/* ========== 说明卡 ========== */
+.intro-card {
+  margin: 24rpx 32rpx 0;
+  padding: 28rpx 32rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.intro-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.intro-text {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.intro-note {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.7;
+}
+
+/* ========== 周期切换 ========== */
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 24rpx 32rpx 0;
+}
+
+.range-item {
+  padding: 10rpx 24rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 999rpx;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.range-item.active {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.update-time {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+/* ========== 告警 ========== */
+.warning-card {
+  margin: 24rpx 32rpx 0;
+  padding: 22rpx 28rpx;
+  border: 2rpx solid var(--tag-warning-border);
+  border-radius: 24rpx;
+  background: var(--tag-warning-bg);
+}
+
+.warning-title {
+  color: var(--tag-warning-text);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.warning-line {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--tag-warning-text);
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+/* ========== 四张主卡 ========== */
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin: 24rpx 32rpx 0;
+}
+
+.metric-card {
+  padding: 24rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 28rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.metric-head {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  min-width: 0;
+}
+
+.metric-icon {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 16rpx;
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.metric-label {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.metric-value {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-primary);
+  font-size: 52rpx;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.metric-bar {
+  height: 8rpx;
+  margin-top: 14rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: var(--bg-tertiary);
+}
+
+.metric-bar-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+}
+
+.metric-sub {
+  display: block;
+  margin-top: 14rpx;
+  color: var(--text-secondary);
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.metric-hint {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--text-tertiary);
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.section-note {
+  display: block;
+  margin: 20rpx 40rpx 0;
+  color: var(--text-tertiary);
+  font-size: 23rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ========== 通用卡片 ========== */
+.section-card {
+  margin: 24rpx 32rpx 0;
+  padding: 28rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.section-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.section-sub {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.section-foot {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+/* ========== 周趋势 ========== */
+.week-scroll {
+  width: 100%;
+  margin-top: 18rpx;
+}
+
+.week-table {
+  min-width: 780rpx;
+}
+
+.week-row {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+
+.week-row:last-child {
+  border-bottom: none;
+}
+
+.week-head {
+  padding-top: 0;
+  color: var(--text-tertiary);
+  font-size: 21rpx;
+}
+
+.week-cell {
+  flex: 1;
+  min-width: 96rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.week-label {
+  flex: 1.6;
+  min-width: 180rpx;
+  color: var(--text-primary);
+  font-size: 23rpx;
+  text-align: left;
+}
+
+.week-head .week-label {
+  color: var(--text-tertiary);
+}
+
+.week-current {
+  border-radius: 12rpx;
+  background: var(--primary-light);
+}
+
+.week-empty {
+  opacity: 0.55;
+}
+
+.week-partial,
+.week-fallback {
+  display: block;
+  margin-top: 4rpx;
+  color: var(--text-tertiary);
+  font-size: 18rpx;
+  font-weight: 400;
+}
+
+/* ========== 入口使用 ========== */
+.entry-lead {
+  display: block;
+  margin-top: 14rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+.entry-summary {
+  margin-top: 16rpx;
+  padding: 14rpx 20rpx;
+  border-radius: 16rpx;
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.entry-summary.has-action {
+  background: var(--tag-danger-bg);
+  color: var(--tag-danger-text);
+}
+
+.entry-list {
+  margin-top: 8rpx;
+}
+
+.entry-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+
+.entry-row:last-child {
+  border-bottom: none;
+}
+
+.entry-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.entry-label {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 26rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.entry-tag {
+  flex-shrink: 0;
+  padding: 2rpx 12rpx;
+  border-radius: 999rpx;
+  font-size: 19rpx;
+  line-height: 1.6;
+}
+
+.tag-unused {
+  background: var(--tag-danger-bg);
+  color: var(--tag-danger-text);
+}
+
+.tag-watch {
+  background: var(--tag-warning-bg);
+  color: var(--tag-warning-text);
+}
+
+.tag-keep {
+  background: var(--tag-success-bg);
+  color: var(--tag-success-text);
+}
+
+.tag-observing {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.entry-hint {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--text-tertiary);
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.entry-bar {
+  height: 6rpx;
+  margin-top: 12rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: var(--bg-tertiary);
+}
+
+.entry-bar-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: var(--primary-color);
+}
+
+.entry-row.unused .entry-bar-fill {
+  background: var(--tag-danger-text);
+}
+
+.entry-row.watch .entry-bar-fill {
+  background: var(--tag-warning-text);
+}
+
+.entry-stat {
+  flex-shrink: 0;
+  min-width: 72rpx;
+  text-align: right;
+}
+
+.entry-count {
+  display: block;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.entry-unit {
+  display: block;
+  margin-top: 4rpx;
+  color: var(--text-tertiary);
+  font-size: 20rpx;
+}
+
+/* ========== 失败态 ========== */
+.load-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx;
+  color: var(--text-tertiary);
+}
+
+.load-failed-title {
+  margin-top: 20rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.retry-btn {
+  margin-top: 28rpx;
+  padding: 14rpx 44rpx;
+  border-radius: 999rpx;
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 26rpx;
+}
+
+/* ========== 口径 ========== */
+.coverage-card {
+  margin-bottom: 20rpx;
+}
+
+.coverage-line {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  line-height: 1.7;
+}
+

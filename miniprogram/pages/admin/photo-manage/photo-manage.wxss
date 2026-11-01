@@ -1,0 +1,289 @@
+/* 照片管理 - 相册列表 */
+
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+/* ========== 搜索栏 ==========
+   样式与 cat-manage.wxss:23-83 逐条对齐：两个管理页的搜索手感必须一致，
+   不然管理员在两个页面之间切换会觉得「怎么换了套皮」。 */
+.search-section {
+  position: relative;
+  z-index: 2;
+  margin-top: -32rpx;
+  padding: 0 40rpx;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 36rpx;
+  box-shadow: var(--shadow-warm-lg3);
+  background: var(--bg-primary);
+  transition: border-color 0.2s ease;
+}
+
+.search-box:focus-within {
+  border-color: var(--primary-color);
+}
+
+.search-input {
+  flex: 1;
+  margin-left: 20rpx;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 30rpx;
+}
+
+.search-input::placeholder {
+  color: var(--text-light);
+}
+
+.search-clear {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 44rpx;
+  height: 44rpx;
+  margin-left: 16rpx;
+  border-radius: 50%;
+  background: var(--border-light);
+}
+
+.search-clear:active {
+  background: var(--border-color);
+}
+
+.clear-icon {
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* 统计 */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  padding: 32rpx 40rpx 16rpx;
+}
+
+.stats-text {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* 加载/搜索失败条 */
+.search-error-bar {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin: 0 32rpx 16rpx;
+  padding: 16rpx 20rpx;
+  border-radius: var(--radius-md);
+  background: var(--error-tint-10);
+  color: var(--error-color);
+}
+
+.search-error-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.album-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28rpx;
+  padding: 20rpx 32rpx;
+}
+
+.album-card {
+  overflow: hidden;
+  border: 1rpx solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-primary);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.album-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+.album-cover {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-tint-04) 100%);
+  aspect-ratio: 1;
+}
+
+.album-cover::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, var(--overlay-black-02) 100%);
+  content: '';
+  pointer-events: none;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-tint-04) 100%);
+}
+
+.photo-count-badge {
+  position: absolute;
+  right: 14rpx;
+  bottom: 14rpx;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 12rpx var(--warm-tint-12);
+  background: var(--overlay-white-92);
+  backdrop-filter: blur(12px);
+}
+
+.count-num {
+  color: var(--primary-color);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.count-text {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.album-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 24rpx;
+}
+
+.album-left {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+
+.album-name {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 0.6rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.album-arrow {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 48rpx;
+  height: 48rpx;
+  margin-left: 16rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-tint-04) 100%);
+}
+
+.album-arrow text {
+  color: var(--primary-color);
+  font-size: 28rpx;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 160rpx 40rpx;
+  text-align: center;
+}
+
+.empty-title {
+  margin-bottom: 16rpx;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}
+
+.skeleton-album-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28rpx;
+  padding: 20rpx 32rpx;
+}
+
+.skeleton-album-card {
+  overflow: hidden;
+  border: 1rpx solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-primary);
+}
+
+.skeleton-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(90deg, var(--border-light) 25%, var(--bg-tertiary) 50%, var(--border-light) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-album-info {
+  padding: 20rpx 24rpx;
+}
+
+.skeleton-album-name {
+  width: 60%;
+  height: 28rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(90deg, var(--border-light) 25%, var(--bg-tertiary) 50%, var(--border-light) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* 分页加载提示（触底加载更多） */
+.album-load-more {
+  padding: 24rpx 0 40rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  text-align: center;
+}

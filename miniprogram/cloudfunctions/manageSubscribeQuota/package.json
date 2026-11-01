@@ -1,0 +1,14 @@
+{
+  "name": "manageSubscribeQuota",
+  "version": "1.0.0",
+  "description": "订阅消息推送次数账本（授权+1/发送-1）",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

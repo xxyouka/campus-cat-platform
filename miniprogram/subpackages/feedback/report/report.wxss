@@ -1,0 +1,230 @@
+/* pages/report/report.wxss - 用户反馈 */
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 0 24rpx 64rpx;
+  background: var(--bg-secondary);
+}
+
+.intro-card,
+.cat-card,
+.form-card,
+.success-card,
+.state-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-card);
+}
+
+.intro-title {
+  margin-left: 12rpx;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.intro-text {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--text-secondary);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.cat-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.cat-avatar {
+  flex: 0 0 auto;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+}
+
+.cat-avatar-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-tertiary);
+}
+
+.cat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.cat-name {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.cat-sub {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.section-label {
+  color: var(--text-primary);
+  font-size: 27rpx;
+  font-weight: 600;
+}
+
+.type-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+
+.type-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding: 18rpx 22rpx;
+  border: 1rpx solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+}
+
+.type-chip.active {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+/* 小程序意见模式：无猫档案可关联，用一枚只读标签替掉类型选择 */
+.app-feedback-tag {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 14rpx 20rpx;
+  border: 1rpx solid var(--primary-color);
+  border-radius: var(--radius-pill);
+  background: var(--primary-light);
+  color: var(--text-primary);
+  font-size: 25rpx;
+}
+
+.type-label {
+  color: var(--text-primary);
+  font-size: 27rpx;
+  font-weight: 600;
+}
+
+.type-desc {
+  color: var(--text-secondary);
+  font-size: 23rpx;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 30rpx;
+}
+
+.counter {
+  color: var(--text-tertiary);
+  font-size: 23rpx;
+}
+
+.desc-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 220rpx;
+  margin-top: 14rpx;
+  padding: 20rpx;
+  border: 1rpx solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.desc-placeholder {
+  color: var(--text-tertiary);
+  font-size: 25rpx;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--text-tertiary);
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.submit-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 30rpx;
+  padding: 22rpx;
+  border-radius: var(--radius-pill);
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.submit-btn.disabled {
+  opacity: 0.6;
+}
+
+.state-card,
+.success-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 60rpx;
+  padding: 56rpx 32rpx;
+}
+
+.state-title,
+.success-title {
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.state-sub,
+.success-sub {
+  color: var(--text-secondary);
+  font-size: 25rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.primary-btn,
+.ghost-btn {
+  margin-top: 10rpx;
+  padding: 16rpx 44rpx;
+  border-radius: var(--radius-pill);
+  font-size: 26rpx;
+}
+
+.primary-btn {
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+}
+
+.ghost-btn {
+  border: 1rpx solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.success-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}

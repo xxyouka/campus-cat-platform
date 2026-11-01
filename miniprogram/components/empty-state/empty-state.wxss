@@ -1,0 +1,81 @@
+/* 空状态组件样式 */
+
+/* 主容器 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 120rpx 48rpx;
+  text-align: center;
+}
+
+/* 插画容器 */
+.empty-illus {
+  position: relative;
+  width: 192rpx;
+  height: 192rpx;
+  margin-bottom: 40rpx;
+}
+
+/* 插画背景 */
+.empty-illus-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 192rpx;
+  height: 192rpx;
+  border-radius: 56rpx;
+  box-shadow: 0 8rpx 32rpx var(--primary-tint-08);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+}
+
+/* 装饰爪印 */
+.empty-illus-paw {
+  position: absolute;
+  right: -12rpx;
+  bottom: -8rpx;
+  font-size: 40rpx;
+  animation: paw-bounce 2.4s ease-in-out infinite;
+}
+
+@keyframes paw-bounce {
+  0%, 100% { transform: rotate(-10deg) scale(1); }
+  50% { transform: rotate(10deg) scale(1.15); }
+}
+
+/* 主文案 */
+.empty-title {
+  margin-bottom: 16rpx;
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: -0.6rpx;
+}
+
+/* 副文案 */
+.empty-subtitle {
+  margin-bottom: 48rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 操作按钮 */
+.empty-action {
+  padding: 24rpx 72rpx;
+  border-radius: 48rpx;
+  box-shadow: 0 8rpx 24rpx var(--primary-tint-25);
+
+  /* 主 CTA 走品牌珊瑚渐变：字用深可可 --primary-cta-text，最浅端 #F0B89A 上也有 7.3:1 */
+  background: var(--primary-cta-gradient);
+  color: var(--primary-cta-text);
+  font-size: 32rpx;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.empty-action:active {
+  transform: scale(0.96);
+  box-shadow: 0 8rpx 16rpx var(--primary-tint-25);
+}

@@ -1,0 +1,131 @@
+<!-- 隐私政策页面 -->
+<view class="privacy-page page-enter">
+  <custom-navbar title="隐私政策" theme="warm" showBack="{{true}}" />
+
+  <!-- 前言 -->
+  <view class="intro">
+    <text class="intro-text">
+      欢迎使用「校园猫猫」小程序。我们是一个校园猫咪信息展示平台，无需登录即可浏览猫咪档案、相册和公告。
+    </text>
+  </view>
+
+  <!-- 章节列表 -->
+  <view class="sections">
+
+    <!-- 01 信息收集 -->
+    <view class="section" bindtap="toggleSection" data-id="1" hover-class="list-hover" hover-start-time="0" hover-stay-time="100">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-number">01</text>
+          <text class="section-title">信息收集</text>
+        </view>
+        <text class="section-arrow">{{sections[0].expanded ? '▲' : '▼'}}</text>
+      </view>
+      <view class="section-body" wx:if="{{sections[0].expanded}}">
+        <view class="notice-box success">
+          <text class="notice-text">我们不收集您的账号、头像或昵称。相遇打卡和关注记录只关联微信提供的匿名 OpenID，用于在换设备后恢复您的记录。</text>
+        </view>
+        <view class="info-list">
+          <view class="info-item">
+            <text class="info-label">无需登录</text>
+            <text class="info-desc">您可以直接浏览猫咪信息、相册和公告，无需注册或登录。</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">无头像昵称</text>
+            <text class="info-desc">我们不获取也不保存您的微信头像和昵称。</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">相遇与关注</text>
+            <text class="info-desc">打卡时间、地点和关注关系会关联匿名 OpenID，用于展示个人记录和排行榜；不会公开展示您的身份。</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">反馈建议</text>
+            <text class="info-desc">您可以自愿提交反馈内容，该内容仅用于核实猫咪档案和改进服务。</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 02 照片与相册 -->
+    <view class="section" bindtap="toggleSection" data-id="2" hover-class="list-hover" hover-start-time="0" hover-stay-time="100">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-number">02</text>
+          <text class="section-title">照片与相册</text>
+        </view>
+        <text class="section-arrow">{{sections[1].expanded ? '▲' : '▼'}}</text>
+      </view>
+      <view class="section-body" wx:if="{{sections[1].expanded}}">
+        <view class="info-list">
+          <view class="info-item">
+            <text class="info-label">猫咪照片</text>
+            <text class="info-desc">相册中的照片由管理员上传和维护，用于展示校园猫咪档案；用户端不开放照片上传。</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">保存与分享</text>
+            <text class="info-desc">您可以长按保存猫咪照片，或通过微信分享卡片把猫咪档案转发给朋友。</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">内容安全</text>
+            <text class="info-desc">管理员上传的图片会经过微信内容安全检测；发现不当内容可在详情页反馈。</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 03 第三方服务 -->
+    <view class="section" bindtap="toggleSection" data-id="3" hover-class="list-hover" hover-start-time="0" hover-stay-time="100">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-number">03</text>
+          <text class="section-title">第三方服务</text>
+        </view>
+        <text class="section-arrow">{{sections[2].expanded ? '▲' : '▼'}}</text>
+      </view>
+      <view class="section-body" wx:if="{{sections[2].expanded}}">
+        <view class="info-list">
+          <view class="info-item">
+            <text class="info-label">微信小程序平台</text>
+            <text class="info-desc">提供基础运行环境，受《微信隐私保护指引》约束。</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">腾讯云（云开发）</text>
+            <text class="info-desc">提供猫咪信息、照片等内容的存储与云函数服务。</text>
+          </view>
+        </view>
+        <view class="notice-box">
+          <text class="notice-text">除微信平台与腾讯云开发外，本小程序不接入其他第三方 SDK 或追踪服务。</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 04 联系我们 -->
+    <view class="section" bindtap="toggleSection" data-id="4" hover-class="list-hover" hover-start-time="0" hover-stay-time="100">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-number">04</text>
+          <text class="section-title">联系我们</text>
+        </view>
+        <text class="section-arrow">{{sections[3].expanded ? '▲' : '▼'}}</text>
+      </view>
+      <view class="section-body" wx:if="{{sections[3].expanded}}">
+        <view class="contact-list">
+          <view class="contact-item">
+            <text class="contact-label">微信</text>
+            <text class="contact-value">{{contact.wechat}}</text>
+          </view>
+          <view class="contact-item">
+            <text class="contact-label">邮箱</text>
+            <text class="contact-value">{{contact.email}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部声明 -->
+  <view class="footer">
+    <view class="inline-row"><text class="footer-text">感谢您使用「校园猫猫」小程序</text><icon name="cat" size="32" /></view>
+  </view>
+</view>

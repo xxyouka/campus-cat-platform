@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "校园猫猫",
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "custom-modal": "/components/custom-modal/custom-modal",
+    "lazy-image": "/components/lazy-image/lazy-image",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

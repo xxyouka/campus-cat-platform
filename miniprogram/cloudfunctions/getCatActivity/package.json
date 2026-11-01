@@ -1,0 +1,1 @@
+{"name": "get-cat-activity", "version": "1.0.0", "description": "获取单只猫的行动规律与活动范围（管理端，仅超级管理员，只读）", "main": "index.js", "dependencies": {"wx-server-sdk": "~2.6.3", "node-cache": "^5.1.2"}}

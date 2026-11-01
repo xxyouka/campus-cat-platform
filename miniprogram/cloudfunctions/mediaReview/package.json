@@ -1,0 +1,9 @@
+{
+  "name": "media-review",
+  "version": "1.0.0",
+  "description": "管理端内容复核：多媒体检测待复核队列 / 通过 / 拦截",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

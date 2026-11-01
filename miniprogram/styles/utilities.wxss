@@ -1,0 +1,603 @@
+
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: rgb(0 0 0 / 20%);
+    --text-secondary: #222;
+  }
+
+  .cat-card, .photo-item {
+    border: 4rpx solid rgb(0 0 0 / 30%);
+  }
+}
+
+/* 减少动画模式（尊重用户偏好） */
+@media (prefers-reduced-motion: reduce) {
+  view, text, image, scroll-view, swiper, button, input, textarea, navigator, video, canvas,
+  view::before, view::after, text::before, text::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 深色模式 — 温暖暗色系（咖啡巧克力色调，保持温馨感） */
+@media (prefers-color-scheme: dark) {
+  page {
+    /* ===== 主题色 ===== */
+    --primary-color: #F5A593;
+    --primary-light: #3D2B26;
+    --primary-dark: #E09480;
+    --secondary-color: #D4B896;
+    --secondary-light: #3D3428;
+    --gradient-primary-mid: #D4886B;
+    --gradient-primary-dark: #A06050;
+
+    /* ===== 功能色 ===== */
+    --success-color: #7CCB8A;
+    --warning-color: #E0B868;
+    --danger-color: #E08080;
+    --info-color: #7AA8D8;
+    --urgent-color: #FF6B6B;
+    --urgent-dark: #F05050;
+
+    /* 错误色：深色底要提亮才够 4.5:1（#E64340 压深卡仅 ~4.4:1），口径同 --urgent-color */
+    --error-color: #FF6B6B;
+    --error-tint-10: rgb(255 107 107 / 10%);
+    --activity-color: #50A8FF;
+    --activity-dark: #4090E0;
+    --accent-gold: #FFE680;
+    --info-light: #8BB8E8;
+    --danger-bright: #FF8080;
+
+    /* ===== 状态色 ===== */
+    --status-healthy: #7CCB8A;
+    --status-adoptable: #60C060;
+    --status-feeding: #E0B868;
+    --status-missing: #B0A098;
+
+    /* ===== 健康类型色 ===== */
+    --health-vaccine: #6AD430;
+    --health-treatment: #30A0FF;
+    --health-surgery: #C080F0;
+    --health-checkup: #F0B040;
+    --health-medicine: #F070B0;
+    --health-other: #A0A0A0;
+    --health-vaccine-light: #80E040;
+    --health-treatment-light: #50B8FF;
+    --health-surgery-light: #D8A0F8;
+    --health-checkup-light: #FFC860;
+    --health-medicine-light: #F888C0;
+    --health-other-light: #C0C0C0;
+
+    /* ===== 文字色 — 温暖奶油白系 ===== */
+    --text-primary: #EBE5DF;
+    --text-secondary: #C5BFB8;
+    --text-tertiary: #B0AAA3;
+    --text-light: #7A7570;
+    --text-accent: #C5BFB8;
+
+    /* ===== 背景色 — 温暖咖啡系 ===== */
+    --bg-primary: #1B1816;
+    --bg-secondary: #211D1A;
+    --bg-tertiary: #302925;
+    --bg-card: #2A2420;
+    --bg-warm: #2D2622;
+    --bg-popup: #2A2420;
+    --bg-close-active: #3D3530;
+    --bg-dashboard-start: #2A2420;
+    --bg-dashboard-end: #25201C;
+    --bg-share-end: #3D3428;
+    --bg-card-alt: #302925;
+    --bg-info-tint: #1C2635;
+    --bg-danger-tint: #3D1C1C;
+
+    /* ===== 骨架屏色 — 比背景稍亮 ===== */
+    --skeleton-base: #2D2824;
+    --skeleton-mid: #36302C;
+    --skeleton-dark: #3D3632;
+    --skeleton-highlight: #3A3330;
+
+    /* ===== 边框 — 可见但不刺眼 ===== */
+    --border-color: rgb(255 255 255 / 10%);
+    --border-light: rgb(255 255 255 / 7%);
+
+    /* ===== 阴影 — 暗色下用微弱光晕代替 ===== */
+    --shadow-xs: 0 2rpx 8rpx rgb(0 0 0 / 40%);
+    --shadow-sm: 0 4rpx 20rpx rgb(0 0 0 / 50%);
+    --shadow-md: 0 8rpx 40rpx rgb(0 0 0 / 60%);
+    --shadow-lg: 0 16rpx 64rpx rgb(0 0 0 / 70%);
+    --shadow-warm: 0 8rpx 40rpx rgb(0 0 0 / 50%);
+
+    /* 暗色模式 - 半透明覆盖层（白色覆盖保持，用于彩色背景） */
+    --overlay-white-04: rgb(255 255 255 / 4%);
+    --overlay-white-06: rgb(255 255 255 / 6%);
+    --overlay-white-08: rgb(255 255 255 / 8%);
+    --overlay-white-10: rgb(255 255 255 / 6%);
+    --overlay-white-12: rgb(255 255 255 / 8%);
+    --overlay-white-15: rgb(255 255 255 / 10%);
+    --overlay-white-20: rgb(255 255 255 / 12%);
+    --overlay-white-25: rgb(255 255 255 / 15%);
+    --overlay-white-32: rgb(255 255 255 / 20%);
+    --overlay-white-35: rgb(255 255 255 / 20%);
+    --overlay-white-40: rgb(255 255 255 / 25%);
+    --overlay-white-50: rgb(255 255 255 / 30%);
+    --overlay-white-60: rgb(255 255 255 / 35%);
+    --overlay-white-70: rgb(255 255 255 / 40%);
+    --overlay-white-80: rgb(255 255 255 / 45%);
+    --overlay-white-85: rgb(255 255 255 / 50%);
+    --overlay-white-90: rgb(255 255 255 / 55%);
+    --overlay-white-92: rgb(42 36 32 / 92%);
+    --overlay-white-95: rgb(255 255 255 / 60%);
+
+    /* 暗色模式 - 黑色覆盖层 */
+    --overlay-black-02: rgb(0 0 0 / 5%);
+    --overlay-black-03: rgb(0 0 0 / 8%);
+    --overlay-black-04: rgb(0 0 0 / 10%);
+    --overlay-black-05: rgb(0 0 0 / 12%);
+    --overlay-black-08: rgb(0 0 0 / 15%);
+    --overlay-black-10: rgb(0 0 0 / 20%);
+    --overlay-black-15: rgb(0 0 0 / 25%);
+    --overlay-black-20: rgb(0 0 0 / 30%);
+    --overlay-black-30: rgb(0 0 0 / 40%);
+    --overlay-black-45: rgb(0 0 0 / 55%);
+    --overlay-black-50: rgb(0 0 0 / 60%);
+    --overlay-black-55: rgb(0 0 0 / 65%);
+    --overlay-black-60: rgb(0 0 0 / 70%);
+    --overlay-black-70: rgb(0 0 0 / 80%);
+
+    /* 暗色模式 - 遮罩层 */
+    --mask-bg: rgb(0 0 0 / 70%);
+    --mask-bg-light: rgb(0 0 0 / 65%);
+    --mask-bg-heavy: rgb(0 0 0 / 75%);
+    --mask-bg-dark: rgb(0 0 0 / 70%);
+    --mask-bg-darker: rgb(0 0 0 / 85%);
+    --mask-bg-warm: rgb(0 0 0 / 70%);
+
+    /* 暗色模式 - 主题色半透明 rgb(245,165,147) */
+    --primary-tint-04: rgb(245 165 147 / 4%);
+    --primary-tint-05: rgb(245 165 147 / 5%);
+    --primary-tint-06: rgb(245 165 147 / 6%);
+    --primary-tint-08: rgb(245 165 147 / 8%);
+    --primary-tint-10: rgb(245 165 147 / 10%);
+    --primary-tint-12: rgb(245 165 147 / 12%);
+    --primary-tint-15: rgb(245 165 147 / 15%);
+    --primary-tint-20: rgb(245 165 147 / 20%);
+    --primary-tint-25: rgb(245 165 147 / 25%);
+    --primary-tint-28: rgb(245 165 147 / 28%);
+    --primary-tint-30: rgb(245 165 147 / 30%);
+    --primary-tint-35: rgb(245 165 147 / 35%);
+    --primary-tint-45: rgb(245 165 147 / 45%);
+    --primary-tint-50: rgb(245 165 147 / 50%);
+    --primary-tint-55: rgb(245 165 147 / 55%);
+    --primary-tint-70: rgb(245 165 147 / 70%);
+    --primary-tint-90: rgb(245 165 147 / 90%);
+
+    /* 暗色模式 - 暖色半透明（使用白色基色，与暗色 border-color 一致） */
+    --warm-tint-03: rgb(255 255 255 / 3%);
+    --warm-tint-04: rgb(255 255 255 / 4%);
+    --warm-tint-05: rgb(255 255 255 / 5%);
+    --warm-tint-06: rgb(255 255 255 / 5%);
+    --warm-tint-07: rgb(255 255 255 / 6%);
+    --warm-tint-08: rgb(255 255 255 / 8%);
+    --warm-tint-10: rgb(255 255 255 / 10%);
+    --warm-tint-12: rgb(255 255 255 / 12%);
+    --warm-tint-15: rgb(255 255 255 / 15%);
+    --warm-tint-18: rgb(255 255 255 / 18%);
+    --warm-tint-25: rgb(255 255 255 / 25%);
+
+    /* 暗色模式 - 次要色半透明 rgb(212,184,150) */
+    --secondary-tint-05: rgb(212 184 150 / 5%);
+    --secondary-tint-08: rgb(212 184 150 / 8%);
+    --secondary-tint-12: rgb(212 184 150 / 12%);
+    --secondary-tint-13: rgb(212 184 150 / 13%);
+    --secondary-tint-14: rgb(212 184 150 / 14%);
+    --secondary-tint-35: rgb(212 184 150 / 35%);
+
+    /* 暗色模式 - 状态色半透明 */
+    --success-tint-06: rgb(124 203 138 / 6%);
+    --success-tint-10: rgb(124 203 138 / 10%);
+    --success-tint-12: rgb(124 203 138 / 12%);
+    --success-tint-15: rgb(124 203 138 / 15%);
+    --warning-tint-08: rgb(224 184 104 / 8%);
+    --warning-tint-12: rgb(224 184 104 / 12%);
+    --warning-tint-15: rgb(224 184 104 / 15%);
+    --warning-tint-20: rgb(224 184 104 / 20%);
+    --danger-tint-04: rgb(224 128 128 / 4%);
+    --danger-tint-05: rgb(224 128 128 / 5%);
+    --danger-tint-08: rgb(224 128 128 / 8%);
+    --danger-tint-10: rgb(224 128 128 / 10%);
+    --danger-tint-12: rgb(224 128 128 / 12%);
+    --danger-tint-15: rgb(224 128 128 / 15%);
+    --danger-tint-20: rgb(224 128 128 / 20%);
+    --danger-tint-30: rgb(224 128 128 / 30%);
+    --info-tint-05: rgb(122 168 216 / 5%);
+    --info-tint-12: rgb(122 168 216 / 12%);
+    --info-tint-15: rgb(80 168 255 / 15%);
+
+    /* 暗色模式 - 浅底状态标签翻转为低透明度底 + 提亮字 */
+    --tag-danger-bg: rgb(214 96 96 / 18%);
+    --tag-danger-text: #F2A8A8;
+    --tag-warning-bg: rgb(214 160 64 / 18%);
+    --tag-warning-text: #F0CE8E;
+    --tag-warning-border: rgb(214 160 64 / 35%);
+    --tag-success-bg: rgb(78 170 112 / 18%);
+    --tag-success-text: #9BD9B2;
+
+    /* 暗色模式 - 健康记录类型阴影色 */
+    --shadow-health-vaccine: 0 4rpx 16rpx rgb(106 212 48 / 30%);
+    --shadow-health-treatment: 0 4rpx 16rpx rgb(48 160 255 / 30%);
+    --shadow-health-surgery: 0 4rpx 16rpx rgb(192 128 240 / 30%);
+    --shadow-health-checkup: 0 4rpx 16rpx rgb(240 176 64 / 30%);
+    --shadow-health-medicine: 0 4rpx 16rpx rgb(240 112 176 / 30%);
+
+    /* 暗色模式 - 主题色阴影（使用黑色基色） */
+    --shadow-primary-sm: 0 4rpx 16rpx rgb(0 0 0 / 30%);
+    --shadow-primary: 0 8rpx 24rpx rgb(0 0 0 / 40%);
+    --shadow-primary-md: 0 8rpx 28rpx rgb(0 0 0 / 50%);
+    --shadow-primary-lg: 0 8rpx 32rpx rgb(0 0 0 / 30%);
+    --shadow-primary-xl: 0 12rpx 48rpx rgb(0 0 0 / 50%);
+    --shadow-primary-2xl: 0 16rpx 48rpx rgb(0 0 0 / 30%);
+    --shadow-primary-3xl: 0 16rpx 80rpx rgb(0 0 0 / 40%);
+
+    /* 暗色模式 - 暖色阴影（使用黑色基色） */
+    --shadow-warm-2xs: 0 1px 4px rgb(0 0 0 / 30%);
+    --shadow-warm-xs2: 0 2rpx 6rpx rgb(0 0 0 / 30%);
+    --shadow-warm-sm2: 0 4rpx 16rpx rgb(0 0 0 / 35%);
+    --shadow-warm-sm3: 0 4rpx 20rpx rgb(0 0 0 / 35%);
+    --shadow-warm-sm4: 0 4rpx 24rpx rgb(0 0 0 / 35%);
+    --shadow-warm-sm5: 0 4rpx 24rpx rgb(0 0 0 / 40%);
+    --shadow-warm-md2: 0 4rpx 24rpx rgb(0 0 0 / 40%);
+    --shadow-warm-md3: 0 6rpx 20rpx rgb(0 0 0 / 40%);
+    --shadow-warm-lg2: 0 8rpx 32rpx rgb(0 0 0 / 40%);
+    --shadow-warm-lg3: 0 8rpx 32rpx rgb(0 0 0 / 40%);
+    --shadow-warm-lg4: 0 8rpx 32rpx rgb(0 0 0 / 45%);
+    --shadow-warm-xl2: 0 8rpx 40rpx rgb(0 0 0 / 40%);
+    --shadow-warm-xl3: 0 8rpx 40rpx rgb(0 0 0 / 40%);
+    --shadow-warm-xl4: 0 8rpx 40rpx rgb(0 0 0 / 45%);
+    --shadow-warm-2xl: 0 12rpx 56rpx rgb(0 0 0 / 45%);
+    --shadow-warm-2xl2: 0 12rpx 48rpx rgb(0 0 0 / 45%);
+    --shadow-warm-3xl: 0 16rpx 56rpx rgb(0 0 0 / 50%);
+    --shadow-warm-4xl: 0 16rpx 80rpx rgb(0 0 0 / 50%);
+    --shadow-warm-5xl: 0 20rpx 60rpx rgb(0 0 0 / 50%);
+    --shadow-warm-6xl: 0 40rpx 120rpx rgb(0 0 0 / 50%);
+
+    /* 暗色模式 - 深色阴影 */
+    --shadow-dark-sm: 0 2rpx 16rpx rgb(0 0 0 / 40%);
+    --shadow-dark-md: 0 16rpx 48rpx rgb(0 0 0 / 50%);
+
+    /* 暗色模式 - 状态边框色 */
+    --border-success: rgb(124 203 138 / 25%);
+    --border-warning: rgb(224 184 104 / 25%);
+    --border-danger: rgb(224 128 128 / 25%);
+    --border-info: rgb(122 168 216 / 25%);
+    --border-adopted: rgb(96 192 96 / 25%);
+    --border-deceased: rgb(160 160 160 / 25%);
+
+    /* 暗色模式 - 骨架屏边框 */
+    --skeleton-border: rgb(255 255 255 / 8%);
+
+    /* 暗色模式 - 特殊装饰色 */
+    --glow-gold: rgb(255 224 102 / 60%);
+    --gold-tint-30: rgb(255 215 0 / 30%);
+    --gold-tint-50: rgb(255 215 0 / 50%);
+    --danger-overlay: rgb(220 53 69 / 85%);
+    --urgent-tint-10: rgb(255 82 82 / 10%);
+    --activity-tint-10: rgb(64 160 255 / 10%);
+    --gray-tint-15: rgb(150 150 150 / 15%);
+    --missing-tint-12: rgb(176 160 152 / 12%);
+    --adoptable-tint-12: rgb(96 192 96 / 12%);
+    --blue-tint-25: rgb(100 160 255 / 25%);
+    --blue-tint-12: rgb(93 173 226 / 12%);
+    --blue-tint-13: rgb(93 173 226 / 13%);
+    --green-tint-12: rgb(130 224 170 / 12%);
+    --green-tint-13: rgb(130 224 170 / 13%);
+    --bluegray-tint-06: rgb(139 169 191 / 6%);
+    --bluegray-tint-15: rgb(139 169 191 / 15%);
+
+    /* 暗色模式 - 扩展主题色半透明 */
+    --primary-tint-03: rgb(245 165 147 / 3%);
+    --primary-tint-22: rgb(245 165 147 / 22%);
+    --primary-tint-40: rgb(245 165 147 / 40%);
+
+    /* 暗色模式 - 扩展暖色文字半透明 */
+    --warm-text-45: rgb(197 191 184 / 45%);
+    --warm-text-50: rgb(197 191 184 / 50%);
+    --warm-text-70: rgb(197 191 184 / 70%);
+
+    /* 暗色模式 - 扩展警告色半透明 */
+    --warning-tint-04: rgb(224 184 104 / 4%);
+    --warning-tint-10: rgb(224 184 104 / 10%);
+    --warning-tint-30: rgb(224 184 104 / 30%);
+
+    /* 暗色模式 - 扩展成功色半透明 */
+    --success-light-tint-06: rgb(124 203 138 / 6%);
+    --success-light-tint-10: rgb(124 203 138 / 10%);
+    --success-light-tint-15: rgb(124 203 138 / 15%);
+    --success-light-tint-20: rgb(124 203 138 / 20%);
+
+    /* 暗色模式 - 扩展信息蓝色半透明 */
+    --info-blue-tint-12: rgb(122 168 216 / 12%);
+    --info-blue-tint-15: rgb(122 168 216 / 15%);
+    --info-blue-tint-30: rgb(122 168 216 / 30%);
+
+    /* 暗色模式 - 扩展白色覆盖层（暗色降低透明度） */
+    --overlay-white-55: rgb(255 255 255 / 35%);
+    --overlay-white-65: rgb(255 255 255 / 40%);
+    --overlay-white-72: rgb(255 255 255 / 45%);
+    --overlay-white-75: rgb(255 255 255 / 45%);
+
+    /* 暗色模式 - 扩展暖色背景半透明 */
+    --warm-bg-60: rgb(45 38 34 / 60%);
+    --warm-bg-92: rgb(45 38 34 / 92%);
+
+    /* 注意：--dark-warm-text-* 不随深色模式翻转。
+     * 它服务的是「深色模式里仍是暖色浅底的表面」（头部暖色渐变带/副标题/地点文字），
+     * 那里需要深色暖字。此前误覆盖为浅色（235 229 223），导致四个主页面
+     * 深色模式副标题发灰看不清（2026-10-08 修复）。深底浅字请用 --text-* / --overlay-white-*。 */
+
+    /* 暗色模式 - 扩展遮罩层 */
+    --mask-bg-38: rgb(0 0 0 / 60%);
+    --mask-bg-40: rgb(0 0 0 / 65%);
+    --mask-bg-48: rgb(0 0 0 / 70%);
+
+    /* 暗色模式 - 奖牌色半透明 */
+    --gold-tint-35: rgb(255 215 0 / 35%);
+    --gray-tint-30: rgb(150 150 150 / 30%);
+    --bronze-tint-30: rgb(255 152 0 / 30%);
+
+    /* 暗色模式 - 词云风格背景 */
+    --wf-style2-bg-start: rgb(58 48 40 / 96%);
+    --wf-style2-bg-end: rgb(50 42 36 / 92%);
+    --wf-style3-bg-start: rgb(40 48 58 / 96%);
+    --wf-style3-bg-end: rgb(36 42 50 / 92%);
+    --wf-style4-bg-start: rgb(40 58 48 / 96%);
+    --wf-style4-bg-end: rgb(36 50 42 / 92%);
+
+    /* 暗色模式 - 渐变组合 */
+    --gradient-warm-tint: linear-gradient(135deg, rgb(245 165 147 / 10%) 0%, rgb(212 184 150 / 10%) 100%);
+    --gradient-warm-tint-light: linear-gradient(135deg, rgb(245 165 147 / 7%) 0%, rgb(212 184 150 / 6%) 100%);
+    --gradient-danger-tint: linear-gradient(135deg, rgb(224 128 128 / 12%) 0%, rgb(224 128 128 / 18%) 100%);
+    --gradient-shimmer-white: linear-gradient(90deg, transparent, rgb(255 255 255 / 15%), transparent);
+    --gradient-shimmer-white-light: linear-gradient(90deg, transparent, rgb(255 255 255 / 8%), transparent);
+    --gradient-photo-overlay: linear-gradient(to top, rgb(0 0 0 / 70%) 0%, transparent 100%);
+    --gradient-map-overlay: linear-gradient(to bottom, rgb(0 0 0 / 50%), transparent);
+
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .page {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  }
+
+  .card {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .fab {
+    box-shadow: 0 12rpx 48rpx rgb(0 0 0 / 40%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  }
+
+  .modal-mask {
+    background-color: rgb(0 0 0 / 70%);
+  }
+
+  .modal-close {
+    background: var(--bg-tertiary);
+  }
+
+  .modal-close:active {
+    background: var(--bg-close-active);
+  }
+
+  .list-item {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .list-item:active {
+    background: var(--bg-warm);
+  }
+
+  .warm-header,
+  .warm-header::before,
+  .warm-header::after {
+    background: linear-gradient(135deg, var(--gradient-primary-mid) 0%, var(--secondary-color) 100%);
+  }
+
+  .warm-header::before,
+  .warm-header::after {
+    background: rgb(255 255 255 / 6%);
+  }
+
+  .tip-card {
+    border-color: rgb(245 165 147 / 22%);
+    background: linear-gradient(135deg, rgb(245 165 147 / 12%) 0%, rgb(212 184 150 / 12%) 100%);
+  }
+
+  .divider {
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  }
+
+  .stat-number {
+    color: var(--primary-color);
+  }
+
+  .back-to-top {
+    box-shadow: 0 4rpx 24rpx rgb(0 0 0 / 30%);
+    background: rgb(42 36 32 / 92%);
+  }
+
+  .back-to-top:active {
+    box-shadow: 0 2rpx 12rpx rgb(0 0 0 / 20%);
+  }
+
+  .load-more-btn {
+    border-color: rgb(245 165 147 / 22%);
+    box-shadow: 0 4rpx 24rpx rgb(0 0 0 / 20%);
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-warm) 100%);
+  }
+
+  .load-more-btn:active {
+    box-shadow: 0 4rpx 16rpx rgb(0 0 0 / 10%);
+  }
+
+  .skeleton-card {
+    border-color: var(--border-light);
+    box-shadow: 0 8rpx 40rpx rgb(0 0 0 / 20%);
+    background: var(--bg-card);
+  }
+
+  .skeleton-list-item {
+    box-shadow: 0 4rpx 20rpx rgb(0 0 0 / 15%);
+    background: var(--bg-card);
+  }
+
+  .skeleton-text {
+    background: linear-gradient(135deg, var(--border-light), var(--border-color));
+  }
+
+  .skeleton-title {
+    background: linear-gradient(135deg, var(--border-light), var(--border-color));
+  }
+
+  .skeleton-avatar {
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+  }
+
+  .skeleton-divider {
+    background: linear-gradient(90deg, transparent, var(--bg-tertiary), transparent);
+  }
+
+  .list-hover {
+    background-color: var(--bg-warm) !important;
+  }
+
+  .menu-hover {
+    background-color: var(--bg-warm) !important;
+  }
+}
+
+/* 大屏/横屏适配 */
+@media (min-width: 768px) {
+  .cat-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24rpx;
+  }
+
+  .cat-card {
+    max-width: none;
+  }
+
+  .photo-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cat-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .photo-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+/* ========== 全局统一返回按钮（箭头 + 隐形热区） ========== */
+
+/*
+ * 使用说明：
+ * 在页面头部使用以下统一结构：
+ *
+ * <view class="back-btn" bindtap="onBack" hover-class="back-btn-hover">
+ *   <view class="back-arrow"></view>
+ * </view>
+ *
+ * 特点：
+ * - 只画箭头，不画胶囊底与描边（曾三者叠加 + 「返回」文字，比系统键宽近一倍）
+ * - 88rpx(44px) 的方形热区不产生视觉重量：既不丑，也不会因变小而误触
+ * - 口径与 components/custom-navbar 保持一致，改一处要改两处
+ */
+
+.back-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-left: -20rpx;
+  border-radius: 50%;
+  background: transparent;
+  transition: transform 0.2s ease;
+}
+
+.back-btn-hover {
+  transform: scale(0.86);
+}
+
+/* 返回箭头（CSS绘制，无需图片） */
+.back-arrow {
+  display: inline-block;
+  width: 16rpx;
+  height: 16rpx;
+  border-bottom: 5rpx solid currentcolor;
+  border-left: 5rpx solid currentcolor;
+  transform: rotate(45deg) translate(2rpx, -2rpx);
+}
+
+/* 返回文字：默认不出现，需要的页面自行加 */
+.back-text {
+  color: inherit;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* ========== 全局猫爪底纹（沉浸式头部装饰） ==========
+ * 用法：<view class="header-paw-bg"></view>
+ * 说明：SVG 内联猫爪图案，opacity 0.04，作为头部底纹
+ * 已在所有页面统一使用，无需在各自 wxss 重复定义
+ */
+.header-paw-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cellipse cx='60' cy='68' rx='18' ry='16' fill='%23fff'/%3E%3Cellipse cx='35' cy='45' rx='9' ry='10' fill='%23fff'/%3E%3Cellipse cx='85' cy='45' rx='9' ry='10' fill='%23fff'/%3E%3Cellipse cx='48' cy='36' rx='7' ry='8' fill='%23fff'/%3E%3Cellipse cx='72' cy='36' rx='7' ry='8' fill='%23fff'/%3E%3C/svg%3E");
+  background-size: 192rpx 192rpx;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+/* 全局通用行内布局：图标与文字对齐（原仅 index.wxss 定义，其余页面引用落空） */
+.inline-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+/* 全局按压反馈态（hover-class 引用） */
+.btn-press {
+  opacity: 0.7;
+}
+
+.item-hover {
+  background-color: var(--bg-tertiary, rgb(0 0 0 / 4%));
+  opacity: 0.75;
+}
+
+.stat-hover {
+  opacity: 0.75;
+  transform: scale(0.98);
+}
+
+.card-hover {
+  opacity: 0.85;
+}

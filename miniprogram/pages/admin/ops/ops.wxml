@@ -1,0 +1,157 @@
+<!-- 运营数据面板 · 四个固定指标 + 入口使用（管理端只读） -->
+<view class="page page-enter">
+  <custom-navbar title="运营看板" theme="warm" showBack="{{true}}" />
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-intro shimmer"></view>
+    <view class="skeleton-grid">
+      <view class="skeleton-card shimmer" wx:for="{{skeletonItems}}" wx:key="*this"></view>
+    </view>
+    <view class="skeleton-list shimmer"></view>
+  </view>
+
+  <block wx:else>
+    <!-- 说明：只读、四个指标、每周复盘 -->
+    <view class="intro-card">
+      <view class="inline-row">
+        <icon name="chart" size="32" />
+        <text class="intro-title">四个固定指标，按周复盘</text>
+      </view>
+      <text class="intro-text">指标口径固定，不随新功能增加而改。看板只读，数据来自小程序服务端记录；不采集浏览内容、搜索词或位置。</text>
+      <text class="intro-note">每周先看这四个数，再看入口使用清单：无人使用的入口当周下线，不再用「再加一个页面」解决留存。</text>
+    </view>
+
+    <!-- 周期切换 -->
+    <view class="range-row">
+      <view
+        wx:for="{{ranges}}"
+        wx:key="*this"
+        class="range-item {{rangeWeeks === item ? 'active' : ''}}"
+        data-weeks="{{item}}"
+        bindtap="onRangeChange"
+      >{{item}} 周</view>
+      <text class="update-time" wx:if="{{updateTime}}">更新于 {{updateTime}}</text>
+    </view>
+
+    <!-- 数据源告警：不把部分失败伪装成 0 -->
+    <view class="warning-card" wx:if="{{warnings.length > 0}}">
+      <view class="inline-row">
+        <icon name="warning" size="28" />
+        <text class="warning-title">部分数据源读取异常</text>
+      </view>
+      <text class="warning-line" wx:for="{{warnings}}" wx:key="*this">· {{item}}</text>
+    </view>
+
+    <!-- 鉴权失败 / 无数据 -->
+    <view class="load-failed" wx:if="{{loadFailed}}">
+      <icon name="warning" size="48" />
+      <text class="load-failed-title">运营数据加载失败</text>
+      <view class="retry-btn" bindtap="onRetry">重新加载</view>
+    </view>
+
+    <block wx:else>
+      <!-- 四张主卡 -->
+      <view class="metric-grid">
+        <view class="metric-card" wx:for="{{cards}}" wx:key="key">
+          <view class="metric-head">
+            <view class="metric-icon"><icon name="{{item.icon}}" size="30" /></view>
+            <text class="metric-label">{{item.label}}</text>
+          </view>
+          <text class="metric-value">{{item.value}}</text>
+          <view class="metric-bar">
+            <view class="metric-bar-fill" style="width: {{item.barWidth}}%"></view>
+          </view>
+          <text class="metric-sub">{{item.sub}}</text>
+          <text class="metric-hint">{{item.hint}}</text>
+        </view>
+      </view>
+
+      <text class="section-note" wx:if="{{!hasData}}">还没有可判定的新用户数据：用户活跃从本次上线后开始累计，满 7 天才计算激活与首打卡。</text>
+
+      <!-- 周趋势 -->
+      <view class="section-card">
+        <view class="section-header">
+          <view class="inline-row"><icon name="chart-up" size="30" /><text class="section-title">周趋势</text></view>
+          <text class="section-sub">未满 7 天的 cohort 不进分母</text>
+        </view>
+        <scroll-view class="week-scroll" scroll-x="{{true}}">
+          <view class="week-table">
+            <view class="week-row week-head">
+              <text class="week-cell week-label">周</text>
+              <text class="week-cell">新用户</text>
+              <text class="week-cell">激活</text>
+              <text class="week-cell">首打卡</text>
+              <text class="week-cell">回访</text>
+            </view>
+            <view
+              class="week-row {{item.isCurrent ? 'week-current' : ''}} {{item.noData ? 'week-empty' : ''}}"
+              wx:for="{{weeks}}"
+              wx:key="key"
+            >
+              <view class="week-cell week-label">
+                <text>{{item.label}}</text>
+                <text class="week-partial" wx:if="{{item.partial}}">起始周</text>
+              </view>
+              <text class="week-cell">{{item.newUsers}}</text>
+              <text class="week-cell">{{item.activation}}</text>
+              <text class="week-cell">{{item.firstMeet}}</text>
+              <text class="week-cell">{{item.followReturn}}</text>
+            </view>
+          </view>
+        </scroll-view>
+        <text class="section-foot">「本周」尚未走完 7 天，率值只统计已经满窗的用户；人数量级很小，周与周之间波动是正常的。</text>
+      </view>
+
+      <!-- 入口使用：每周淘汰依据 -->
+      <view class="section-card">
+        <view class="section-header">
+          <view class="inline-row"><icon name="pin" size="30" /><text class="section-title">入口使用</text></view>
+          <text class="section-sub">近 {{coverage.windowDays}} 天 · 活跃 {{coverage.activeUsers28}} 人</text>
+        </view>
+        <text class="entry-lead">按「用过这个页面的去重人数」排。0 人 = 淘汰候选；低于活跃用户 1% = 观察。</text>
+
+        <view class="entry-summary {{entrySummary.unused + entrySummary.watch > 0 ? 'has-action' : ''}}">
+          <text wx:if="{{!entriesAvailable}}">入口数据未读到，本周不做淘汰判定</text>
+          <text wx:elif="{{!entryPruneReady}}">入口观测中：满 28 天后才启用淘汰判定</text>
+          <text wx:elif="{{entrySummary.unused + entrySummary.watch > 0}}">本周待处理：淘汰候选 {{entrySummary.unused}} 个 · 观察 {{entrySummary.watch}} 个</text>
+          <text wx:else>本周没有需要淘汰的入口，继续保持</text>
+        </view>
+
+        <view class="entry-list">
+          <view class="entry-row {{item.status}}" wx:for="{{entries}}" wx:key="name">
+            <view class="entry-main">
+              <view class="entry-title-row">
+                <text class="entry-label">{{item.label}}</text>
+                <text class="entry-tag tag-{{item.status}}">{{item.statusText}}</text>
+              </view>
+              <text class="entry-hint">{{item.hint}}</text>
+              <view class="entry-bar">
+                <view class="entry-bar-fill" style="width: {{item.barWidth}}%"></view>
+              </view>
+            </view>
+            <view class="entry-stat">
+              <text class="entry-count">{{item.users28}}</text>
+              <text class="entry-unit">人</text>
+            </view>
+          </view>
+        </view>
+
+        <text class="section-foot">淘汰的是「入口」，不是数据：页面与历史记录保留，只是不再从首页/我的页露出。连续两周 0 人再彻底删代码。</text>
+      </view>
+
+      <!-- 口径与边界 -->
+      <view class="section-card coverage-card">
+        <view class="section-header">
+          <view class="inline-row"><icon name="info" size="30" /><text class="section-title">口径与数据边界</text></view>
+        </view>
+        <text class="coverage-line">· 新用户：数据开始记录后首次打开小程序的人；老用户首次上报会算作「首见」，启动首周不作为完整周。</text>
+        <text class="coverage-line">· 激活：首见后 7 天内完成打卡或关注任一核心动作；首个打卡完成率是其中完成相遇打卡的那一部分。</text>
+        <text class="coverage-line">· 关注后回访：首次关注后的 7 天内，另一天再打开小程序（同一日多次不算回访）。</text>
+        <text class="coverage-line">· {{coverage.trackingText}}</text>
+        <text class="coverage-line">· {{coverage.pruneText}}</text>
+        <text class="coverage-line">· 数据源是小程序服务端记录，不含微信后台「体验分析」口径；两者不要混着对。</text>
+      </view>
+    </block>
+  </block>
+</view>

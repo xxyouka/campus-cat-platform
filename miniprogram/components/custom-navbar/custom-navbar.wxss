@@ -1,0 +1,220 @@
+/* components/custom-navbar/custom-navbar.wxss - 通用自定义导航栏样式 */
+
+/* ========== 导航栏根节点 ========== */
+.navbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+  pointer-events: auto;
+}
+
+/* ========== 导航栏内容区 ========== */
+.navbar-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 32rpx;
+}
+
+/* ========== 左侧：返回按钮 ========== */
+.navbar-left {
+  flex-shrink: 0;
+
+  /* 与 .navbar-right 同宽，标题才真居中。热区本身在 .back-btn 上。 */
+  min-width: 120rpx;
+}
+
+/*
+ * 返回键：只画一个箭头，热区是无形的。
+ *
+ * 之前这里是「描边胶囊 + 毛玻璃底 + 「返回」文字」三件套，比系统返回键宽了
+ * 近一倍，在 32rpx 边距下显得笨重又长。但触控区不能跟着一起缩小 ——
+ * 此前实测约 60rpx 时返回键经常误触（这是真实修过的 bug，不是洁癖）。
+ * 二者不冲突：88rpx(44px) 的方形热区不产生任何视觉重量，只是手指的落点。
+ */
+.back-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-left: -20rpx;
+  border-radius: 50%;
+  background: transparent;
+  transition: transform 0.2s ease;
+}
+
+/* CSS绘制的返回箭头 - 与各页面统一风格。
+   16rpx / 5rpx 描边：14rpx + 4rpx 在高亮渐变头上偏细偏小，缩小后更要先保证看得见。 */
+.back-arrow-icon {
+  display: inline-block;
+  width: 16rpx;
+  height: 16rpx;
+  border-bottom: 5rpx solid currentcolor;
+  border-left: 5rpx solid currentcolor;
+  transform: rotate(45deg) translate(2rpx, -2rpx);
+}
+
+.back-text {
+  color: inherit;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* 反馈只做缩放：任何主题下都成立，不必逐个主题配一遍底色 */
+.back-btn-hover {
+  transform: scale(0.86);
+}
+
+/* ========== 中间：标题 ========== */
+.navbar-center {
+  flex: 1;
+  padding: 0 16rpx;
+  overflow: hidden;
+  text-align: center;
+}
+
+.navbar-title {
+  display: block;
+  overflow: hidden;
+  color: inherit;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.navbar-subtitle {
+  display: block;
+  margin-top: 8rpx;
+  overflow: hidden;
+  color: inherit;
+  font-size: 22rpx;
+  white-space: nowrap;
+  opacity: 0.8;
+  text-overflow: ellipsis;
+}
+
+/* ========== 右侧：操作区域 ========== */
+.navbar-right {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 120rpx;
+}
+
+/* ========== 主题：默认（白色实色） ========== */
+.navbar.default {
+  border-bottom: 2rpx solid var(--border-light);
+  background: var(--bg-primary);
+}
+
+.navbar.default .back-btn,
+.navbar.default .navbar-title {
+  color: var(--text-primary);
+}
+
+/* ========== 主题：透明/毛玻璃（用于详情页） ========== */
+.navbar.transparent {
+  background: transparent;
+}
+
+.navbar.transparent .back-btn,
+.navbar.transparent .navbar-title {
+  color: var(--bg-primary);
+  text-shadow: 0 2rpx 8rpx var(--overlay-black-15);
+}
+
+/* ========== 主题：渐变（相册/公告） ========== */
+.navbar.gradient {
+  box-shadow: var(--shadow-warm);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.navbar.gradient .back-btn,
+.navbar.gradient .navbar-title {
+  color: var(--bg-primary);
+  text-shadow: 0 2rpx 4rpx var(--overlay-black-10);
+}
+
+/* ========== 主题：温暖渐变（首页同款，带猫爪底纹） ========== */
+.navbar.warm {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 64rpx 64rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.navbar.warm::before {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600rpx;
+  height: 600rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-12);
+  content: '';
+  pointer-events: none;
+}
+
+.navbar.warm::after {
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-08);
+  content: '';
+  pointer-events: none;
+}
+
+.navbar.warm .back-btn,
+.navbar.warm .navbar-title {
+  color: var(--bg-primary);
+  text-shadow: 0 2rpx 4rpx var(--overlay-black-10);
+}
+
+/* .header-paw-bg 已抽到 styles/utilities.wxss 全局复用 */
+
+/* ========== 主题：浅色（用于相册、公告等） ========== */
+.navbar.light {
+  border-bottom: 2rpx solid var(--border-light);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+}
+
+.navbar.light .back-btn,
+.navbar.light .navbar-title {
+  color: var(--text-primary);
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  .navbar.default {
+    border-bottom-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .navbar.light {
+    border-bottom-color: var(--border-color);
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  }
+
+  .navbar.gradient,
+  .navbar.warm {
+    background: linear-gradient(135deg, var(--gradient-primary-mid) 0%, var(--secondary-color) 100%);
+  }
+
+  .navbar.warm::before,
+  .navbar.warm::after {
+    background: var(--overlay-white-06);
+  }
+}

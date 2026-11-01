@@ -1,0 +1,41 @@
+<!-- 猫咪活动轨迹图（只读图：校园底图 + 打卡点位 + 聚集圈 + 最近一次标记；
+     总轨迹模式带双指缩放/拖动 —— 手势层只在 zoomable 时渲染） -->
+<view class="amap">
+  <!-- type="2d" 是新版 Canvas 接口；dpr 由 JS 设置 canvas.width/height 后 scale -->
+  <canvas
+    id="activityCanvas"
+    type="2d"
+    class="amap-canvas"
+    style="width:100%;height:{{height > 0 ? height + 'px' : '320px'}};"
+  ></canvas>
+
+  <!-- 手势层：catch 掉 touchmove，拖图时页面不跟着滚。
+       单猫模式不渲染这一层 —— 地图夹在卡片流里，吞掉页面滚动会难滑 -->
+  <view
+    class="amap-gesture"
+    wx:if="{{zoomable}}"
+    catchtouchstart="onTouchStart"
+    catchtouchmove="onTouchMove"
+    catchtouchend="onTouchEnd"
+    catchtouchcancel="onTouchEnd"
+  ></view>
+
+  <!-- 加载中 -->
+  <view class="amap-mask" wx:if="{{!ready}}">
+    <text class="amap-mask-t">地图加载中…</text>
+  </view>
+
+  <!-- 底图异常 -->
+  <view class="amap-mask" wx:if="{{ready && loadError}}">
+    <text class="amap-mask-t">底图加载失败</text>
+    <text class="amap-mask-s">请检查 campus-map.js 是否存在</text>
+  </view>
+
+  <!-- 放大/拖动之后：一键回到整校全览（词与校园地图页的「回到全图」一致） -->
+  <view
+    class="amap-reset"
+    wx:if="{{zoomable && zoomed}}"
+    bindtap="onResetView"
+    hover-class="btn-press"
+  ><text class="amap-reset-t">回到全图</text></view>
+</view>

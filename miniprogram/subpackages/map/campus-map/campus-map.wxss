@@ -1,0 +1,440 @@
+/* subpackages/map/campus-map/campus-map.wxss - 校园寻猫地图 */
+.cmap-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  background: var(--bg-secondary);
+}
+.cmap-page.page-enter { animation: pageEnter 0.4s ease; }
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== 纵向 flex 布局（两种模式共用） ==================== */
+
+/*
+ * 关键约束：画布**不能压住任何页面级元素**。
+ * 微信把 <canvas type="2d"> 合成到独立层，实测页面级绝对定位元素
+ * （任意 z-index）都盖不过它。所以不叠浮层，改成 flex 纵向排：
+ * 导航 / 信息条 / 地图 / 底部，各占各的位置。
+ *
+ * 「各占各的位置」不是风格选择，是被这条限制逼出来的唯一做法 ——
+ * 之前校区角标和统计条浮在地图上，结果从来没渲染出来过。
+ */
+.cmap-page.picking,
+.cmap-page.browsing {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100vh;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.cmap-page .cmap-stage.fill,
+.cmap-page .cmap-stage.grow {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+}
+
+.cmap-page.browsing .cmap-stage.grow {
+  margin: 0 24rpx;
+  overflow: hidden;
+  border: 2rpx solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==================== 浏览模式：信息条 ==================== */
+.cmap-info {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 32rpx 12rpx;
+}
+
+.cmap-info-zone {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+/* 校区切换条：只在已有底图的校区不止一个时出现（宽度固定，横向可滑） */
+.cmap-zones {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.cmap-zone {
+  display: inline-block;
+  margin-right: 12rpx;
+  padding: 8rpx 22rpx;
+  border: 2rpx solid var(--border-light);
+  border-radius: 999rpx;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.cmap-zone.active {
+  border-color: var(--primary-cta-bg);
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-weight: 600;
+}
+
+.cmap-info-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.cmap-info-count {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.cmap-info-n {
+  color: var(--primary-color);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.cmap-info-reset {
+  padding: 6rpx 18rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 999rpx;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+/* ==================== 地图区 ==================== */
+.cmap-stage {
+  position: relative;
+  margin: 16rpx 24rpx 0;
+}
+
+/* ==================== 居中态（加载/失败/空） ==================== */
+.cmap-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx;
+  min-height: 50vh;
+  padding: 40rpx;
+}
+
+/* flex 列布局里它跟地图抢高度 —— 改成「按内容占位」，
+   地图保持 flex:1 撑满，空态/失败态在底部自然占一块。 */
+.cmap-page.browsing .cmap-center,
+.cmap-page.picking .cmap-center {
+  flex: 0 1 auto;
+  min-height: 0;
+  padding: 32rpx 40rpx calc(32rpx + env(safe-area-inset-bottom));
+}
+
+.cmap-center-t {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.cmap-center-s {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+}
+
+.cmap-retry {
+  margin-top: 16rpx;
+  padding: 18rpx 56rpx;
+  border-radius: 999rpx;
+  background: var(--primary-cta-bg);
+}
+
+.cmap-retry-t {
+  color: var(--primary-cta-text);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* ==================== 选点模式：底部确定栏 ==================== */
+.cmap-confirm {
+  flex-shrink: 0;
+  padding: 20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-sheet-up);
+  background: var(--bg-card);
+}
+
+.cmap-confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.cmap-confirm-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6rpx;
+  min-width: 0;
+}
+
+.cmap-confirm-label {
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.cmap-confirm-hint {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.cmap-confirm-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8rpx;
+}
+
+.cmap-reset-link {
+  padding: 8rpx 4rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+/* ==================== 浏览模式：猫列表（横向） ==================== */
+.cmap-cats {
+  flex-shrink: 0;
+  padding: 16rpx 0 calc(16rpx + env(safe-area-inset-bottom));
+  white-space: nowrap;
+}
+
+.cmap-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-left: 24rpx;
+  padding: 14rpx 28rpx 14rpx 14rpx;
+  border: 2rpx solid var(--border-light);
+  border-radius: 999rpx;
+  box-shadow: var(--shadow-xs);
+  background: var(--bg-card);
+  vertical-align: middle;
+}
+.cmap-cat:last-child { margin-right: 24rpx; }
+
+.cmap-cat-ava {
+  flex-shrink: 0;
+  width: 72rpx;
+  height: 72rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+}
+
+.cmap-cat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+
+.cmap-cat-name {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.cmap-cat-when {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+/* ==================== 浏览模式：一坨猫的名单 ==================== */
+.cmap-cluster {
+  flex-shrink: 0;
+  padding: 20rpx 0 calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-sheet-up);
+  background: var(--bg-card);
+  animation: sheetUp 0.24s ease;
+}
+
+.cmap-cluster-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16rpx;
+  padding: 0 32rpx 12rpx;
+}
+
+.cmap-cluster-title {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.cmap-cluster-close {
+  padding: 6rpx 18rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 999rpx;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.cmap-cluster-list {
+  white-space: nowrap;
+}
+
+/* ==================== 浏览模式：选中猫的卡片 ==================== */
+.cmap-detail {
+  flex-shrink: 0;
+  padding: 24rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-sheet-up);
+  background: var(--bg-card);
+  animation: sheetUp 0.24s ease;
+}
+
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cmap-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.cmap-detail-ava {
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+}
+
+.cmap-detail-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.cmap-detail-name {
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.cmap-detail-badge {
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  background: var(--primary-color);
+  color: var(--primary-cta-text);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+.cmap-detail-badge.lost { background: var(--status-missing); }
+.cmap-detail-badge.adopted { background: var(--status-adoptable); }
+.cmap-detail-badge.deceased { background: var(--text-tertiary); }
+
+.cmap-detail-where {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.cmap-detail-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 24rpx;
+}
+
+/* ==================== 按钮 ==================== */
+.cmap-sheet-btn {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  min-height: 80rpx;   /* ≥44px，满足点按热区 */
+  border-radius: var(--radius-lg);
+}
+
+.cmap-sheet-btn.ghost {
+  border: 2rpx solid var(--border-color);
+  background: var(--bg-card);
+}
+.cmap-sheet-btn.ghost .cmap-sheet-btn-t { color: var(--text-secondary); }
+
+.cmap-sheet-btn.primary {
+  background: var(--primary-cta-bg);
+}
+.cmap-sheet-btn.primary .cmap-sheet-btn-t { color: var(--primary-cta-text); }
+.cmap-sheet-btn.disabled { opacity: 0.4; }
+
+.cmap-sheet-btn.sm {
+  flex: none;
+  min-width: 176rpx;
+  min-height: 80rpx;
+  padding: 0 32rpx;
+}
+
+.cmap-sheet-btn-t {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+/* ==================== 暗色模式 ==================== */
+@media (prefers-color-scheme: dark) {
+  .cmap-info-zone,
+  .cmap-info-count { color: var(--text-secondary); }
+  .cmap-info-n { color: var(--primary-light); }
+
+  .cmap-info-reset {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .cmap-page.browsing .cmap-stage.grow {
+    border-color: var(--border-color);
+  }
+
+  .cmap-cat {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .cmap-cluster {
+    box-shadow: var(--shadow-sheet-up-dark);
+    background: var(--bg-card);
+  }
+
+  .cmap-cluster-close {
+    border-color: var(--border-color);
+  }
+
+  .cmap-detail {
+    box-shadow: var(--shadow-sheet-up-dark);
+    background: var(--bg-card);
+  }
+  .cmap-detail-badge { background: var(--primary-dark); }
+
+  .cmap-confirm {
+    box-shadow: var(--shadow-sheet-up-dark);
+    background: var(--bg-card);
+  }
+}

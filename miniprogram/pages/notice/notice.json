@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "custom-navbar": "../../components/custom-navbar/custom-navbar",
+    "empty-state": "/components/empty-state/empty-state",
+    "icon": "../../components/icon/icon"
+  },
+  "navigationStyle": "custom",
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C",
+  "navigationBarTitleText": "公告"
+}

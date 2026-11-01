@@ -1,0 +1,9 @@
+{
+  "triggers": [
+    {
+      "name": "dailyBackupTimer",
+      "type": "timer",
+      "config": "0 3 * * * * *"
+    }
+  ]
+}

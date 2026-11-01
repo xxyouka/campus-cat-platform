@@ -1,0 +1,138 @@
+.cat-picker { width: 100%; }
+
+/* ============ 选中态：带头像回执 ============ */
+.picked {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12rpx 24rpx 12rpx 12rpx;
+  border: 2rpx solid var(--primary-tint-30);
+  border-radius: 20rpx;
+  background: var(--bg-secondary);
+}
+
+.picked-avatar {
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+}
+
+.picked-avatar-ph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: var(--bg-primary);
+  font-size: 26rpx;
+  font-weight: bold;
+}
+
+.picked-name { overflow: hidden; color: var(--text-primary); font-size: 30rpx; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+
+.picked-color { color: var(--text-tertiary); font-size: 24rpx; }
+
+.picked-x {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+/* ============ 未选中：搜索 + 浏览 ============ */
+.picker-box {
+  border: 2rpx solid var(--border-color);
+  border-radius: 20rpx;
+}
+
+.picker-search {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 8rpx 24rpx;
+  border-bottom: 2rpx solid var(--border-color);
+  border-radius: 20rpx 20rpx 0 0;
+  background: var(--bg-secondary);
+}
+
+.picker-input { flex: 1; height: 64rpx; color: var(--text-primary); font-size: 28rpx; }
+
+.picker-clear {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+/* 候选项**不再自带滚动区**。
+   嵌套滚动会抢走触摸手势：手指落在候选区上滑，滑的是内层列表，
+   外层面板纹丝不动 —— 用户看到的现象就是「滑不到最下面」。
+   候选交给面板的 scroll-view 统一滚动；条数由 JS 侧上限控制
+   （浏览与搜索同为 10 条，见 cat-picker.js BROWSE_PAGE_SIZE）。 */
+.picker-list { max-height: none; }
+
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 24rpx;
+  border-bottom: 2rpx solid var(--border-color);
+}
+
+.opt:last-child { border-bottom: none; }
+.opt-hover { background: var(--bg-secondary); }
+
+.opt-avatar { flex-shrink: 0; width: 56rpx; height: 56rpx; border-radius: 50%; }
+
+.opt-avatar-ph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-tint-12);
+
+  /* 深墨而非 --primary-dark：深墨压浅珊瑚底 ≈9:1，primary-dark 只有 ≈3:1，
+     这是 28rpx 的正文级字号，达不到 4.5:1 就等于读不清 */
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.opt-name { flex: 1; overflow: hidden; color: var(--text-primary); font-size: 28rpx; white-space: nowrap; text-overflow: ellipsis; }
+
+.opt-color { flex-shrink: 0; color: var(--text-tertiary); font-size: 24rpx; }
+
+.opt-used-tip { flex-shrink: 0; color: var(--text-tertiary); font-size: 22rpx; }
+
+/* 对端已选的那只：置灰且拦下点击（见 cat-picker.js onPick） */
+.opt-used { opacity: 0.4; }
+
+.picker-tip { padding: 24rpx; color: var(--text-tertiary); font-size: 24rpx; text-align: center; }
+
+.browse-btn {
+  display: inline-block;
+  margin-top: 16rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 28rpx;
+  background: var(--primary-tint-12);
+
+  /* 同 .opt-avatar-ph：正文级字号的强调按钮用深墨（≈9:1），不用 primary-dark（≈3:1） */
+  color: var(--text-primary);
+  font-size: 26rpx;
+  font-weight: 500;
+}

@@ -1,0 +1,42 @@
+<!-- components/lazy-image/lazy-image.wxml - 懒加载图片组件 -->
+<view class="lazy-image-wrapper {{status}} lazy-image-wrapper-{{uniqueId}} custom-class" style="border-radius: {{radiusStr}};" bindtap="onTap" hover-class="hover-none" role="img" aria-label="{{ariaLabel}}">
+
+  <!-- 加载中骨架屏（只在 loading 状态显示） -->
+  <view wx:if="{{status === 'loading'}}" class="skeleton-loader">
+    <view class="skeleton-shimmer"></view>
+    <!-- 猫咪图标占位 -->
+    <view class="cat-placeholder">
+      <view class="cat-icon">
+        <view class="cat-ear left"></view>
+        <view class="cat-ear right"></view>
+        <view class="cat-face">
+          <view class="cat-eye left"></view>
+          <view class="cat-eye right"></view>
+          <view class="cat-nose"></view>
+          <view class="cat-mouth"></view>
+        </view>
+      </view>
+      <text class="loading-text">加载中…</text>
+    </view>
+  </view>
+
+  <!-- 错误状态占位：自动重试 3 次耗尽后，给手动重试入口 -->
+  <view wx:if="{{status === 'error'}}" class="error-placeholder">
+    <icon name="cat" size="48" />
+    <text class="error-text">图片加载失败</text>
+    <view class="retry-btn" catchtap="onRetryTap" hover-class="hover-none">点击重试</view>
+  </view>
+
+  <!-- 实际图片（始终渲染，通过 opacity 控制显示） -->
+  <image
+    wx:if="{{src}}"
+    class="lazy-image {{status}}"
+    src="{{currentUrl}}"
+    mode="{{mode}}"
+    lazy-load="{{lazy}}"
+    webp="{{true}}"
+    bindload="onImageLoad"
+    binderror="onImageError"
+    style="opacity: {{status === 'loaded' ? 1 : 0}}"
+  />
+</view>

@@ -1,0 +1,501 @@
+/* 猫咪行动分析 · 单只猫详情 */
+.page {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+/* ========== 猫信息 + 时间窗 ========== */
+.cat-card {
+  margin: 24rpx 32rpx 0;
+  padding: 28rpx 32rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.cat-head {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.cat-avatar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 108rpx;
+  height: 108rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-tertiary));
+}
+
+.cat-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.cat-head-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10rpx;
+  min-width: 0;
+}
+
+.cat-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  overflow: hidden;
+}
+
+.cat-name {
+  flex-shrink: 0;
+  max-width: 60%;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cat-status {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: var(--warning-tint-08);
+  color: var(--warning-color);
+  font-size: 22rpx;
+}
+
+.cat-campus {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.cat-sub {
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 统计三格 */
+.stat-row {
+  display: flex;
+  margin-top: 28rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid var(--border-light);
+}
+
+.stat-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.stat-num {
+  color: var(--primary-color);
+  font-size: 40rpx;
+  font-weight: 700;
+}
+
+.stat-label {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+/* 时间窗 chips */
+.range-chips {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 28rpx;
+}
+
+.range-chip {
+  flex: 1;
+  padding: 14rpx 0;
+  border: 2rpx solid var(--border-color);
+  border-radius: 28rpx;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.range-chip.active {
+  border-color: var(--primary-color);
+  background: var(--primary-tint-06);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* 切换时间窗时的轻提示（不整页骨架，避免丢上下文） */
+.refresh-note {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120rpx 48rpx;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+}
+
+/* ========== 通用卡片 ========== */
+.card {
+  margin: 24rpx 32rpx 0;
+  padding: 28rpx 32rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.card-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.card-note {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.7;
+}
+
+/* ========== 结论 ========== */
+.conclusion-text {
+  display: block;
+  margin-top: 20rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  line-height: 1.8;
+}
+
+.conclusion-extra {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.conclusion-extra-label {
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: var(--primary-tint-08);
+  color: var(--primary-color);
+  font-size: 22rpx;
+}
+
+.conclusion-extra-value {
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+/* ========== 时段横条 ========== */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 22rpx;
+}
+
+.bar-label {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 140rpx;
+}
+
+.bar-name {
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+.bar-range {
+  color: var(--text-light);
+  font-size: 20rpx;
+}
+
+.bar-track {
+  flex: 1;
+  height: 20rpx;
+  overflow: hidden;
+  border-radius: 10rpx;
+  background: var(--bg-tertiary);
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 10rpx;
+  background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+  transition: width 0.3s ease;
+}
+
+.bar-value {
+  flex-shrink: 0;
+  width: 56rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  text-align: right;
+}
+
+/* ========== 星期柱状图 ========== */
+.week-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 12rpx;
+  height: 240rpx;
+  margin-top: 24rpx;
+}
+
+.week-col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8rpx;
+  height: 100%;
+}
+
+.week-count {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.week-track {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12rpx;
+  background: var(--bg-tertiary);
+}
+
+.week-fill {
+  width: 100%;
+  border-radius: 12rpx 12rpx 0 0;
+  background: linear-gradient(180deg, var(--primary-color), var(--primary-light));
+  transition: height 0.3s ease;
+}
+
+.week-label {
+  color: var(--text-secondary);
+  font-size: 22rpx;
+}
+
+/* ========== 榜单（场景 / 地点 / 片区共用） ========== */
+.rank-block {
+  margin-top: 24rpx;
+}
+
+.rank-block-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.rank-name {
+  flex-shrink: 0;
+  width: 220rpx;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rank-track {
+  flex: 1;
+  height: 16rpx;
+  overflow: hidden;
+  border-radius: 8rpx;
+  background: var(--bg-tertiary);
+}
+
+.rank-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+}
+
+.rank-value {
+  flex-shrink: 0;
+  width: 80rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  text-align: right;
+}
+
+/* ========== 活动地图 ========== */
+.map-box {
+  margin-top: 20rpx;
+  overflow: hidden;
+  border: 2rpx solid var(--border-color);
+  border-radius: 24rpx;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.legend-item {
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+/* ========== 轨迹时间线 ========== */
+.timeline {
+  margin-top: 12rpx;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  margin-top: 14rpx;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 24rpx;
+  background: var(--bg-secondary);
+}
+
+.timeline-item.active {
+  border-color: var(--primary-color);
+  background: var(--primary-tint-06);
+}
+
+.timeline-dot {
+  flex-shrink: 0;
+  width: 16rpx;
+  height: 16rpx;
+  margin-top: 12rpx;
+  border-radius: 50%;
+  background: var(--primary-color);
+}
+
+.timeline-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6rpx;
+  min-width: 0;
+}
+
+.timeline-time {
+  color: var(--text-primary);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.timeline-desc {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* ========== 数据说明 ========== */
+.footnote {
+  margin: 24rpx 32rpx 48rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--bg-tertiary);
+}
+
+.footnote-title {
+  display: block;
+  margin-bottom: 12rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.footnote-line {
+  display: block;
+  color: var(--text-light);
+  font-size: 22rpx;
+  line-height: 1.8;
+}
+
+/* ========== 骨架屏 ========== */
+.skeleton-section {
+  padding: 24rpx 32rpx 0;
+}
+
+.skeleton-block {
+  height: 220rpx;
+  margin-bottom: 24rpx;
+  border-radius: 32rpx;
+}
+
+/* ========== 加载失败 / 不存在 ========== */
+.load-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 48rpx;
+}
+
+.load-failed-title {
+  margin-top: 24rpx;
+  margin-bottom: 32rpx;
+  padding: 0 32rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.failed-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.retry-btn {
+  padding: 16rpx 56rpx;
+  border-radius: 40rpx;
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  font-size: 28rpx;
+}
+
+.back-list-btn {
+  padding: 16rpx 56rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 40rpx;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}

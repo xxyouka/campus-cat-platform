@@ -1,0 +1,32 @@
+<!-- 校园矢量地图 -->
+<view class="cmap {{ mode === 'select' ? 'selecting' : '' }} filling">
+  <!-- type="2d" 是新版 Canvas 接口；dpr 由 JS 设置 canvas.width/height 后 scale -->
+  <canvas
+    id="campusCanvas"
+    type="2d"
+    class="cmap-canvas"
+    style="{{height ? 'width:100%;height:' + height + 'px;' : 'width:100%;height:100%;'}}"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchEnd"
+    disable-scroll="{{true}}"
+  ></canvas>
+
+  <!-- 加载中 -->
+  <view class="cmap-mask" wx:if="{{!ready}}">
+    <text class="cmap-mask-t">地图加载中…</text>
+  </view>
+
+  <!-- 底图异常 -->
+  <view class="cmap-mask" wx:if="{{ready && loadError}}">
+    <text class="cmap-mask-t">地图加载失败</text>
+    <text class="cmap-mask-s">请检查 campus-map.js 是否存在</text>
+  </view>
+
+  <!-- 底图为空：引导用户去画 -->
+  <view class="cmap-mask" wx:if="{{ready && !loadError && empty}}">
+    <text class="cmap-mask-t">校园地图还没画好</text>
+    <text class="cmap-mask-s">用 tools/campus-map-editor 绘制后导出 campus-map.js</text>
+  </view>
+</view>

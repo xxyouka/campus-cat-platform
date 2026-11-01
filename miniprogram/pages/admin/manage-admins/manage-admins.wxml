@@ -1,0 +1,252 @@
+<view class="page page-enter">
+  <custom-navbar title="管理员管理" theme="warm" showBack="{{true}}" />
+
+  <!-- 角色说明 -->
+  <view class="role-banner {{isFounder ? 'founder' : (isSuperAdmin ? 'super' : 'normal')}}">
+    <view class="role-banner-icon">
+      <icon name="{{isFounder ? 'medal-gold' : (isSuperAdmin ? 'star' : 'user')}}" size="40" />
+    </view>
+    <view class="role-info">
+      <text class="role-title">当前角色：{{isFounder ? '创始人' : (isSuperAdmin ? '超级管理员' : '普通管理员')}}</text>
+      <text class="role-desc">{{isFounder ? '拥有全部权限：可管理管理员、提升或降级超管、调整入口权限' : (isSuperAdmin ? '可添加/编辑普通管理员、调整入口权限；升降超管仅创始人可用' : (canManageAdmins ? '可添加、编辑、解绑、移除普通管理员账号' : '查看管理员列表'))}}</text>
+    </view>
+  </view>
+
+  <!-- 提示条 -->
+  <view class="share-tip" wx:if="{{canManageAdmins}}">
+    <icon name="lightbulb" size="28" />
+    <text class="share-tip-text">把账号密码发给对方，让对方用自己的微信首次登录即完成绑定；此后仅该微信能登录此账号</text>
+  </view>
+
+  <!-- 添加按钮（仅超级管理员） -->
+  <view class="add-section" wx:if="{{canManageAdmins}}">
+    <view class="add-card" bindtap="onShowAddAdmin" hover-class="card-hover">
+      <view class="add-icon-wrap">
+        <text class="add-icon">+</text>
+      </view>
+      <view class="add-text-col">
+        <text class="add-text">添加管理员</text>
+        <text class="add-sub">创建账号后由对方用微信首次登录绑定</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 管理员列表 -->
+  <view class="section-title">
+    <text class="section-label">管理员列表</text>
+    <text class="section-count">{{admins.length}} 人</text>
+  </view>
+
+  <view class="admin-list" wx:if="{{!loading}}">
+    <view class="admin-item" wx:for="{{admins}}" wx:key="_id">
+      <!-- 主行：头像 + 名称/角色 + 账号与绑定状态 -->
+      <view class="admin-item-main">
+        <view class="admin-avatar {{item.role === 'founder' ? 'avatar-founder' : (item.role === 'superadmin' ? 'avatar-super' : 'avatar-normal')}}">
+          <text>{{item.firstChar}}</text>
+        </view>
+
+        <view class="admin-info">
+          <view class="admin-name-row">
+            <text class="admin-display-name">{{item.displayName || item.account}}</text>
+            <text class="admin-role-tag {{item.role === 'founder' ? 'founder' : (item.role === 'superadmin' ? 'super' : 'normal')}}">{{item.role === 'founder' ? '创始人' : (item.role === 'superadmin' ? '超级管理员' : '普通管理员')}}</text>
+            <text class="admin-self-tag" wx:if="{{item.isSelf}}">本人</text>
+          </view>
+          <view class="admin-account-row">
+            <icon name="tag" size="22" />
+            <text class="admin-account-text">{{item.account}}</text>
+            <view class="bind-pill {{item.boundOpenid ? 'on' : ''}}">
+              <view class="bind-dot"></view>
+              <text>{{item.boundOpenid ? '已绑定' : '未绑定'}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 复制账号 -->
+        <view class="admin-copy" wx:if="{{canManageAdmins}}" catchtap="onCopyAccount" data-account="{{item.account}}" hover-class="action-hover" aria-label="复制账号">
+          <icon name="share" size="28" />
+        </view>
+      </view>
+
+      <!-- 元信息：功能权限用量 + 最后登录 -->
+      <view class="admin-meta-block">
+        <view class="admin-meta-row">
+          <icon name="chart" size="22" />
+          <text class="admin-meta-label">功能权限</text>
+          <block wx:if="{{item.role === 'admin'}}">
+            <view class="perm-track">
+              <view class="perm-fill" style="width: {{item.permissionPercent}}%"></view>
+            </view>
+            <text class="perm-count">{{item.permissionCount}}/{{permissionTotal}}</text>
+          </block>
+          <text class="perm-all" wx:else>全部开放</text>
+        </view>
+        <view class="admin-meta-row" wx:if="{{item.lastLoginText}}">
+          <icon name="clock" size="22" />
+          <text class="admin-meta-label">最后登录</text>
+          <text class="admin-meta-text">{{item.lastLoginText}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮（本人行不显示；超管/创始人行仅创始人可编辑，移除与解绑须先降级） -->
+      <view class="admin-actions" wx:if="{{canManageAdmins && !item.isSelf && (item.role === 'admin' || isFounder)}}">
+        <view class="action-btn perm" wx:if="{{isSuperAdmin && item.role === 'admin'}}" catchtap="onEditPermissions" data-id="{{item._id}}" data-name="{{item.displayName || item.account}}" hover-class="action-hover">权限</view>
+        <view class="action-btn edit" wx:if="{{item.role === 'admin' || isFounder}}" catchtap="onEditAdmin" data-id="{{item._id}}" data-name="{{item.displayName || item.account}}" data-account="{{item.account}}" data-role="{{item.role}}" hover-class="action-hover">编辑</view>
+        <view class="action-btn unbind" wx:if="{{item.boundOpenid && item.role === 'admin'}}" catchtap="onUnbindAdmin" data-id="{{item._id}}" data-name="{{item.displayName || item.account}}" hover-class="action-hover">解绑</view>
+        <view class="action-btn remove" wx:if="{{item.role === 'admin'}}" catchtap="onRemoveAdmin" data-id="{{item._id}}" data-name="{{item.displayName || item.account}}" hover-class="action-hover">移除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载失败态（与「暂无管理员」区分） -->
+  <view class="empty-state" wx:if="{{!loading && loadFailed && admins.length === 0}}">
+    <icon name="warning" size="56" />
+    <text class="empty-text">加载失败了</text>
+    <text class="empty-sub">网络似乎不太顺畅，稍后再试试</text>
+    <view class="retry-btn" bindtap="onRetryLoad">
+      <text>重新加载</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && !loadFailed && admins.length === 0}}">
+    <icon name="users" size="56" />
+    <text class="empty-text">暂无管理员</text>
+    <text class="empty-sub">点击上方按钮添加管理员</text>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-container visible" wx:if="{{loading}}">
+    <view class="skeleton-list-item" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-avatar-circle skeleton-shimmer"></view>
+      <view class="skeleton-info">
+        <view class="skeleton-line w50 skeleton-shimmer"></view>
+        <view class="skeleton-line w70 skeleton-shimmer"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 添加管理员弹窗 ===== -->
+  <custom-modal
+    show="{{showAddModal}}"
+    title="添加管理员"
+    confirmText="添加"
+    cancelText="取消"
+    bindconfirm="onAddAdminConfirm"
+    bindcancel="onAddModalCancel"
+  >
+    <view class="form-group">
+      <text class="form-label">登录账号 <text class="form-required">*</text></text>
+      <input class="form-input {{addErrors.account ? 'input-error' : ''}}" placeholder="英文/数字/下划线，3-20位" value="{{addForm.account}}" bindinput="onAddFormInput" data-field="account" maxlength="20" />
+      <text class="form-error" wx:if="{{addErrors.account}}">{{addErrors.account}}</text>
+      <text class="form-hint" wx:else>对方用此账号登录管理后台</text>
+    </view>
+    <view class="form-group">
+      <text class="form-label">显示名称</text>
+      <input class="form-input {{addErrors.displayName ? 'input-error' : ''}}" placeholder="姓名或昵称" value="{{addForm.displayName}}" bindinput="onAddFormInput" data-field="displayName" maxlength="20" />
+      <text class="form-error" wx:if="{{addErrors.displayName}}">{{addErrors.displayName}}</text>
+      <text class="form-hint" wx:else>留空则使用账号作为显示名称</text>
+    </view>
+    <view class="form-group">
+      <text class="form-label">登录密码 <text class="form-required">*</text></text>
+      <view class="password-row">
+        <input class="form-input password-input {{addErrors.password ? 'input-error' : ''}}" password="{{!showAddPassword}}" placeholder="至少6位，须包含字母和数字" value="{{addForm.password}}" bindinput="onAddFormInput" data-field="password" maxlength="30" />
+        <view class="password-toggle" bindtap="onToggleAddPassword">
+          <icon name="{{showAddPassword ? 'eye-off' : 'eye'}}" size="28" />
+        </view>
+      </view>
+      <text class="form-error" wx:if="{{addErrors.password}}">{{addErrors.password}}</text>
+      <view class="password-strength" wx:elif="{{addForm.password}}">
+        <view class="strength-bar {{passwordStrength}}"></view>
+        <text class="strength-text">{{passwordStrength === 'strong' ? '强' : (passwordStrength === 'medium' ? '中' : '弱')}}</text>
+      </view>
+    </view>
+  </custom-modal>
+
+  <!-- ===== 编辑管理员弹窗 ===== -->
+  <custom-modal
+    show="{{showEditModal}}"
+    title="编辑管理员"
+    confirmText="保存"
+    cancelText="取消"
+    bindconfirm="onEditConfirm"
+    bindcancel="onEditCancel"
+  >
+    <view class="edit-account-info">
+      <text class="edit-account-label">账号</text>
+      <text class="edit-account-value">{{editTargetAccount}}</text>
+    </view>
+    <view class="form-group">
+      <text class="form-label">显示名称 <text class="form-required">*</text></text>
+      <input class="form-input {{editErrors.displayName ? 'input-error' : ''}}" placeholder="姓名或昵称" value="{{editForm.displayName}}" bindinput="onEditFormInput" data-field="displayName" maxlength="20" />
+      <text class="form-error" wx:if="{{editErrors.displayName}}">{{editErrors.displayName}}</text>
+    </view>
+    <!-- 角色（仅创始人可见，且不能改自己/创始人账号）：保存时才提交，取消编辑不生效 -->
+    <view class="form-group" wx:if="{{isFounder && !editTargetIsSelf && !editTargetIsFounder}}">
+      <text class="form-label">角色</text>
+      <view class="role-select-row">
+        <text class="role-chip {{editForm.role === 'superadmin' ? 'super' : 'normal'}}">{{editForm.role === 'superadmin' ? '超级管理员' : '普通管理员'}}</text>
+        <view class="role-promote-btn" wx:if="{{editForm.role === editTargetRole && editTargetRole === 'admin'}}" catchtap="onPromoteToSuperAdmin" hover-class="action-hover">提升为超管</view>
+        <view class="role-promote-btn" wx:elif="{{editForm.role === editTargetRole && editTargetRole === 'superadmin'}}" catchtap="onDemoteToAdmin" hover-class="action-hover">降级为普通管理员</view>
+        <view class="role-promote-cancel" wx:elif="{{editForm.role !== editTargetRole}}" catchtap="onResetRoleDraft" hover-class="action-hover">撤销</view>
+      </view>
+      <text class="form-hint role-hint" wx:if="{{editForm.role !== editTargetRole && editForm.role === 'superadmin'}}">保存后拥有全部权限；如需移除/解绑，须先降级为普通管理员</text>
+      <text class="form-hint role-hint" wx:elif="{{editForm.role !== editTargetRole}}">保存后立即失去超管全部权限，按普通管理员入口权限处理</text>
+      <text class="form-hint" wx:else>{{editForm.role === 'superadmin' ? '超级管理员可管理其他管理员、调整权限并重置密码' : '普通管理员按入口权限使用管理端'}}</text>
+    </view>
+    <view class="form-group" wx:if="{{isSuperAdmin}}">
+      <text class="form-label">新密码</text>
+      <view class="password-row">
+        <input class="form-input password-input {{editErrors.password ? 'input-error' : ''}}" password="{{!showEditPassword}}" placeholder="留空则不修改密码" value="{{editForm.password}}" bindinput="onEditFormInput" data-field="password" maxlength="30" />
+        <view class="password-toggle" bindtap="onToggleEditPassword">
+          <icon name="{{showEditPassword ? 'eye-off' : 'eye'}}" size="28" />
+        </view>
+      </view>
+      <text class="form-error" wx:if="{{editErrors.password}}">{{editErrors.password}}</text>
+      <text class="form-hint" wx:else>留空则不修改密码</text>
+    </view>
+    <text class="form-hint" wx:else>密码重置仅超级管理员可操作</text>
+  </custom-modal>
+
+  <!-- ===== 功能权限弹窗（仅超级管理员） ===== -->
+  <custom-modal
+    show="{{showPermModal}}"
+    title="功能权限"
+    confirmText="保存"
+    cancelText="取消"
+    bindconfirm="onSavePermissions"
+    bindcancel="onPermModalCancel"
+  >
+    <view class="perm-target">
+      <text class="perm-target-label">管理员</text>
+      <text class="perm-target-name">{{permTargetName}}</text>
+    </view>
+
+    <view class="perm-toolbar">
+      <text class="perm-toolbar-tip">未开启的入口，该管理员看不到，云函数也会拒绝调用</text>
+      <view class="perm-all-btn" catchtap="onToggleAllPermissions">{{permAllOn ? '全部关闭' : '全部开启'}}</view>
+    </view>
+
+    <view class="perm-group" wx:for="{{permGroups}}" wx:key="name" wx:for-item="group">
+      <text class="perm-group-title">{{group.name}}</text>
+      <view class="perm-row" wx:for="{{group.items}}" wx:key="key" wx:for-item="perm">
+        <text class="perm-label">{{perm.label}}</text>
+        <switch class="perm-switch" checked="{{perm.checked}}" color="#E8927C" data-key="{{perm.key}}" bindchange="onPermSwitchChange" />
+      </view>
+    </view>
+  </custom-modal>
+
+  <!-- ===== 移除确认弹窗 ===== -->
+  <custom-modal
+    show="{{showRemoveModal}}"
+    title="确认移除"
+    confirmText="确认移除"
+    cancelText="取消"
+    bindconfirm="onRemoveConfirm"
+    bindcancel="onRemoveCancel"
+  >
+    <view class="remove-warning">
+      <icon name="warning" size="44" />
+      <text class="remove-warning-text">确认移除「{{removeTargetName}}」？移除后将无法登录管理后台。</text>
+    </view>
+  </custom-modal>
+</view>

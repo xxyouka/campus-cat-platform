@@ -1,0 +1,28 @@
+<!-- 空状态组件：aria-live 让「加载完成→空态」的切换对读屏可感知 -->
+<view class="empty-state" aria-live="polite">
+  <!-- 插画容器 -->
+  <view class="empty-illus">
+    <view class="empty-illus-bg">
+      <icon name="{{icon}}" size="56" />
+    </view>
+    <icon class="empty-illus-paw" name="{{decoration || 'paw'}}" size="48" />
+  </view>
+
+  <!-- 主文案 -->
+  <text class="empty-title">{{title}}</text>
+
+  <!-- 副文案 -->
+  <text class="empty-subtitle" wx:if="{{subtitle}}">{{subtitle}}</text>
+
+  <!-- 操作按钮 -->
+  <view
+    class="empty-action"
+    wx:if="{{showAction && actionText}}"
+    bindtap="onAction"
+    hover-class="btn-press"
+    role="button"
+    aria-label="{{actionText}}"
+  >
+    {{actionText}}
+  </view>
+</view>

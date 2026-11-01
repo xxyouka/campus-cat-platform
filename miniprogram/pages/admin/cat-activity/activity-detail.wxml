@@ -1,0 +1,243 @@
+<!-- 猫咪行动分析 · 单只猫详情（仅超级管理员，只读） -->
+<view class="page page-enter">
+  <custom-navbar title="{{navTitle}}" theme="warm" showBack="{{true}}" />
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-block shimmer" wx:for="{{skeletonItems}}" wx:key="*this"></view>
+  </view>
+
+  <block wx:else>
+    <!-- 加载失败 / 猫咪已不存在：两种情况给不同的下一步动作 -->
+    <view class="load-failed" wx:if="{{loadFailed}}">
+      <icon name="{{notFound ? 'cat-sad' : 'warning'}}" size="48" />
+      <text class="load-failed-title">{{errorText}}</text>
+      <view class="failed-actions">
+        <view class="retry-btn" wx:if="{{!notFound}}" bindtap="onRetryLoad">重新加载</view>
+        <view class="back-list-btn" bindtap="onBackToList">返回列表</view>
+      </view>
+    </view>
+
+    <block wx:else>
+      <!-- 猫信息 + 时间窗 -->
+      <view class="cat-card">
+        <view class="cat-head">
+          <view class="cat-avatar">
+            <image wx:if="{{cat.avatar}}" src="{{cat.avatar}}" mode="aspectFill" />
+            <icon wx:else name="cat" size="40" />
+          </view>
+          <view class="cat-head-info">
+            <view class="cat-name-row">
+              <text class="cat-name">{{cat.name}}</text>
+              <text class="cat-status" wx:if="{{cat.statusText !== '在校'}}">{{cat.statusText}}</text>
+              <text class="cat-campus" wx:if="{{cat.campus}}">{{cat.campus}}</text>
+            </view>
+            <text class="cat-sub" wx:if="{{spanText}}">{{spanText}}</text>
+            <text class="cat-sub" wx:else>时间窗内还没有相遇记录</text>
+          </view>
+        </view>
+
+        <view class="stat-row" wx:if="{{hasData}}">
+          <view class="stat-item">
+            <text class="stat-num">{{totals.meets}}</text>
+            <text class="stat-label">相遇次数</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-num">{{totals.activeDays}}</text>
+            <text class="stat-label">出现天数</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-num">{{totals.withPoint}}</text>
+            <text class="stat-label">地图点位</text>
+          </view>
+        </view>
+
+        <!-- 时间窗：切换即重新现算，页面不缓存结论 -->
+        <view class="range-chips">
+          <view
+            class="range-chip {{rangeIndex === index ? 'active' : ''}}"
+            wx:for="{{ranges}}"
+            wx:key="days"
+            bindtap="onRangeTap"
+            data-index="{{index}}"
+            hover-class="btn-press"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <!-- 切换时间窗时只提示一次，不把旧窗口的结论留在屏幕上冒充新窗口 -->
+      <view class="refresh-note" wx:if="{{refreshing}}">
+        <text>正在按新时间窗重新分析…</text>
+      </view>
+
+      <block wx:if="{{!refreshing}}">
+        <block wx:if="{{hasData}}">
+          <!-- 一句话结论 -->
+          <view class="card">
+            <view class="inline-row">
+              <icon name="sparkle" size="32" />
+              <text class="card-title">一句话结论</text>
+            </view>
+            <text class="conclusion-text">{{conclusion}}</text>
+            <view class="conclusion-extra" wx:if="{{spreadText}}">
+              <text class="conclusion-extra-label">活动范围</text>
+              <text class="conclusion-extra-value">{{spreadText}}</text>
+            </view>
+          </view>
+
+          <!-- 时段分布 -->
+          <view class="card">
+            <view class="inline-row">
+              <icon name="clock" size="32" />
+              <text class="card-title">常在哪个时段出没</text>
+            </view>
+            <view class="bar-row" wx:for="{{blocks}}" wx:key="key">
+              <view class="bar-label">
+                <text class="bar-name">{{item.label}}</text>
+                <text class="bar-range">{{item.range}}</text>
+              </view>
+              <view class="bar-track">
+                <view class="bar-fill" style="width: {{item.percent}}%"></view>
+              </view>
+              <text class="bar-value">{{item.count}}</text>
+            </view>
+          </view>
+
+          <!-- 星期分布 -->
+          <view class="card">
+            <view class="inline-row">
+              <icon name="calendar" size="32" />
+              <text class="card-title">一周里的分布</text>
+            </view>
+            <view class="week-grid">
+              <view class="week-col" wx:for="{{weekdays}}" wx:key="d">
+                <text class="week-count">{{item.count}}</text>
+                <view class="week-track">
+                  <view class="week-fill" style="height: {{item.percent}}%"></view>
+                </view>
+                <text class="week-label">{{item.label}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 场景与地点 -->
+          <view class="card" wx:if="{{tags.length > 0 || locations.length > 0}}">
+            <view class="inline-row">
+              <icon name="tag" size="32" />
+              <text class="card-title">相遇场景与常去地点</text>
+            </view>
+
+            <view class="rank-block" wx:if="{{tags.length > 0}}">
+              <text class="rank-block-title">相遇场景</text>
+              <view class="rank-row" wx:for="{{tags}}" wx:key="text">
+                <text class="rank-name">{{item.text}}</text>
+                <view class="rank-track">
+                  <view class="rank-fill" style="width: {{item.percent}}%"></view>
+                </view>
+                <text class="rank-value">{{item.count}} 次</text>
+              </view>
+            </view>
+
+            <view class="rank-block" wx:if="{{locations.length > 0}}">
+              <text class="rank-block-title">常去地点</text>
+              <view class="rank-row" wx:for="{{locations}}" wx:key="text">
+                <text class="rank-name">{{item.text}}</text>
+                <view class="rank-track">
+                  <view class="rank-fill" style="width: {{item.percent}}%"></view>
+                </view>
+                <text class="rank-value">{{item.count}} 次</text>
+              </view>
+            </view>
+
+            <text class="card-note" wx:if="{{locationNote}}">{{locationNote}}</text>
+          </view>
+
+          <!-- 活动地图：有点位才画，没点位时明说为什么没有 -->
+          <view class="card" id="activityMap" wx:if="{{hasMap}}">
+            <view class="inline-row">
+              <icon name="pin" size="32" />
+              <text class="card-title">活动地图</text>
+            </view>
+            <view class="map-box">
+              <activity-map
+                zone="{{mapZone}}"
+                height="360"
+                points="{{mapPoints}}"
+                clusters="{{mapClusters}}"
+                last-point="{{lastPoint}}"
+                highlight="{{highlight}}"
+              />
+            </view>
+            <view class="map-legend">
+              <text class="legend-item">点越大越深：打卡越近</text>
+              <text class="legend-item">虚线圈：常去的片区</text>
+              <text class="legend-item">红点双圈：最近一次</text>
+            </view>
+          </view>
+
+          <view class="card" wx:else>
+            <view class="inline-row">
+              <icon name="pin" size="32" />
+              <text class="card-title">活动地图</text>
+            </view>
+            <text class="card-note">时间窗内还没有带地图位置的打卡，暂时画不出活动轨迹。等大家在打卡时选一次地图位置，这里会自动长出来。</text>
+          </view>
+
+          <!-- 常驻片区（与地图上的虚线圈一一对应） -->
+          <view class="card" wx:if="{{clusters.length > 0}}">
+            <view class="inline-row">
+              <icon name="target" size="32" />
+              <text class="card-title">常驻片区</text>
+            </view>
+            <view class="rank-row" wx:for="{{clusters}}" wx:key="key">
+              <text class="rank-name">{{item.label}}</text>
+              <view class="rank-track">
+                <view class="rank-fill" style="width: {{item.percent}}%"></view>
+              </view>
+              <text class="rank-value">{{item.count}} 次</text>
+            </view>
+          </view>
+
+          <!-- 轨迹时间线：点一条在地图上圈出它的位置 -->
+          <view class="card" wx:if="{{timeline.length > 0}}">
+            <view class="inline-row">
+              <icon name="clock" size="32" />
+              <text class="card-title">最近相遇轨迹</text>
+            </view>
+            <text class="card-note" wx:if="{{hasMap}}">点一条记录，可在地图上圈出它的位置</text>
+            <view class="timeline">
+              <view
+                class="timeline-item {{item._active ? 'active' : ''}}"
+                wx:for="{{timeline}}"
+                wx:key="key"
+                bindtap="onTimelineTap"
+                data-idx="{{index}}"
+                hover-class="item-hover"
+              >
+                <view class="timeline-dot"></view>
+                <view class="timeline-body">
+                  <text class="timeline-time">{{item.timeText}}</text>
+                  <text class="timeline-desc">{{item.descText}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 数据说明：样本量摊开讲，避免把小样本读成规律 -->
+          <view class="footnote">
+            <text class="footnote-title">数据说明</text>
+            <text class="footnote-line" wx:for="{{footnote}}" wx:key="*this">{{item}}</text>
+            <text class="footnote-line">本页为只读自动分析，不保存任何结论；每次打开都按最新打卡现算。</text>
+          </view>
+        </block>
+
+        <empty-state
+          wx:else
+          icon="paw"
+          title="这段时间还没有相遇记录"
+          subtitle="换个时间窗看看，或等大家在打卡后自动出现"
+        />
+      </block>
+    </block>
+  </block>
+</view>

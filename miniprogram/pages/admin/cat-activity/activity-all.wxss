@@ -1,0 +1,203 @@
+/* 猫咪行动分析 · 全部小猫总轨迹 */
+.page {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+/* ========== 时间窗 ========== */
+.control-card {
+  margin: 24rpx 32rpx 0;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.range-chips {
+  display: flex;
+  gap: 16rpx;
+}
+
+.range-chip {
+  flex: 1;
+  padding: 14rpx 0;
+  border: 2rpx solid var(--border-color);
+  border-radius: 28rpx;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.range-chip.active {
+  border-color: var(--primary-color);
+  background: var(--primary-tint-06);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* 切换时间窗时的轻提示（不整页骨架，避免丢上下文） */
+.refresh-note {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120rpx 48rpx;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+}
+
+/* ========== 通用卡片 ========== */
+.card {
+  margin: 24rpx 32rpx 0;
+  padding: 28rpx 32rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.card-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+/* ========== 地图与图例 ========== */
+.map-box {
+  margin-top: 20rpx;
+  overflow: hidden;
+  border: 2rpx solid var(--border-color);
+  border-radius: 24rpx;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.legend-item {
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+.trail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.trail-chip {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 8rpx 20rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 28rpx;
+  background: var(--bg-secondary);
+}
+
+.trail-chip.active {
+  border-color: var(--primary-color);
+  background: var(--primary-tint-06);
+}
+
+.chip-dot {
+  flex-shrink: 0;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+}
+
+.chip-name {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.trail-chip.active .chip-name {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.chip-count {
+  color: var(--text-light);
+  font-size: 22rpx;
+}
+
+.totals-text {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+/* ========== 数据说明 ========== */
+.footnote {
+  margin: 24rpx 32rpx 48rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--bg-tertiary);
+}
+
+.footnote-title {
+  display: block;
+  margin-bottom: 12rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.footnote-line {
+  display: block;
+  color: var(--text-light);
+  font-size: 22rpx;
+  line-height: 1.8;
+}
+
+/* ========== 骨架屏 ========== */
+.skeleton-section {
+  padding: 24rpx 32rpx 0;
+}
+
+.skeleton-block {
+  height: 220rpx;
+  margin-bottom: 24rpx;
+  border-radius: 32rpx;
+}
+
+/* ========== 加载失败 ========== */
+.load-failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 48rpx;
+}
+
+.load-failed-title {
+  margin-top: 24rpx;
+  margin-bottom: 32rpx;
+  padding: 0 32rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.retry-btn {
+  padding: 16rpx 56rpx;
+  border-radius: 40rpx;
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  font-size: 28rpx;
+}

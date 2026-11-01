@@ -1,0 +1,1 @@
+{"name": "get-campus-map-cats", "version": "1.0.0", "description": "获取校园地图上的猫标记（按校区过滤，含坐标有效性过滤）", "main": "index.js", "dependencies": {"wx-server-sdk": "~2.6.3", "node-cache": "^5.1.2"}}

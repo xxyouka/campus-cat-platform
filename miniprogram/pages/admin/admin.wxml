@@ -1,0 +1,354 @@
+<!-- 管理员后台 - 简洁版 -->
+<view class="page page-enter">
+  <!-- 骨架屏加载 -->
+  <view class="skeleton-container" wx:if="{{loading}}">
+    <!-- 状态栏安全占位 -->
+    <view class="status-bar-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <!-- 头部骨架 -->
+    <view class="skeleton-header-admin shimmer"></view>
+    <!-- 统计骨架 -->
+    <view class="skeleton-stats">
+      <view class="skeleton-stat-card">
+        <view class="skeleton-icon shimmer"></view>
+        <view class="skeleton-text value shimmer"></view>
+        <view class="skeleton-text label shimmer"></view>
+      </view>
+      <view class="skeleton-stat-card">
+        <view class="skeleton-icon shimmer"></view>
+        <view class="skeleton-text value shimmer"></view>
+        <view class="skeleton-text label shimmer"></view>
+      </view>
+    </view>
+    <!-- 菜单骨架 -->
+    <view class="skeleton-menu">
+      <view class="skeleton-menu-item">
+        <view class="skeleton-menu-left">
+          <view class="skeleton-icon small shimmer"></view>
+          <view class="skeleton-text menu-text shimmer"></view>
+        </view>
+        <view class="skeleton-arrow"></view>
+      </view>
+      <view class="skeleton-menu-item">
+        <view class="skeleton-menu-left">
+          <view class="skeleton-icon small shimmer"></view>
+          <view class="skeleton-text menu-text shimmer"></view>
+        </view>
+        <view class="skeleton-arrow"></view>
+      </view>
+      <view class="skeleton-menu-item">
+        <view class="skeleton-menu-left">
+          <view class="skeleton-icon small shimmer"></view>
+          <view class="skeleton-text menu-text shimmer"></view>
+        </view>
+        <view class="skeleton-arrow"></view>
+      </view>
+      <view class="skeleton-menu-item">
+        <view class="skeleton-menu-left">
+          <view class="skeleton-icon small shimmer"></view>
+          <view class="skeleton-text menu-text shimmer"></view>
+        </view>
+        <view class="skeleton-arrow"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 温馨头部 -->
+  <view class="admin-header" wx:if="{{!loading}}">
+    <!-- 状态栏安全占位 -->
+    <view class="status-bar-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="header-content">
+      <view class="header-title-row">
+        <view class="inline-row"><icon name="settings" size="32" /><text class="header-title">管理后台</text></view>
+        <view class="role-badge {{isFounder ? 'role-founder' : (isSuperAdmin ? 'role-super' : 'role-normal')}}">
+          <text>{{isFounder ? '创始人' : (isSuperAdmin ? '超级管理员' : '普通管理员')}}</text>
+        </view>
+      </view>
+      <text class="header-subtitle">校园猫咪管理系统</text>
+    </view>
+  </view>
+
+  <!-- 数据统计（猫咪/照片卡跟随入口权限；相遇/收藏排行不在这 14 项内） -->
+  <view class="stats-section" wx:if="{{!loading}}">
+    <view class="section-header">
+      <view class="inline-row"><icon name="chart" size="32" /><text class="section-title">数据统计</text></view>
+      <text class="update-time" wx:if="{{updateTime}}">更新于 {{updateTime}}</text>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-card" wx:if="{{can.cat}}" bindtap="onGoToCatManage" hover-class="card-hover">
+        <view class="stat-icon-wrap stat-icon-1">
+          <icon name="cat-outline" size="36" />
+        </view>
+        <text class="stat-value">{{stats.totalCats || 0}}</text>
+        <text class="stat-label">猫咪总数</text>
+      </view>
+      <view class="stat-card" wx:if="{{can.photo}}" bindtap="onGoToPhotoManage" hover-class="card-hover">
+        <view class="stat-icon-wrap stat-icon-2">
+          <icon name="camera" size="36" />
+        </view>
+        <text class="stat-value">{{stats.totalPhotos || 0}}</text>
+        <text class="stat-label">照片总数</text>
+      </view>
+      <view class="stat-card" bindtap="onGoToMeetRank" hover-class="card-hover">
+        <view class="stat-icon-wrap stat-icon-3">
+          <icon name="paw" size="36" />
+        </view>
+        <text class="stat-value">{{stats.totalMeets || 0}}</text>
+        <text class="stat-label">相遇打卡</text>
+      </view>
+      <view class="stat-card" bindtap="onGoToFavRank" hover-class="card-hover">
+        <view class="stat-icon-wrap stat-icon-4">
+          <icon name="heart" size="36" />
+        </view>
+        <text class="stat-value">{{stats.totalFavorites || 0}}</text>
+        <text class="stat-label">总关注数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section" wx:if="{{!loading}}">
+    <view class="section-header">
+      <view class="inline-row"><icon name="tools" size="32" /><text class="section-title">功能管理</text></view>
+    </view>
+    <view class="menu-list">
+      <!-- 运营看板：四个固定指标 + 每周入口淘汰依据（只读） -->
+      <view class="menu-item" wx:if="{{can.ops}}" bindtap="onGoToOpsDashboard" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-8">
+            <icon name="chart-up" size="36" />
+          </view>
+          <text class="menu-text">运营看板</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <view class="menu-item" wx:if="{{can.addCat}}" bindtap="onGoToAddCat" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-1">
+            <icon name="plus" size="36" />
+          </view>
+          <text class="menu-text">添加新猫</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <view class="menu-item" wx:if="{{can.photo}}" bindtap="onGoToPhotoManage" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-2">
+            <icon name="camera-outline" size="36" />
+          </view>
+          <text class="menu-text">照片管理</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <view class="menu-item" wx:if="{{can.cat}}" bindtap="onGoToCatManage" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-3">
+            <icon name="cat" size="36" />
+          </view>
+          <text class="menu-text">猫咪管理</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <view class="menu-item" wx:if="{{can.notice}}" bindtap="onGoToNoticeManage" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-3">
+            <icon name="announce" size="36" />
+          </view>
+          <text class="menu-text">公告管理</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+
+      <view class="menu-item" wx:if="{{can.relation}}" bindtap="onGoToRelationManage" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-1">
+            <icon name="link" size="36" />
+          </view>
+          <text class="menu-text">关系管理</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <!-- 管理员管理 -->
+      <view class="menu-item" wx:if="{{isSuperAdmin}}" bindtap="onGoToManageAdmins" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-6">
+            <icon name="users" size="36" />
+          </view>
+          <text class="menu-text">管理员管理</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <!-- 操作日志 -->
+      <view class="menu-item" wx:if="{{can.logs}}" bindtap="onGoToOperationLogs" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-7">
+            <icon name="clipboard" size="36" />
+          </view>
+          <text class="menu-text">操作日志</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <!-- 猫咪行动分析（只读分析，仅超管） -->
+      <view class="menu-item" wx:if="{{can.catActivity}}" bindtap="onGoToCatActivity" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-8">
+            <icon name="target" size="36" />
+          </view>
+          <text class="menu-text">猫咪行动分析</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <!-- 内容复核：多媒体安全检测的待复核 / 已拦截队列 -->
+      <view class="menu-item" wx:if="{{can.mediaReview}}" bindtap="onGoToMediaReview" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-3">
+            <icon name="warning" size="36" />
+          </view>
+          <text class="menu-text">内容复核</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      <!-- 反馈处理：用户提交的信息有误 / 受伤 / 走失等反馈 -->
+      <view class="menu-item" wx:if="{{can.report}}" bindtap="onGoToReportManage" hover-class="menu-hover">
+        <view class="menu-left">
+          <view class="menu-icon-wrap menu-icon-9">
+            <icon name="announce" size="36" />
+          </view>
+          <text class="menu-text">反馈处理</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+
+      </view>
+  </view>
+
+  <!-- 数据导出（仅超级管理员） -->
+  <view class="section-card" wx:if="{{!loading && isSuperAdmin}}">
+    <view class="section-title inline-row"><icon name="share" size="32" /><text>数据导出</text></view>
+    <view class="export-grid">
+      <view class="export-item" bindtap="onOpenExportPanel" data-type="cat_complete" hover-class="btn-hover">
+        <icon name="clipboard" size="32" />
+        <text class="export-label">猫咪档案</text>
+      </view>
+      <view class="export-item" bindtap="onOpenExportPanel" data-type="photos" hover-class="btn-hover">
+        <icon name="camera-outline" size="32" />
+        <text class="export-label">猫咪照片</text>
+      </view>
+      </view>
+
+    <!-- 导出历史 -->
+    <view class="export-history" wx:if="{{exportHistory.length > 0}}">
+      <view class="export-history-header">
+        <text class="export-history-title">最近导出</text>
+        <text class="export-history-clear" bindtap="onClearExportHistory">清除</text>
+      </view>
+      <view class="export-history-list">
+        <view class="export-history-item" wx:for="{{exportHistory}}" wx:key="time"
+              bindtap="onRedownload" data-url="{{item.downloadUrl}}" data-format="{{item.format}}">
+          <view class="export-history-info">
+            <text class="export-history-type">{{item.typeName}}</text>
+            <text class="export-history-meta">{{item.count}}条 · {{item.formatUpper}} · {{item.time}}</text>
+          </view>
+          <text class="export-history-date" wx:if="{{item.dateDesc}}">{{item.dateDesc}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导出配置面板 -->  <view class="export-panel-mask" wx:if="{{showExportPanel}}" bindtap="onCloseExportPanel">
+    <view class="export-panel" catchtap="stopProp">
+      <view class="export-panel-header">
+        <text class="export-panel-title">导出{{exportTypeName}}数据</text>
+        <view class="export-panel-close" bindtap="onCloseExportPanel"><icon name="close" size="28" /></view>
+      </view>
+
+      <view class="export-panel-body">
+        <!-- 猫咪档案支持 TXT 和 JSON 格式 -->
+        <view class="export-option" wx:if="{{exportType === 'cat_complete'}}">
+          <text class="export-option-label">文件格式</text>
+          <view class="export-format-group">
+            <view class="export-format-btn {{exportFormat === 'txt' ? 'active' : ''}}" bindtap="onExportFormatChange" data-value="txt">
+              <icon name="note" size="32" />
+              <text class="format-name">TXT</text>
+              <text class="format-desc">文本格式</text>
+            </view>
+            <view class="export-format-btn {{exportFormat === 'json' ? 'active' : ''}}" bindtap="onExportFormatChange" data-value="json">
+              <icon name="clipboard" size="32" />
+              <text class="format-name">JSON</text>
+              <text class="format-desc">数据格式</text>
+            </view>
+          </view>
+        </view>
+        <!-- 照片固定 ZIP 格式 -->
+        <view class="export-option" wx:if="{{exportType === 'photos'}}">
+          <text class="export-option-label">文件格式</text>
+          <view class="export-format-group">
+            <view class="export-format-btn active">
+              <icon name="package" size="32" />
+              <text class="format-name">ZIP</text>
+              <text class="format-desc">按猫咪分文件夹</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 日期范围 -->
+        <view class="export-option">
+          <text class="export-option-label">日期范围（可选）</text>
+          <view class="export-date-group">
+            <view class="export-date-item">
+              <text class="export-date-label">开始日期</text>
+              <picker mode="date" value="{{exportStartDate}}" bindchange="onStartDateChange">
+                <view class="export-date-picker">
+                  <text class="{{exportStartDate ? '' : 'placeholder'}}">{{exportStartDate || '不限制'}}</text>
+                </view>
+              </picker>
+            </view>
+            <text class="export-date-separator">至</text>
+            <view class="export-date-item">
+              <text class="export-date-label">结束日期</text>
+              <picker mode="date" value="{{exportEndDate}}" bindchange="onEndDateChange">
+                <view class="export-date-picker">
+                  <text class="{{exportEndDate ? '' : 'placeholder'}}">{{exportEndDate || '不限制'}}</text>
+                </view>
+              </picker>
+            </view>
+          </view>
+        </view>
+
+        <!-- 导出提示 -->
+        <view class="export-tips">
+          <text class="export-tip">• 数据类最多导出5000条，照片类最多导出1000张</text>
+          <text class="export-tip">• CSV文件可用Excel打开，JSON适合程序处理</text>
+          <text class="export-tip" wx:if="{{exportStartDate || exportEndDate}}">• 已选择日期范围，仅导出范围内数据</text>
+        </view>
+      </view>
+
+      <view class="export-panel-footer">
+        <view class="export-btn-cancel" bindtap="onCloseExportPanel" hover-class="btn-hover">取消</view>
+        <view class="export-btn-confirm {{exporting ? 'disabled' : ''}}" bindtap="{{exporting ? '' : 'onConfirmExport'}}" hover-class="btn-hover">
+          <text wx:if="{{exporting}}">导出中…</text>
+          <text wx:else>确认导出</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-btn" wx:if="{{!loading}}" bindtap="onLogout" hover-class="btn-hover">
+    <icon name="unlock" size="34" />
+    <text>退出登录</text>
+  </view>
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+</view>

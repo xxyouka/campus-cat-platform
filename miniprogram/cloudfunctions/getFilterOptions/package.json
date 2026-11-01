@@ -1,0 +1,15 @@
+{
+  "name": "getFilterOptions",
+  "version": "1.0.0",
+  "description": "首页筛选选项与统计（缓存 + 限流）",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "node-cache": "^5.1.2"
+  }
+}

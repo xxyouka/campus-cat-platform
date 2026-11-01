@@ -1,0 +1,18 @@
+<!-- 底部卡片式导览：不挖洞、不遮 canvas，适合地图这类原生组件页面 -->
+<view class="gcard-root" wx:if="{{show}}" style="bottom: {{offsetBottom}}rpx;" catchtouchmove="preventDefault">
+  <view class="gcard-card">
+    <view class="gcard-head">
+      <text class="gcard-title">{{title}}</text>
+      <text class="gcard-progress" wx:if="{{stepText}}">{{stepText}}</text>
+    </view>
+    <text class="gcard-desc">{{desc}}</text>
+    <view class="gcard-actions">
+      <view class="gcard-skip" bindtap="onSkip" hover-class="gcard-skip-hover" role="button" aria-label="{{skipText}}">
+        <text>{{skipText}}</text>
+      </view>
+      <view class="gcard-done" bindtap="onDone" hover-class="gcard-done-hover" role="button" aria-label="{{doneText}}">
+        <text>{{doneText}}</text>
+      </view>
+    </view>
+  </view>
+</view>

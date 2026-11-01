@@ -1,0 +1,7 @@
+/* 全局样式入口 - 模块化拆分 */
+@import './styles/variables.wxss';
+@import './styles/components.wxss';
+@import './styles/animations.wxss';
+@import './styles/utilities.wxss';
+@import './styles/iconfont.wxss';
+@import './styles/icons.wxss';

@@ -1,0 +1,9 @@
+{
+  "name": "reconcileMeetCount",
+  "version": "1.0.0",
+  "description": "自动对账云函数 - 修复 meetCount 不一致",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

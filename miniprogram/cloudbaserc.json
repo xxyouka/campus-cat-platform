@@ -1,0 +1,280 @@
+{
+  "envId": "your-cloud-env-id",
+  "functionRoot": "./cloudfunctions",
+  "functions": [
+    {
+      "name": "adminLogin",
+      "installDependency": true
+    },
+    {
+      "name": "getAdminStats",
+      "installDependency": true
+    },
+    {
+      "name": "deleteData",
+      "timeout": 60,
+      "installDependency": true
+    },
+    {
+      "name": "manageNotice",
+      "installDependency": true
+    },
+    {
+      "name": "manageAdmin",
+      "installDependency": true
+    },
+    {
+      "name": "updateCat",
+      "timeout": 30,
+      "installDependency": true
+    },
+    {
+      "name": "addCat",
+      "installDependency": true
+    },
+    {
+      "name": "addPhoto",
+      "installDependency": true
+    },
+    {
+      "name": "getCatAvatars",
+      "installDependency": true
+    },
+    {
+      "name": "generateAdminSignature",
+      "installDependency": true
+    },
+    {
+      "name": "checkAdminStatus",
+      "installDependency": true
+    },
+    {
+      "name": "exportData",
+      "timeout": 120,
+      "installDependency": true
+    },
+    {
+      "name": "backupData",
+      "timeout": 120,
+      "triggers": [
+        {
+          "name": "dailyBackupTimer",
+          "type": "timer",
+          "config": "0 3 * * * * *"
+        }
+      ],
+      "installDependency": true
+    },
+    {
+      "name": "getNotices",
+      "installDependency": true
+    },
+    {
+      "name": "getOperationLogs",
+      "installDependency": true
+    },
+    {
+      "name": "getCatDetail",
+      "installDependency": true
+    },
+    {
+      "name": "getCatsByIds",
+      "installDependency": true
+    },
+    {
+      "name": "getFilterOptions",
+      "installDependency": true
+    },
+    {
+      "name": "subscribeCatStatus",
+      "installDependency": true
+    },
+    {
+      "name": "getPhotosByCat",
+      "installDependency": true
+    },
+    {
+      "name": "filterCats",
+      "installDependency": true
+    },
+    {
+      "name": "getAlbumsWithInfo",
+      "installDependency": true
+    },
+    {
+      "name": "getCatPhotoCounts",
+      "installDependency": true
+    },
+    {
+      "name": "recordMeet",
+      "installDependency": true
+    },
+    {
+      "name": "recordView",
+      "installDependency": true
+    },
+    {
+      "name": "syncFavorites",
+      "installDependency": true
+    },
+    {
+      "name": "getRecentMeets",
+      "installDependency": true
+    },
+    {
+      "name": "getMyMeets",
+      "installDependency": true
+    },
+    {
+      "name": "getMyMeetCount",
+      "installDependency": true
+    },
+    {
+      "name": "getMeetCalendar",
+      "installDependency": true
+    },
+    {
+      "name": "getMeetRank",
+      "installDependency": true
+    },
+    {
+      "name": "getFavRank",
+      "installDependency": true
+    },
+    {
+      "name": "getCatRank",
+      "installDependency": true
+    },
+    {
+      "name": "getShareData",
+      "installDependency": true
+    },
+    {
+      "name": "getConfig",
+      "installDependency": true
+    },
+    {
+      "name": "getOpenId",
+      "installDependency": true
+    },
+    {
+      "name": "getNotifications",
+      "installDependency": true
+    },
+    {
+      "name": "markNotificationRead",
+      "installDependency": true
+    },
+    {
+      "name": "keepWarm",
+      "timeout": 30,
+      "triggers": [
+        {
+          "name": "keepWarmTimer",
+          "type": "timer",
+          "config": "0 */5 * * * * *"
+        }
+      ],
+      "installDependency": true
+    },
+    {
+      "name": "reconcileMeetCount",
+      "triggers": [
+        {
+          "name": "reconcileTimer",
+          "type": "timer",
+          "config": "0 0 3 * * * *"
+        }
+      ],
+      "installDependency": true
+    },
+    {
+      "name": "sweepLostCats",
+      "timeout": 60,
+      "triggers": [
+        {
+          "name": "lostSweepTimer",
+          "type": "timer",
+          "config": "0 0 4 * * * *"
+        }
+      ],
+      "installDependency": true
+    },
+    {
+      "name": "initDatabase",
+      "timeout": 60,
+      "installDependency": true
+    },
+    {
+      "name": "fixRecordOpenid",
+      "installDependency": true
+    },
+    {
+      "name": "compressImages",
+      "installDependency": true
+    },
+    {
+      "name": "togglePhotoLike",
+      "installDependency": true
+    },
+    {
+      "name": "catRelation",
+      "installDependency": true
+    },
+    {
+      "name": "manageSubscribeQuota",
+      "installDependency": true
+    },
+    {
+      "name": "migrateMeetStatusTag",
+      "timeout": 60,
+      "installDependency": true
+    },
+    {
+      "name": "migrateCatListSort",
+      "timeout": 60,
+      "installDependency": true
+    },
+    {
+      "name": "mediaCheckCallback",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "getCampusMapCats",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "getCatActivity",
+      "timeout": 20,
+      "runtime": "Nodejs16.13",
+      "installDependency": true
+    },
+    {
+      "name": "mediaReview",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "submitReport",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "manageReport",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "trackOps",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "getOpsDashboard",
+      "timeout": 60,
+      "installDependency": true
+    }
+  ]
+}

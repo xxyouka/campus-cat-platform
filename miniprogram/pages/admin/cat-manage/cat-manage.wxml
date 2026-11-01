@@ -1,0 +1,153 @@
+<!-- 猫咪管理 -->
+<view class="page page-enter">
+  <custom-navbar title="猫咪管理" theme="warm" showBack="{{true}}" />
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-box">
+      <icon name="search" size="32" />
+      <input class="search-input" placeholder="搜索名字、花色、位置…" value="{{searchKeyword}}" bindinput="onSearchInput" confirm-type="search" maxlength="50" bindconfirm="onSearchConfirm" />
+      <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="onClearSearch" hover-class="btn-hover">
+        <text class="clear-icon">×</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计 -->
+  <view class="stats-bar">
+    <text class="stats-text">{{hasSearched ? '找到' : '共'}} {{hasSearched ? searchTotal : totalCats}} 只猫咪</text>
+  </view>
+
+  <!-- 搜索失败条：列表里还留着上一次的结果，不提示的话管理员会以为
+       「搜过了、就这些」，而真相是这次根本没搜成。可点重试。 -->
+  <view class="search-error-bar" wx:if="{{searchError && cats.length > 0}}" catchtap="onRetrySearch" hover-class="btn-hover" role="button" aria-label="{{searchError}}">
+    <icon name="warning" size="26" />
+    <text class="search-error-text">{{searchError}}</text>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-list" wx:if="{{loading}}">
+    <view class="skeleton-cat-card" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-avatar"></view>
+      <view class="skeleton-cat-info">
+        <view class="skeleton-name-row">
+          <view class="skeleton-text name"></view>
+          <view class="skeleton-text tag"></view>
+        </view>
+        <view class="skeleton-text desc"></view>
+        <view class="skeleton-text desc short"></view>
+      </view>
+      <view class="skeleton-actions">
+        <view class="skeleton-action-btn"></view>
+        <view class="skeleton-action-btn"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索失败态：必须排在「没有找到匹配的猫咪」之前。
+       失败时列表保留上一次的结果，所以只有空列表场景才需要提示；
+       非空时由 stats 行下方那条错误条承担（见下）。 -->
+  <empty-state
+    wx:if="{{cats.length === 0 && hasSearched && searchError}}"
+    icon="warning"
+    title="搜索失败了"
+    subtitle="没能取到结果，稍后再试试"
+    showAction="{{true}}"
+    actionText="重新搜索"
+    bindaction="onRetrySearch"
+  />
+
+  <!-- 空状态：搜索无结果 -->
+  <empty-state
+    wx:elif="{{cats.length === 0 && hasSearched}}"
+    icon="search"
+    title="没有找到匹配的猫咪"
+    subtitle="试试其他关键词"
+  />
+
+  <!-- 空状态：真的没有猫咪 -->
+  <empty-state
+    wx:elif="{{cats.length === 0 && !hasSearched && !loading}}"
+    icon="cat"
+    title="暂无猫咪数据"
+  />
+
+  <!-- 猫咪列表 -->
+  <view class="cat-list" wx:else>
+    <view class="cat-card" wx:for="{{cats}}" wx:key="_id" wx:for-item="cat">
+      <!-- 头像：使用懒加载组件 -->
+      <lazy-image
+        wx:if="{{cat._displayAvatar || cat.avatar}}"
+        class="cat-avatar"
+        src="{{cat._displayAvatar || cat.avatar}}"
+        type="avatar"
+        lazy="{{true}}"
+        mode="aspectFill"
+        radius="16"
+        showLoading="{{true}}"
+        bind:error="onCatImageError"
+        data-index="{{index}}"
+      />
+      <view wx:else class="cat-avatar cat-emoji"><icon name="cat" size="44" /></view>
+      <view class="cat-info" bindtap="onCatDetail" data-id="{{cat._id}}" hover-class="list-hover">
+        <view class="cat-name-row">
+          <view class="cat-name">{{cat.name}}</view>
+          <view class="cat-status-wrap">
+            <view class="cat-status {{cat.status === 'normal' ? 'normal' : cat.status}}">
+              {{cat.status === 'normal' ? '在校' : cat.status === 'adopted' ? '已领养' : cat.status === 'lost' ? '走失' : cat.status === 'deceased' ? '已离世' : '在校'}}
+            </view>
+          </view>
+        </view>
+        <view class="cat-desc">{{cat.gender || '未知'}} · {{cat.age || '未知年龄'}} · {{cat.color || '未知毛色'}}</view>
+        <view class="cat-personality" wx:if="{{cat.description}}"><view class="inline-row"><icon name="chat" size="28" /><text>{{cat.description}}</text></view></view>
+        <view class="cat-appearance" wx:if="{{cat.appearance}}"><view class="inline-row"><icon name="sparkle" size="28" /><text>{{cat.appearance}}</text></view></view>
+        <view class="cat-location" wx:if="{{cat.campus}}"><view class="inline-row"><icon name="pin" size="28" /><text>{{cat.campus}}</text></view></view>
+        <view class="cat-location" wx:if="{{cat.location}}">{{cat.location}}</view>
+      </view>
+      <view class="cat-actions">
+        <view class="action-btn edit" data-id="{{cat._id}}" bindtap="onEdit" hover-class="btn-hover">
+          <icon name="edit" size="28" />
+        </view>
+        <!-- 入口已由 guardPermission('cat') 把关：能进本页即可删除，不再按角色隐藏 -->
+        <view class="action-btn delete" data-id="{{cat._id}}" bindtap="onDelete" hover-class="btn-hover">
+          <icon name="trash" size="28" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多（搜索态同样可翻页，避免搜索结果被硬截断在第一页） -->
+  <view class="load-more" wx:if="{{!loading && hasMore}}">
+    <view class="load-more-btn" bindtap="loadMoreCats" hover-class="btn-hover">
+      <text class="load-more-icon">↓</text>
+      <text>加载更多</text>
+    </view>
+  </view>
+
+  <view class="load-more loading-more" wx:if="{{loadingMore}}">
+    <view class="loading-spinner small"></view>
+    <text class="loading-text">正在加载…</text>
+  </view>
+
+  <view class="load-more no-more" wx:if="{{!loading && !hasMore && cats.length > 0}}">
+    <text class="no-more-text">已经到底啦</text>
+  </view>
+
+  <!-- 删除确认弹窗 -->
+  <view class="delete-panel {{deleteModal.show ? 'show' : ''}}" wx:if="{{deleteModal.show}}">
+    <view class="panel-mask" bindtap="onDeleteCancel"></view>
+    <view class="panel-card">
+      <view class="delete-icon"><icon name="trash" size="44" /></view>
+      <view class="delete-title">确认删除</view>
+      <view class="delete-content">确定要删除「{{deleteModal.cat.name}}」吗？此操作不可恢复。</view>
+      <view class="delete-btns">
+        <button class="btn-cancel" bindtap="onDeleteCancel" hover-class="btn-hover">取消</button>
+        <button class="btn-delete" bindtap="onDeleteConfirm" hover-class="btn-hover">删除</button>
+      </view>
+    </view>
+  </view>
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+</view>

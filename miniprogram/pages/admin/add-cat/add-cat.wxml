@@ -1,0 +1,248 @@
+<!-- 添加猫咪 -->
+<view class="page page-enter">
+
+  <custom-navbar title="添加猫咪" theme="warm" showBack="{{true}}" />
+
+  <!-- 基本信息卡片 -->
+  <view class="section-card">
+    <view class="section-title">
+      <icon name="tag" size="36" />
+      <text>基本信息</text>
+    </view>
+
+    <!-- 大头照 -->
+    <view class="form-item avatar-upload-wrapper">
+      <view class="avatar-upload">
+        <view class="avatar-preview" wx:if="{{avatar}}">
+          <image src="{{avatar}}" mode="aspectFill" />
+          <view class="remove-btn" bindtap="onRemoveAvatar" hover-class="btn-hover">×</view>
+        </view>
+        <view class="add-btn avatar-add" bindtap="onChooseAvatar" hover-class="btn-hover" wx:if="{{!avatar}}">
+          <text class="add-icon">+</text>
+          <text class="add-text">上传大头照</text>
+        </view>
+        <view class="change-btn" bindtap="onChooseAvatar" hover-class="btn-hover" wx:if="{{avatar}}">更换头像</view>
+      </view>
+    </view>
+
+    <!-- 名字 -->
+    <view class="form-item">
+      <text class="form-label">名字 <text class="required">*</text></text>
+      <view class="input-wrap">
+        <input class="form-input" value="{{form.name}}" placeholder="请输入猫咪名字" data-field="name" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="{{maxNameLength}}" />
+        <text class="input-count">{{form.name.length}}/20</text>
+      </view>
+    </view>
+
+    <!-- 性别 -->
+    <view class="form-item">
+      <text class="form-label">性别</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.gender === '公' ? 'active' : ''}}" data-field="gender" data-value="公" bindtap="onOption" hover-class="btn-hover"><icon name="male" size="28" /><text>公</text></view>
+        <view class="btn-opt {{form.gender === '母' ? 'active' : ''}}" data-field="gender" data-value="母" bindtap="onOption" hover-class="btn-hover"><icon name="female" size="28" /><text>母</text></view>
+        <view class="btn-opt {{form.gender === '未知' ? 'active' : ''}}" data-field="gender" data-value="未知" bindtap="onOption" hover-class="btn-hover">未知</view>
+      </view>
+    </view>
+
+    <!-- 年龄 -->
+    <view class="form-item">
+      <text class="form-label">年龄</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.age === '幼年' ? 'active' : ''}}" data-field="age" data-value="幼年" bindtap="onOption" hover-class="btn-hover">幼年</view>
+        <view class="btn-opt {{form.age === '成年' ? 'active' : ''}}" data-field="age" data-value="成年" bindtap="onOption" hover-class="btn-hover">成年</view>
+        <view class="btn-opt {{form.age === '老年' ? 'active' : ''}}" data-field="age" data-value="老年" bindtap="onOption" hover-class="btn-hover">老年</view>
+      </view>
+    </view>
+
+    <!-- 花色 -->
+    <view class="form-item">
+      <text class="form-label">花色</text>
+      <input class="form-input" value="{{form.color}}" placeholder="如：橘猫、奶牛、三花、狸花" data-field="color" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="20" />
+    </view>
+
+    <!-- 绝育 -->
+    <view class="form-item">
+      <text class="form-label">绝育</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.sterilized === true ? 'active' : ''}}" data-value="true" bindtap="onSterilized" hover-class="btn-hover">已绝育</view>
+        <view class="btn-opt {{form.sterilized === false ? 'active' : ''}}" data-value="false" bindtap="onSterilized" hover-class="btn-hover">未绝育</view>
+        <view class="btn-opt {{form.sterilized === null ? 'active' : ''}}" data-value="null" bindtap="onSterilized" hover-class="btn-hover">未知</view>
+      </view>
+    </view>
+
+    <!-- 校区 -->
+    <view class="form-item">
+      <text class="form-label">所在校区</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.campus === '本部' ? 'active' : ''}}" data-field="campus" data-value="本部" bindtap="onOption" hover-class="btn-hover">本部</view>
+        <view class="btn-opt {{form.campus === '东区' ? 'active' : ''}}" data-field="campus" data-value="东区" bindtap="onOption" hover-class="btn-hover">东区</view>
+        <view class="btn-opt {{form.campus === '西区' ? 'active' : ''}}" data-field="campus" data-value="西区" bindtap="onOption" hover-class="btn-hover">西区</view>
+        <view class="btn-opt {{form.campus === '南区' ? 'active' : ''}}" data-field="campus" data-value="南区" bindtap="onOption" hover-class="btn-hover">南区</view>
+      </view>
+    </view>
+
+    <!-- 经常出没地点 -->
+    <view class="form-item">
+      <text class="form-label">经常出没地点</text>
+      <input class="form-input" value="{{form.location}}" placeholder="如：图书馆门口、食堂门口" data-field="location" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="50" />
+    </view>
+  </view>
+
+  <!-- 领养推荐卡片 -->
+  <view class="section-card">
+    <view class="section-title">
+      <icon name="star" size="36" />
+      <text>领养推荐</text>
+    </view>
+
+    <view class="form-item last">
+      <text class="form-label">好猫星级</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.adoptLevel === 0 ? 'active' : ''}}" data-value="0" bindtap="onAdoptLevel" hover-class="btn-hover">不评</view>
+        <view class="btn-opt {{form.adoptLevel === 3 ? 'active' : ''}}" data-value="3" bindtap="onAdoptLevel" hover-class="btn-hover">3星</view>
+        <view class="btn-opt {{form.adoptLevel === 4 ? 'active' : ''}}" data-value="4" bindtap="onAdoptLevel" hover-class="btn-hover">4星</view>
+        <view class="btn-opt {{form.adoptLevel === 5 ? 'active' : ''}}" data-value="5" bindtap="onAdoptLevel" hover-class="btn-hover">5星</view>
+      </view>
+      <view class="form-hint">只给明显不太适合野外生存、但很适合家养的猫打星，不用每只都评；打星后首页与详情页会显示「好猫星级」。</view>
+    </view>
+  </view>
+
+  <!-- 状态卡片 -->
+  <view class="section-card">
+    <view class="section-title">
+      <icon name="chart" size="36" />
+      <text>猫咪状态</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">当前状况</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.status === 'normal' ? 'active' : ''}}" data-field="status" data-value="normal" bindtap="onOption" hover-class="btn-hover">在校</view>
+        <view class="btn-opt {{form.status === 'adopted' ? 'active' : ''}}" data-field="status" data-value="adopted" bindtap="onOption" hover-class="btn-hover">已领养</view>
+        <view class="btn-opt {{form.status === 'lost' ? 'active warn' : 'warn'}}" data-field="status" data-value="lost" bindtap="onOption" hover-class="btn-hover">走失</view>
+        <view class="btn-opt {{form.status === 'deceased' ? 'active danger' : 'danger'}}" data-field="status" data-value="deceased" bindtap="onOption" hover-class="btn-hover">已离世</view>
+      </view>
+    </view>
+
+    <!-- 走失详情 -->
+    <block wx:if="{{form.status === 'lost'}}">
+      <view class="status-detail warn-bg">
+        <view class="form-item no-border">
+          <text class="form-label">走失时间</text>
+          <picker mode="date" value="{{form.lostTime}}" bindchange="onDate" data-field="lostTime">
+            <view class="picker-row">
+              <text class="picker-val">{{form.lostTime || '点击选择日期'}}</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item no-border last">
+          <text class="form-label">走失地点</text>
+          <input class="form-input" value="{{form.lostLocation}}" placeholder="最后出现地点" data-field="lostLocation" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="30" />
+        </view>
+      </view>
+    </block>
+
+    <!-- 离世详情 -->
+    <block wx:if="{{form.status === 'deceased'}}">
+      <view class="status-detail danger-bg">
+        <view class="form-item no-border">
+          <text class="form-label">离世时间</text>
+          <picker mode="date" value="{{form.deceasedTime}}" bindchange="onDate" data-field="deceasedTime">
+            <view class="picker-row">
+              <text class="picker-val">{{form.deceasedTime || '点击选择日期'}}</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item no-border last">
+          <text class="form-label">离世原因</text>
+          <input class="form-input" value="{{form.deceasedReason}}" placeholder="简要描述" maxlength="200" data-field="deceasedReason" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" />
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 描述卡片 -->
+  <view class="section-card">
+    <view class="section-title">
+      <icon name="note" size="36" />
+      <text>详细描述</text>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label-row">
+        <text class="form-label">性格描述</text>
+        <text class="char-count">{{form.description.length}}/200</text>
+      </view>
+      <textarea class="form-textarea" value="{{form.description}}" placeholder="描述猫咪性格，如：亲人、活泼、爱撒娇…" data-field="description" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="{{maxDescriptionLength}}" adjust-position="{{true}}" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label-row">
+        <text class="form-label">外貌描述</text>
+        <text class="char-count">{{form.appearance.length}}/200</text>
+      </view>
+      <textarea class="form-textarea" value="{{form.appearance}}" placeholder="描述外形特征，如：花纹、眼睛颜色、体型…" data-field="appearance" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="200" adjust-position="{{true}}" />
+    </view>
+
+    <view class="form-item last">
+      <view class="form-label-row">
+        <view class="inline-row"><icon name="note" size="32" /><text class="form-label">备注</text></view>
+        <text class="char-count">{{form.notes.length}}/200</text>
+      </view>
+      <textarea class="form-textarea short" value="{{form.notes}}" placeholder="补充关于猫咪的其他信息…" data-field="notes" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="200" adjust-position="{{true}}" />
+    </view>
+  </view>
+
+  <!-- 健康卡片 -->
+  <view class="section-card">
+    <view class="section-title">
+      <icon name="health" size="36" />
+      <text>健康信息</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">健康状况</text>
+      <view class="btn-group">
+        <view class="btn-opt {{form.healthStatus === 'healthy' ? 'active' : ''}}" data-field="healthStatus" data-value="healthy" bindtap="onOption" hover-class="btn-hover">健康</view>
+        <view class="btn-opt {{form.healthStatus === 'stomatitis' ? 'active danger' : ''}}" data-field="healthStatus" data-value="stomatitis" bindtap="onOption" hover-class="btn-hover">口炎</view>
+        <view class="btn-opt {{form.healthStatus === 'skin' ? 'active warn' : ''}}" data-field="healthStatus" data-value="skin" bindtap="onOption" hover-class="btn-hover">皮肤病</view>
+        <view class="btn-opt {{form.healthStatus === 'other' ? 'active' : ''}}" data-field="healthStatus" data-value="other" bindtap="onOption" hover-class="btn-hover">其他</view>
+      </view>
+    </view>
+
+    <!-- 口炎提示 -->
+    <view class="health-alert danger" wx:if="{{form.healthStatus === 'stomatitis'}}">
+      <icon name="warning" size="28" />
+      <text class="alert-text">患有口炎，请勿喂食猫条等湿粮，建议干粮或遵医嘱。</text>
+    </view>
+
+    <!-- 皮肤病提示 -->
+    <view class="health-alert warn" wx:if="{{form.healthStatus === 'skin'}}">
+      <icon name="warning" size="28" />
+      <text class="alert-text">患有皮肤病，请勿随意触摸，避免交叉感染。</text>
+    </view>
+
+    <!-- 健康备注 -->
+    <view class="form-item last" wx:if="{{form.healthStatus && form.healthStatus !== 'healthy'}}">
+      <view class="form-label-row">
+        <text class="form-label">健康备注</text>
+        <text class="char-count">{{form.healthNote.length}}/200</text>
+      </view>
+      <textarea class="form-textarea" value="{{form.healthNote}}" placeholder="详细描述健康状况、治疗情况、注意事项…" data-field="healthNote" bindinput="onInput" bindfocus="onInputFocus" bindblur="onInputBlur" maxlength="200" adjust-position="{{true}}" />
+    </view>
+  </view>
+
+  <!-- 底部间距 -->
+  <view class="bottom-space"></view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar {{inputFocus ? 'hidden' : ''}}">
+    <button class="btn-cancel" bindtap="onCancel" hover-class="btn-hover">取消</button>
+    <button class="btn-save {{loading ? 'disabled' : ''}}" bindtap="onSave" hover-class="btn-hover" disabled="{{loading}}">
+      {{loading ? '提交中…' : '提交'}}
+    </button>
+  </view>
+
+</view>

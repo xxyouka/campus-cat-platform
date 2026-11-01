@@ -1,0 +1,445 @@
+/* 页面容器 */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+}
+
+/* 温馨卡片 */
+.card {
+  margin-bottom: 32rpx;
+  padding: 40rpx;
+  border: 2rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-card);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:active {
+  transform: scale(0.995);
+  box-shadow: var(--shadow-xs);
+}
+
+/* 温馨按钮 */
+.btn {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 28rpx 56rpx;
+  overflow: hidden;
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-primary-md);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--bg-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--overlay-white-25), transparent);
+  transition: left 0.6s;
+}
+
+.btn:active::before {
+  left: 100%;
+}
+
+.btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 16rpx var(--primary-tint-30);
+}
+
+/* 温馨标签 */
+.tag {
+  /* 触摸反馈优化 - 扩大隐形点击区域 */
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 44rpx;   /* 确保最小触摸宽度 */
+  min-height: 44rpx;  /* 确保最小触摸高度（苹果HIG标准） */
+  padding: 10rpx 20rpx;  /* 增加内边距，提升可点击区域 */
+
+  /* 非正方形：用 --radius-pill（50% 会变成椭圆） */
+  border-radius: var(--radius-pill);
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 标签的隐形扩展区域（提升可访问性） */
+.tag::before {
+  content: '';
+  position: absolute;
+  top: -20rpx;
+  right: -20rpx;
+  bottom: -20rpx;
+  left: -20rpx;
+}
+
+/* 分割线 */
+.divider {
+  height: 2rpx;
+  margin: 40rpx 0;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+/* 空状态 */
+.empty {
+  padding: 120rpx 48rpx;
+  text-align: center;
+}
+
+.empty-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 160rpx;
+  height: 160rpx;
+  margin: 0 auto 40rpx;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+  font-size: 72rpx;
+}
+
+.empty-text {
+  color: var(--text-secondary);
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.empty-subtext {
+  margin-top: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+}
+
+/* 加载状态 */
+.loading {
+  padding: 80rpx;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 72rpx;
+  height: 72rpx;
+  margin: 0 auto 24rpx;
+  border: 6rpx solid var(--border-light);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ========== 全局骨架屏系统（精美版）========== */
+
+/*
+ * 使用说明：
+ * 1. 所有页面使用统一的 .skeleton-* 类名
+ * 2. 添加 .shimmer 类实现流光动画
+ * 3. 骨架屏容器使用 .skeleton-container
+ * 4. 底部加载提示使用 .skeleton-loading-hint
+ */
+
+/* ---------- 基础 shimmer 动画（增强版）---------- */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-mid) 20%,
+    var(--skeleton-dark) 40%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-dark) 60%,
+    var(--skeleton-mid) 80%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmerEnhanced 2s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmerEnhanced {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* 光修饰类：按上文「使用说明」的口径，`.shimmer` 是「给已带骨架类名的元素
+   加上流光动画」。此前只有下面的复合选择器（.skeleton-text.shimmer 等）
+   调过 animation-duration/delay，却没有任何规则真的挂上 animation，
+   于是全仓 6 个页面写 `class="skeleton-text ... shimmer"` 的骨架全是静止灰块。 */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-mid) 20%,
+    var(--skeleton-dark) 40%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-dark) 60%,
+    var(--skeleton-mid) 80%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmerEnhanced 2s ease-in-out infinite;
+}
+
+/* 不同元素的微调动画延迟 */.skeleton-avatar.shimmer{
+  animation-duration: 2.2s;
+  animation-delay: 0.1s;
+}
+
+.skeleton-text.shimmer {
+  animation-duration: 2.1s;
+  animation-delay: 0.05s;
+}
+
+.skeleton-title.shimmer {
+  animation-duration: 2.15s;
+  animation-delay: 0.08s;
+}
+
+/* ---------- 骨架屏容器 ---------- */
+.skeleton-container {
+  min-height: 60vh;
+  padding: 20rpx;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.skeleton-container.visible {
+  opacity: 1;
+}
+
+/* ---------- 通用骨架元素 ---------- */
+
+/* 文本行 */
+.skeleton-text {
+  height: 24rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, var(--border-light), var(--border-color));
+}
+
+.skeleton-text.short { width: 30%; }
+.skeleton-text.medium { width: 55%; }
+.skeleton-text.long { width: 80%; }
+.skeleton-text.full { width: 100%; }
+
+/* 标题文本（更大） */
+.skeleton-title {
+  height: 32rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, var(--border-light), var(--border-color));
+}
+
+.skeleton-title.short { width: 25%; }
+.skeleton-title.medium { width: 50%; }
+.skeleton-title.long { width: 75%; }
+
+/* 头像/图片占位 */
+.skeleton-avatar {
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+}
+
+.skeleton-avatar.sm { width: 64rpx; height: 64rpx; }
+.skeleton-avatar.md { width: 88rpx; height: 88rpx; }
+.skeleton-avatar.lg { width: 120rpx; height: 120rpx; }
+
+/* 卡片容器 */
+.skeleton-card {
+  overflow: hidden;
+  border: 2rpx solid var(--skeleton-border);
+  border-radius: 20rpx;
+  box-shadow:
+    0 8rpx 40rpx var(--warm-tint-06),
+    0 2rpx 6rpx var(--warm-tint-03);
+  background: var(--bg-primary);
+}
+
+/* 分割线 */
+.skeleton-divider {
+  height: 2rpx;
+  margin: 16rpx 0;
+  background: linear-gradient(90deg, transparent, var(--bg-tertiary), transparent);
+}
+
+/* ---------- 特殊场景：列表骨架屏 ---------- */
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+  padding: 24rpx;
+  border-radius: 18rpx;
+  box-shadow: 0 4rpx 20rpx var(--warm-tint-05);
+  background: var(--bg-primary);
+}
+
+.skeleton-list-item .item-left {
+  flex-shrink: 0;
+}
+
+/* ---------- 特殊场景：网格骨架屏 ---------- */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+/* 输入框 */
+.input-group {
+  margin-bottom: 40rpx;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 16rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* ========== 全局输入框增强 ========== */
+input,
+textarea {
+  box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-light);
+}
+
+/* 输入框聚焦态 - 全局统一 */
+.form-input:focus,
+.search-input:focus,
+.modern-input:focus {
+  border-color: var(--primary-color);
+  background: var(--bg-primary);
+}
+
+/* 输入框错误态 - 全局统一 */
+.input-error,
+.form-input.input-error,
+.modern-input.input-error {
+  border-color: var(--danger-color) !important;
+  background: var(--danger-tint-04) !important;
+}
+
+/* 错误提示 - 全局统一 */
+.form-error,
+.error-hint {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--danger-color);
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+/* 输入提示 - 全局统一 */
+.form-hint {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+/* 字符计数 - 全局统一 */
+.char-count,
+.input-count,
+.textarea-char-count {
+  color: var(--text-light);
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+/* 密码显示切换 - 全局统一 */
+.password-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  padding-right: 88rpx !important;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64rpx;
+  height: 64rpx;
+  font-size: 32rpx;
+}
+
+/* 密码强度指示器 - 全局统一 */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.strength-bar {
+  width: 120rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  transition: background 0.3s ease;
+}
+
+.strength-bar.weak { background: var(--danger-color); }
+.strength-bar.medium { background: var(--warning-color); }
+.strength-bar.strong { background: var(--success-color); }
+
+.strength-text {
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.strength-bar.weak + .strength-text { color: var(--danger-color); }
+.strength-bar.medium + .strength-text { color: var(--warning-color); }
+.strength-bar.strong + .strength-text { color: var(--success-color); }
+
+/* 必填标记 - 全局统一 */
+.form-required,
+.required {
+  margin-left: 4rpx;
+  color: var(--danger-color);
+  font-size: 28rpx;
+}
+
+/* 搜索框清除按钮 - 全局统一 */
+.search-clear {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.clear-icon {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}

@@ -1,0 +1,281 @@
+/* 公告列表页面 */
+
+.page-enter {
+  animation: contentFadeIn 0.4s ease both;
+}
+
+@keyframes contentFadeIn {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.notice-list {
+  padding: 24rpx 40rpx 0;
+}
+
+.skeleton-mt-sm { margin-top: 12rpx; }
+
+.notice-card {
+  position: relative;
+  display: flex;
+  margin-bottom: 28rpx;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notice-card:active,
+.card-hover:active {
+  transform: scale(0.985);
+  box-shadow: var(--shadow-xs);
+}
+
+.notice-side-bar {
+  flex-shrink: 0;
+  width: 8rpx;
+  background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.notice-urgent .notice-side-bar {
+  background: linear-gradient(180deg, var(--urgent-color) 0%, var(--urgent-dark) 100%);
+}
+
+.notice-activity .notice-side-bar {
+  background: linear-gradient(180deg, var(--activity-color) 0%, var(--activity-dark) 100%);
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 32rpx 36rpx 28rpx;
+}
+
+.card-header {
+  margin-bottom: 14rpx;
+}
+
+/* 类型徽标（22rpx 小字）—— 2026-10-14 口径：品牌面 + 白字（维护者定，全站统一）
+   ① 形状：--radius-full 是 50%，非正方形元素会被渲染成椭圆（截图里「公告」呈蛋形），
+      故用 999rpx 让四角半径统一压缩，得到上下平直、两端半圆的胶囊；
+   ② 颜色沿革：实色深底+白字（发闷，2026-10-12 反馈）→ tint 底+深一档字色 → 品牌珊瑚底+白字（现行）。 */
+.card-tag {
+  display: inline-block;
+  padding: 6rpx 20rpx;
+  border-radius: 999rpx;
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+.notice-urgent .card-tag {
+  background: var(--urgent-tint-10);
+  color: var(--urgent-deep);
+}
+
+/* 用 --info-dark 而不是 --activity-dark：后者压在 10% 活动蓝底上只有 4.06:1，
+   22rpx 小字不达标；--info-dark 同底色约 4.9:1 */
+.notice-activity .card-tag {
+  background: var(--activity-tint-10);
+  color: var(--info-dark);
+}
+
+.card-title {
+  display: -webkit-box;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.4;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-time-sub {
+  margin-bottom: 20rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.card-content {
+  display: -webkit-box;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.65;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.card-content.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.expand-toggle {
+  padding: 16rpx 0 8rpx;
+  color: var(--primary-color);
+  font-size: 24rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--border-light);
+}
+
+.card-source {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 48rpx;
+  bottom: calc(160rpx + env(safe-area-inset-bottom));
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  box-shadow: 0 4rpx 24rpx var(--warm-tint-15);
+  background: var(--overlay-white-92);
+  opacity: 0;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  transform: scale(0.6);
+  pointer-events: none;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.back-to-top:active {
+  transform: scale(0.9);
+  box-shadow: 0 2rpx 12rpx var(--warm-tint-12);
+}
+
+.back-to-top-icon {
+  color: var(--primary-color);
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  .notice-card { border-color: var(--border-color); background: var(--bg-card); }
+  .notice-card:active { background: var(--bg-warm); }
+
+  /* 「公告」徽标已铺品牌底：底色/字色随 --primary-cta-* 自动翻转 */
+  .notice-activity .card-tag { color: var(--activity-color); }
+}
+
+/* 骨架屏内层占位元素 */
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.skeleton-tag {
+  width: 120rpx;
+  height: 32rpx;
+  border-radius: 8rpx;
+  background: var(--skeleton-base);
+}
+
+.skeleton-time {
+  width: 140rpx;
+  height: 24rpx;
+  border-radius: 8rpx;
+  background: var(--skeleton-base);
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 36rpx;
+  margin-bottom: 20rpx;
+  border-radius: 8rpx;
+  background: var(--skeleton-base);
+}
+
+.skeleton-content {
+  width: 100%;
+  height: 26rpx;
+  margin-bottom: 14rpx;
+  border-radius: 8rpx;
+  background: var(--skeleton-base);
+}
+
+.skeleton-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20rpx;
+}
+
+.skeleton-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--skeleton-base);
+}
+
+.skeleton-xs { width: 25%; }
+.skeleton-sm { width: 45%; }
+.skeleton-md { width: 70%; }
+
+/* 加载失败态（detail 页同名类口径）：此前本页未定义这三个类，
+   错误界面渲染为左对齐裸文本 */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 48rpx;
+}
+
+.error-text {
+  margin-top: 24rpx;
+  margin-bottom: 32rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.retry-btn {
+  padding: 16rpx 56rpx;
+  border-radius: 40rpx;
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  font-size: 28rpx;
+}
+
+/* ========== 分页加载提示 ==========
+   notice.js:99-139 一直在维护 loadingMore / hasMore，此前 wxml 从不渲染（触底加载全静默）；
+   fb9080c 补三态时把节点写进了 wx:for 卡片内部，被 .notice-card 的横排 flex 当成正文的
+   兄弟项渲染到卡片右侧（2026-10-12 反馈）。现已移出卡片，只留「加载中 / 加载更多」两态，
+   「已经到底啦」按反馈撤下，.no-more* 三条样式随之删除。
+   .load-more / .loading-spinner 由 styles/ 全局提供，.loading-text 需本页自带。 */
+.loading-text {
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}

@@ -1,0 +1,234 @@
+/* pages/notifications/notifications.wxss - 消息中心
+   .page 不能加横向内边距：custom-navbar 的 warm 主题是 position:relative（在文档流内），
+   容器一有横向 padding，导航栏会被整体缩进 → 页头左右各露一条页面底色的白边
+   （2026-10-06 修复）。横向留白由下方各内容块自己承担。 */
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+  background: var(--bg-secondary);
+}
+
+.mark-all-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+
+  /* 触控区 ≥ 88rpx(44px)：此前约 58rpx，「全部已读」易误触 */
+  min-height: 88rpx;
+  padding: 20rpx 32rpx 12rpx;
+}
+
+.mark-all-text {
+  color: var(--info-color);
+  font-size: 26rpx;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 0 24rpx;
+}
+
+.notify-item {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  background: var(--bg-card);
+}
+
+.notify-item.unread {
+  border: 2rpx solid var(--primary-tint-15);
+  background: var(--primary-tint-04);
+}
+
+.notify-left {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.notify-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: var(--radius-md);
+}
+
+.notify-avatar.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-tint-10);
+}
+
+.notify-dot {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  box-sizing: border-box;
+  width: 16rpx;
+  height: 16rpx;
+  border: 4rpx solid var(--bg-card);
+  border-radius: var(--radius-full);
+  background: var(--urgent-color);
+}
+
+.notify-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.notify-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.notify-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+/* 26rpx 类型标签：品牌面 + 白字（口径同主按钮，2026-10-14 维护者定）
+   —— 其余类型标签（走失/找回/离世）保持各自的语义色文字，未铺底 */
+.type-meet {
+  padding: 2rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+}
+.type-lost { color: var(--urgent-deep); }
+.type-found { color: var(--status-adoptable-deep); }
+.type-deceased { color: var(--text-secondary); }
+.type-default { color: var(--text-secondary); }
+
+.notify-time {
+  flex-shrink: 0;
+  color: var(--text-light);
+  font-size: 22rpx;
+}
+
+.notify-content {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.notify-cat {
+  color: var(--primary-color);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.load-more {
+  padding: 24rpx 0;
+  color: var(--text-light);
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.load-end {
+  /* 原为 var(--border-color)（边框色 rgb(139 109 79/8%)），两种模式下都近乎不可见 */
+  color: var(--text-light);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 0 24rpx;
+}
+
+.skeleton-item {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.skeleton-avatar {
+  flex-shrink: 0;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: var(--radius-md);
+  background: var(--skeleton-base);
+}
+
+.skeleton-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16rpx;
+  padding-top: 8rpx;
+}
+
+.skeleton-line {
+  height: 24rpx;
+  border-radius: 8rpx;
+  background: var(--skeleton-base);
+}
+
+.updates-hint {
+  position: fixed;
+  right: 40rpx;
+  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+  padding: 0 32rpx;
+  border-radius: var(--radius-pill);
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 28rpx;
+}
+
+.skeleton-line.w60 { width: 60%; }
+.skeleton-line.w90 { width: 90%; }
+
+/* 加载失败态（区别于空数据） */
+.load-error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32rpx;
+  padding: 120rpx 64rpx;
+}
+
+.load-error-text {
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.load-error-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 240rpx;
+  min-height: 88rpx;
+
+  /* 宽 240 × 高 88，非正方形：用 --radius-pill，50% 会变成大椭圆 */
+  border-radius: var(--radius-pill);
+  background: var(--primary-cta-gradient);
+  color: var(--primary-cta-text);
+  font-size: 30rpx;
+  font-weight: 500;
+}
+

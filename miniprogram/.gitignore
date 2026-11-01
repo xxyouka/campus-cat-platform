@@ -1,0 +1,72 @@
+# Dependencies
+# 注：package-lock.json 已纳入版本管理，供 CI 的 npm ci 使用
+node_modules/
+
+# Build output
+miniprogram_npm/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 微信开发者工具本地私有配置（每台开发机不同，不纳入版本管理）
+project.private.config.json
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files (包含敏感信息)
+.env.local
+.env.*.local
+.env
+
+# Cloud function builds
+cloudfunctions/*/node_modules/
+cloudfunctions/*/.env
+cloudfunctions/*/package-lock.json
+
+# Test artifacts
+test-results.json
+test-output.txt
+*-results.json
+coverage/
+.nyc_output/
+
+# Lint result files
+lint_*.txt
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+.uploads/
+
+# 其他可能包含敏感信息的文件
+*.env
+*.env.development
+*.env.test
+*.env.production
+
+# 编辑器备份和临时文件
+*.bak
+*.backup
+
+# 云开发密钥和凭证
+credentials.json
+key.pem
+cert.pem
+.agents/
+.trae/
+
+# 代码上传密钥（微信开发者工具 CI 用，严禁入库）
+.ci/
+*.key

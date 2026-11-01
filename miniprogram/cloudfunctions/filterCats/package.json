@@ -1,0 +1,9 @@
+{
+  "name": "filterCats",
+  "version": "1.0.0",
+  "description": "服务端筛选猫咪（支持性别/花色/年龄/校区/状态/关键词）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

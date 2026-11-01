@@ -1,0 +1,539 @@
+/* 我的页面样式 */
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(80rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+  background-blend-mode: normal;
+}
+
+.top-card {
+  position: relative;
+  padding: 0 32rpx 50rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  text-align: center;
+}
+.status-bar-placeholder { width: 100%; }
+
+/* .header-paw-bg 已抽到 styles/utilities.wxss 全局复用（原 .top-paw-bg 已统一改名） */
+
+.top-card::before {
+  position: absolute; top: -160rpx; right: -120rpx;
+  width: 500rpx; height: 500rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-08);
+  content: '';
+}
+
+.top-card::after {
+  position: absolute; bottom: -80rpx; left: -80rpx;
+  width: 360rpx; height: 360rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-06);
+  content: '';
+}
+
+/* 一行小品牌（E+G 布局）：原 logo 区让位给日历，只留 猫图标 + 名称 守住身份。
+   尺寸按「不抢日历」定：icon 32rpx、文字 28rpx，白字压在渐变上（同原 .app-desc 的口径）。 */
+.brandline {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx;
+  margin: 20rpx 0 24rpx;
+  color: var(--overlay-white-92);
+}
+
+.brandline .cat-icon {
+  color: var(--bg-primary);
+}
+
+.brandline-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+/* ========== 记录快捷条（原头部统计行整行下沉） ==========
+   关注 / 相遇 / 新动态 三格，承接原菜单「我的记录」两项与头部「新动态」入口。
+   白卡 + 三格等宽，格间 2rpx 竖线；格子内边距按最挤的一格（相遇出错时
+   图标 + 标签 + 数字 + 重试 四件同排）定的，别随手加大。 */
+.quick-card {
+  display: flex;
+  margin: 24rpx 32rpx 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-card);
+}
+
+.quick-cell {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10rpx;
+  min-width: 0;
+  padding: 24rpx 12rpx;
+}
+
+.quick-cell + .quick-cell {
+  border-left: 2rpx solid var(--border-light);
+}
+
+/* 图标底托：三色口径与菜单/统计标签一致（爱心玫瑰 / 相遇蓝 / 报警红 tint）
+   第一格心形用站内爱心色 --icon-rose(#E8697D)：此前写的是 --primary-deep 暖墨，
+   `.quick-icon.fav`（两个类）权重压过图标名色 .icon-name-heart-double，心就成了棕色
+   （2026-10-14 维护者定方案 A）。 */
+.quick-icon {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 18rpx;
+}
+
+.quick-icon.fav { background: var(--primary-tint-10); color: var(--icon-rose); }
+.quick-icon.meet { background: var(--info-blue-tint-12); color: var(--info-dark); }
+.quick-icon.noti { background: var(--danger-tint-12); color: var(--danger-color); }
+
+.quick-name {
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.quick-num {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+/* 相遇次数读取失败：保留原值不伪装成 0（口径同 quotaError），
+   红字 + 就地「重试」，与「真的没打过卡」区分开 */
+.quick-num.is-error {
+  margin-left: auto;
+  color: var(--error-color);
+}
+
+.quick-retry {
+  flex-shrink: 0;
+  color: var(--error-color);
+  font-size: 18rpx;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+/* 未读红点：挂在铃铛图标右上角（口径同首页 .badge-dot）。
+   描边取卡片底色：浅色下是白光圈，深色下是「挖空」边 */
+.quick-badge {
+  position: absolute;
+  top: -2rpx;
+  right: -2rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border: 3rpx solid var(--bg-card);
+  border-radius: 50%;
+  background: var(--danger-color);
+}
+
+/* 数字占位（firstScreenReady 之前）：与 .quick-num 同宽高，换真值时零位移 */
+.quick-num-skeleton {
+  width: 40rpx;
+  height: 26rpx;
+  margin-left: auto;
+  border-radius: 8rpx;
+}
+
+/* 数字占位：日历统计与推送卡（白底卡片）通用 */
+.push-skeleton-num {
+  width: 72rpx;
+  height: 34rpx;
+  border-radius: 8rpx;
+}
+
+.push-skeleton-label {
+  width: 96rpx;
+  height: 24rpx;
+  margin-top: 8rpx;
+  border-radius: 8rpx;
+}
+
+/* 菜单分组 */
+.menu-list { padding: 40rpx 32rpx; }
+
+.menu-section {
+  margin-bottom: 16rpx;
+}
+
+.menu-section-header {
+  padding: 8rpx 8rpx 16rpx;
+}
+
+.menu-section-label {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16rpx;
+  padding: 36rpx 40rpx;
+  border: 2rpx solid var(--warm-tint-07); border-radius: 40rpx;
+  box-shadow: 0 8rpx 32rpx var(--warm-tint-07); background: var(--bg-primary);
+  transition: all 0.25s ease;
+}
+
+.menu-item:active {
+  transform: scale(0.99);
+  box-shadow: 0 4rpx 16rpx var(--warm-tint-05);
+  background: var(--bg-warm);
+}
+
+/* 菜单项内联标记与三格快捷条（.quick-*）并存时的分工：
+   徽标类（.menu-badge*）随「我的记录」组一起下线 —— 关注/相遇 数字已上移到快捷条 */
+
+.menu-left { display: flex; align-items: center; }
+
+/* .menu-icon*（旧版图标底托）与 .menu-right 随「我的记录」组一起下线：菜单项现在
+   直接用 <icon> 组件 + .arrow，2026-10-12 视觉对齐清查确认无引用后删除 */
+.menu-name { color: var(--text-primary); font-size: 32rpx; font-weight: 500; }
+.arrow { color: var(--text-light); font-size: 44rpx; font-weight: 300; transition: transform 0.2s ease; }
+.menu-item:active .arrow { transform: translateX(6rpx); color: var(--primary-color); }
+
+.footer { padding: 120rpx 40rpx 40rpx; text-align: center; }
+.version { display: block; margin-bottom: 16rpx; color: var(--text-light); font-size: 24rpx; }
+.version:active { color: var(--primary-color); }
+.copyright { color: var(--text-light); font-size: 24rpx; }
+
+.login-overlay {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: flex; justify-content: center; align-items: center; padding: 40rpx;
+  background: var(--mask-bg);
+}
+
+.login-box { box-sizing: border-box;
+  width: 580rpx;
+  padding: 48rpx; border-radius: 48rpx;
+  box-shadow: 0 40rpx 120rpx var(--warm-tint-18); background: var(--bg-primary);
+}
+
+.login-title-row {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 48rpx;
+}
+.login-title { color: var(--text-primary); font-size: 36rpx; font-weight: 600; }
+.login-close { margin: -28rpx; padding: 28rpx; color: var(--text-tertiary); font-size: 32rpx; }
+
+.field { margin-bottom: 36rpx; }
+.field-label { display: block; margin-bottom: 16rpx; color: var(--text-secondary); font-size: 26rpx; }
+
+.field-input {
+  display: flex; align-items: center; box-sizing: border-box; height: 92rpx;
+  padding: 0 28rpx;
+  border: 2rpx solid var(--warm-tint-10); border-radius: 24rpx; background: var(--bg-tertiary);
+  transition: border-color 0.2s ease;
+}
+
+.field-input:focus-within {
+  border-color: var(--primary-color);
+}
+.field-input input { flex: 1; height: 100%; color: var(--text-primary); font-size: 30rpx; }
+.field-input input::placeholder { color: var(--text-light); }
+.field-input.error { border-color: var(--danger-color); background: var(--primary-light); }
+.field-error { display: block; margin-top: 6rpx; color: var(--danger-color); font-size: 24rpx; }
+.toggle-pwd { flex-shrink: 0; padding: 12rpx; font-size: 32rpx; }
+
+.btn-login {
+  display: block;
+  box-sizing: border-box; width: 100%; height: 96rpx; margin-top: 48rpx; padding: 0; overflow: hidden;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.btn-login text {
+  display: block; width: 100%; height: 96rpx; color: var(--bg-primary); font-size: 32rpx; font-weight: 600; line-height: 96rpx;
+  text-align: center;
+}
+.btn-login.loading { pointer-events: none; }
+.btn-login.loading text { opacity: 0.7; }
+
+.modal-wrap {
+  position: fixed; inset: 0; z-index: var(--z-overlay);
+  display: flex; justify-content: center; align-items: center;
+  background: var(--mask-bg);
+}
+
+.about-modal {
+  width: 600rpx;
+  overflow: hidden; border-radius: 48rpx; box-shadow: 0 40rpx 120rpx var(--warm-tint-18); background: var(--bg-primary);
+}
+
+.about-header {
+  padding: 60rpx 48rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); text-align: center;
+}
+
+.about-name { display: block; margin-bottom: 12rpx; color: var(--bg-primary); font-size: 38rpx; font-weight: 600; }
+
+.about-version {
+  display: inline-block; padding: 6rpx 24rpx; border-radius: 24rpx;
+  background: var(--overlay-white-20); color: var(--overlay-white-80); font-size: 24rpx;
+}
+.about-body { padding: 48rpx; }
+.about-desc { display: block; color: var(--text-secondary); font-size: 28rpx; line-height: 1.6; text-align: center; }
+.about-divider { height: 2rpx; margin: 36rpx 0; background: var(--border-color); }
+.about-contact { text-align: center; }
+.contact-title { margin-bottom: 24rpx; color: var(--text-primary); font-size: 28rpx; font-weight: 600; }
+.contact-item { display: flex; justify-content: center; align-items: center; gap: 12rpx; margin-bottom: 16rpx; }
+.contact-text { color: var(--text-secondary); font-size: 26rpx; }
+
+/* 意见反馈入口：品牌色点出可点，与静态联系方式区分 */
+.contact-link { color: var(--primary-dark); font-weight: 500; }
+.about-school { text-align: center; }
+.school-text { display: block; margin-bottom: 8rpx; color: var(--text-primary); font-size: 28rpx; font-weight: 500; }
+.school-sub { display: block; color: var(--text-tertiary); font-size: 24rpx; }
+.about-footer { padding: 0 48rpx 48rpx; }
+
+.about-btn {
+  display: flex; justify-content: center; align-items: center;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+.about-btn text { color: var(--bg-primary); font-size: 30rpx; font-weight: 500; }
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  /* 深色模式下头部渐变变浅，一行小品牌改暖底深色字（原 .app-desc 的口径搬过来） */
+  .brandline-text {
+    color: var(--dark-warm-text-85);
+  }
+
+  .brandline .cat-icon {
+    color: var(--dark-warm-text-85);
+  }
+
+  .menu-item {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .menu-item:active {
+    background: var(--bg-warm);
+  }
+
+  .menu-name {
+    color: var(--text-primary);
+  }
+
+  .menu-section-label {
+    color: var(--text-tertiary);
+  }
+
+  .quick-name {
+    color: var(--text-primary);
+  }
+
+  .quick-num {
+    color: var(--text-secondary);
+  }
+
+  .login-box {
+    background: var(--bg-card);
+  }
+
+  .field-input {
+    border-color: var(--border-color);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+
+  .field-input input::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+/* ── iPad / 大屏居中布局 ── */
+@media (min-width: 768px) {
+  .page {
+    max-width: 960rpx;
+    margin: 0 auto;
+    border-right: 2rpx solid var(--border-color);
+    border-left: 2rpx solid var(--border-color);
+  }
+}
+
+/* ========== 打卡日历（E+G：整块坐进 .top-card 头部） ==========
+   横向边距归零 —— 头部自身有 32rpx 内边距，卡片与下方推送卡/快捷条左右对齐；
+   上边距 24rpx 与「一行小品牌」的下边距连成呼吸带。白卡压在橘色渐变上，
+   阴影比常规卡片重一档（--warm-tint-18），层级才立得住。 */
+.calendar-card {
+  margin: 24rpx 0 0;
+  padding: 28rpx 24rpx;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12rpx 40rpx var(--warm-tint-18);
+  background: var(--bg-card);
+}
+
+.calendar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.calendar-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.calendar-switch {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: var(--radius-full);
+  background: var(--primary-tint-08);
+}
+
+/* 月份切换原为 56rpx(28px) 圆钮，低于 44pt 最小热区。
+   用透明伪元素外扩到 88rpx(44px)，保持 56rpx 圆钮的视觉尺寸与日历行高不变 */
+.calendar-switch::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 88rpx;
+  height: 88rpx;
+  content: '';
+  transform: translate(-50%, -50%);
+}
+
+.calendar-switch-icon {
+  color: var(--primary-color);
+  font-size: 34rpx;
+  line-height: 1;
+}
+
+.calendar-week {
+  display: flex;
+}
+
+.calendar-week-day {
+  flex: 1;
+  padding: 8rpx 0;
+  color: var(--text-light);
+  font-size: 22rpx;
+  text-align: center;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendar-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 14.28%;
+  height: 76rpx;
+  border-radius: var(--radius-sm);
+}
+
+.calendar-day {
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+.calendar-day.meeted {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.calendar-cell.meeted {
+  background: var(--primary-tint-10);
+}
+
+/* 今天：品牌实底 + 白字（同主按钮口径；「我的」页格子是 98×76 的圆角矩形，
+   与 meets 页 72rpx 正圆不是同一形状 —— 要不要统一成圆，待维护者定）
+   2026-10-14 改：原来只有内描边圆环 + 暖墨数字，深色模式下暖墨压深底几乎看不见；
+   改成实底后底色 / 字色随 --primary-cta-* 自动翻转，深浅两态都稳。 */
+.calendar-cell.today {
+  background: var(--primary-cta-bg);
+}
+
+.calendar-day.today {
+  color: var(--primary-cta-text);
+  font-weight: 700;
+}
+
+.calendar-dot {
+  position: absolute;
+  bottom: 8rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: var(--radius-full);
+  background: var(--primary-color);
+}
+
+.calendar-stats {
+  display: flex;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--border-light);
+}
+
+/* 日历加载失败态（可点击重试）：与「真的没打卡」区分 */
+.calendar-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--border-light);
+}
+
+.calendar-error-text {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  text-decoration: underline;
+}
+
+.calendar-stat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.calendar-stat-num {
+  color: var(--primary-dark);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.calendar-stat-label {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+

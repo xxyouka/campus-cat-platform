@@ -1,0 +1,417 @@
+<!-- 首页 - 温馨高级风 -->
+<view class="page page-enter">
+  <!-- 自定义下拉刷新动画 -->
+  <view class="pull-refresh-indicator {{isRefreshing ? 'refreshing' : ''}}" wx:if="{{isRefreshing}}">
+    <view class="refresh-paw-wrap">
+      <icon name="paw" size="32" />
+    </view>
+    <text class="refresh-text">正在刷新喵~</text>
+  </view>
+
+  <!-- 温馨头部（沉浸式自定义导航） -->
+  <view class="warm-header">
+    <!-- 状态栏安全占位，高度由 JS 注入 -->
+    <view class="status-bar-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <!-- 猫爪底纹 SVG -->
+    <view class="header-paw-bg"></view>
+    <view class="header-content">
+      <view class="inline-row"><icon name="cat" size="36" /><text class="header-greeting">校园猫猫</text></view>
+      <text class="header-subtitle">校园猫咪信息展示平台</text>
+    </view>
+  </view>
+
+  <!-- 搜索栏（增强版） -->
+  <view class="search-section">
+    <view class="search-box" id="coach-index-search">
+      <icon name="search" size="32" />
+      <input 
+        class="search-input" 
+        placeholder="搜索名字、花色、位置…" 
+        value="{{searchKeyword}}" 
+        bindinput="onSearchInput"
+        bindfocus="onSearchFocus"
+        bindblur="onSearchBlur"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+        maxlength="50"
+        aria-label="搜索猫咪"
+      />
+      <view
+        class="search-clear"
+        wx:if="{{searchKeyword}}"
+        bindtap="clearSearch"
+        aria-label="清除搜索"
+      ><icon name="close" size="28" /></view>
+      </view>
+  </view>
+
+  <!-- 统计+快捷入口 融合行 -->
+  <view class="stats-quick-row">
+    <view class="stats-quick-main">
+      <view class="stats-inline">
+        <view class="stat-chip"><text class="stat-chip-num">{{displayCats}}</text><text class="stat-chip-label">只猫</text></view>
+        <view class="stat-chip"><text class="stat-chip-num">{{displayPhotos}}</text><text class="stat-chip-label">张照</text></view>
+        <view class="stat-chip"><text class="stat-chip-num">{{displayViewsText}}</text><text class="stat-chip-label">浏览</text></view>
+      </view>
+      <view class="quick-divider"></view>
+      <view class="quick-inline">
+        <view class="quick-pill" bindtap="onQuickAction" data-url="/pages/rank/rank" hover-class="btn-press" role="button" aria-label="排行榜"><icon name="trophy" size="26" /><text>排行</text></view>
+        <view class="quick-pill" bindtap="onQuickAction" data-url="/pages/meets/meets" hover-class="btn-press" role="button" aria-label="相遇记录"><icon name="paw" size="26" /><text>记录</text></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索历史下拉 -->
+  <view class="search-history-dropdown {{showSearchHistory ? 'show' : ''}}" wx:if="{{showSearchHistory}}">
+    <view class="history-list">
+      <view class="history-item" wx:for="{{searchHistory}}" wx:key="*this" bindtap="onTapHistoryItem" data-term="{{item}}" hover-class="history-item-hover">
+        <view class="inline-row">
+          <icon name="search" size="28" />
+          <text class="history-text">{{item}}</text>
+        </view>
+        <view class="history-delete" catchtap="onDeleteHistoryItem" data-index="{{index}}" hover-class="btn-press">
+          <icon name="close" size="24" />
+        </view>
+      </view>
+    </view>
+    <view class="history-clear" bindtap="onClearSearchHistory" hover-class="btn-press" wx:if="{{searchHistory.length > 0}}">
+      <text>清除历史</text>
+    </view>
+  </view>
+
+  <!-- 校区下拉 + 操作按钮 -->
+  <view class="campus-dropdown-row">
+    <view
+      class="campus-dropdown"
+      bindtap="onToggleCampusDropdown"
+      hover-class="btn-press"
+      role="button"
+      aria-expanded="{{showCampusDropdown}}"
+      aria-label="选择校区，当前{{campusFilter || '全部校区'}}"
+    >
+      <icon name="pin" size="28" />
+      <text class="campus-dropdown-text">{{campusFilter || '全部校区'}}</text>
+      <text class="campus-dropdown-arrow {{showCampusDropdown ? 'up' : ''}}">▼</text>
+    </view>
+    <view class="campus-actions">
+      <view
+        class="campus-act-btn {{showFilter || activeFilterCount > 0 ? 'active' : ''}}"
+        bindtap="onToggleFilter"
+        hover-class="btn-press"
+        role="button"
+        aria-expanded="{{showFilter}}"
+      >
+        <icon name="target" size="28" /><text>筛选</text>
+        <text wx:if="{{activeFilterCount > 0}}">·{{activeFilterCount}}</text>
+      </view>
+      <view class="campus-act-btn notice" bindtap="onGoToNotice" hover-class="btn-press">
+        <view class="badge-dot" wx:if="{{hasNewNotice}}"></view>
+        <icon name="announce" size="28" /><text>公告</text>
+      </view>
+      <view id="coach-campus-map" class="campus-act-btn" bindtap="onGoToCampusMap" hover-class="btn-press">
+        <icon name="pin" size="28" /><text>地图</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 校区面板：与筛选面板同范式（行内向下展开 + 点外收起），选中即筛选并收起 -->
+  <view class="panel-mask" wx:if="{{showCampusDropdown}}" bindtap="onToggleCampusDropdown" catchtouchmove="preventDefault"></view>
+  <view class="filter-panel campus-panel {{showCampusDropdown ? 'show' : ''}}">
+    <view class="filter-options">
+      <view class="filter-option {{campusFilter === '' ? 'active' : ''}}" bindtap="onSelectCampus" hover-class="btn-hover" data-campus="">全部校区</view>
+      <view class="filter-option {{campusFilter === '本部' ? 'active' : ''}}" bindtap="onSelectCampus" hover-class="btn-hover" data-campus="本部">本部</view>
+      <view class="filter-option {{campusFilter === '东区' ? 'active' : ''}}" bindtap="onSelectCampus" hover-class="btn-hover" data-campus="东区">东区</view>
+      <view class="filter-option {{campusFilter === '西区' ? 'active' : ''}}" bindtap="onSelectCampus" hover-class="btn-hover" data-campus="西区">西区</view>
+      <view class="filter-option {{campusFilter === '南区' ? 'active' : ''}}" bindtap="onSelectCampus" hover-class="btn-hover" data-campus="南区">南区</view>
+    </view>
+  </view>
+
+  <!-- 筛选面板遮罩：点面板外任意处收起 -->
+  <view class="panel-mask" wx:if="{{showFilter}}" bindtap="onToggleFilter" catchtouchmove="preventDefault"></view>
+
+  <!-- 筛选面板 -->
+  <view class="filter-panel {{showFilter ? 'show' : ''}}">
+    <view class="filter-panel-header">
+      <text class="filter-panel-title">筛选条件</text>
+      <view class="filter-panel-close" bindtap="onFinishFilter" hover-class="btn-hover" role="button" aria-label="完成筛选并返回列表">完成</view>
+    </view>
+    <view class="filter-group">
+      <view class="filter-label">性别</view>
+      <view class="filter-options">
+        <view class="filter-option {{genderFilter === '' ? 'active' : ''}}" bindtap="onGenderFilter" hover-class="btn-hover" data-gender="">全部</view>
+        <view class="filter-option {{genderFilter === 'male' ? 'active' : ''}}" bindtap="onGenderFilter" hover-class="btn-hover" data-gender="male">公猫</view>
+        <view class="filter-option {{genderFilter === 'female' ? 'active' : ''}}" bindtap="onGenderFilter" hover-class="btn-hover" data-gender="female">母猫</view>
+      </view>
+    </view>
+    <view class="filter-group">
+      <view class="filter-label">状态</view>
+      <view class="filter-options">
+        <view class="filter-option {{statusFilter === '' ? 'active' : ''}}" bindtap="onStatusFilter" hover-class="btn-hover" data-status="">全部</view>
+        <view class="filter-option {{statusFilter === 'normal' ? 'active' : ''}}" bindtap="onStatusFilter" hover-class="btn-hover" data-status="normal">在校</view>
+        <view class="filter-option {{statusFilter === 'adopted' ? 'active' : ''}}" bindtap="onStatusFilter" hover-class="btn-hover" data-status="adopted">已领养</view>
+        <view class="filter-option {{statusFilter === 'lost' ? 'active' : ''}}" bindtap="onStatusFilter" hover-class="btn-hover" data-status="lost">走失</view>
+        <view class="filter-option {{statusFilter === 'deceased' ? 'active' : ''}}" bindtap="onStatusFilter" hover-class="btn-hover" data-status="deceased">已离世</view>
+      </view>
+    </view>
+    <view class="filter-group">
+      <view class="filter-label">好猫星级</view>
+      <view class="filter-options">
+        <view class="filter-option {{adoptFilter === '' ? 'active' : ''}}" bindtap="onAdoptFilter" hover-class="btn-hover" data-level="">全部</view>
+        <view class="filter-option {{adoptFilter === '3' ? 'active' : ''}}" bindtap="onAdoptFilter" hover-class="btn-hover" data-level="3">有星级</view>
+        <view class="filter-option {{adoptFilter === '4' ? 'active' : ''}}" bindtap="onAdoptFilter" hover-class="btn-hover" data-level="4">4星以上</view>
+        <view class="filter-option {{adoptFilter === '5' ? 'active' : ''}}" bindtap="onAdoptFilter" hover-class="btn-hover" data-level="5">5星</view>
+      </view>
+    </view>
+    <view class="filter-group">
+      <view class="filter-label">花色</view>
+      <view class="filter-options color-options">
+        <view class="filter-option {{colorFilter === '' ? 'active' : ''}}" bindtap="onColorFilter" hover-class="btn-hover" data-color="">全部</view>
+        <view class="filter-option {{colorFilter === item ? 'active' : ''}} {{colorCounts[item] === 0 ? 'disabled' : ''}}" bindtap="onColorFilter" hover-class="btn-hover" data-color="{{item}}" wx:for="{{colorOptions}}" wx:key="*this">{{item}}</view>
+      </view>
+    </view>
+    <view class="filter-actions">
+      <view class="filter-reset" bindtap="onResetFilter" hover-class="btn-hover" role="button" aria-label="重置筛选条件">重置</view>
+      <view class="filter-done" bindtap="onFinishFilter" hover-class="btn-hover" role="button">完成筛选</view>
+    </view>
+  </view>
+
+  <!-- 骨架屏加载状态 -->
+  <block wx:if="{{showSkeleton}}">
+    <view class="cat-list skeleton-list visible">
+      <view class="cat-card skeleton" wx:for="{{skeletonItems}}" wx:key="*this">
+        <view class="cat-image-wrap skeleton-box shimmer"></view>
+        <view class="cat-info">
+          <view class="cat-name-row">
+            <view class="skeleton-text name shimmer"></view>
+            <view class="skeleton-text gender shimmer"></view>
+          </view>
+          <view class="cat-tags">
+            <view class="skeleton-text tag shimmer"></view>
+            <view class="skeleton-text tag short shimmer"></view>
+          </view>
+          <view class="cat-meta">
+            <view class="skeleton-text location shimmer"></view>
+            <view class="skeleton-text time shimmer"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 实际猫咪列表 -->
+  <block wx:elif="{{!loading}}">
+    <view class="cat-list fade-in">
+    <!-- 猫咪列表 -->
+    <view class="section-header">
+      <text class="section-title">猫咪图鉴</text>
+      <text class="section-count" aria-live="polite">{{isFiltering ? '正在查找…' : '共 ' + filteredCatCount + ' 只'}}</text>
+      <view class="loading-mini" wx:if="{{loading}}">
+        <view class="loading-dot"></view>
+        <view class="loading-dot"></view>
+        <view class="loading-dot"></view>
+      </view>
+    </view>
+    <view class="cat-card" wx:for="{{filteredCats}}" wx:key="_id" bindtap="onCatDetail" bindtouchstart="onCatTouchStart" data-id="{{item._id}}" hover-class="card-hover" role="button" aria-label="查看{{item.name}}的详细信息，有{{item.photoCount}}张照片" tabindex="0">
+      <view class="cat-image-wrap">
+        <!-- 使用懒加载组件优化图片加载体验 -->
+        <lazy-image
+          wx:if="{{item.avatar}}"
+          src="{{item.avatar}}"
+          type="gallery"
+          lazy="{{true}}"
+          mode="aspectFill"
+          radius="20"
+          showLoading="{{true}}"
+          class="cat-image-wrapper"
+          bind:load="onImageLoad"
+          bind:error="onImageError"
+          data-id="{{item._id}}"
+        />
+        
+        <icon wx:if="{{!item.avatar}}" name="cat" size="80" />
+      </view>
+      <view class="cat-info">
+        <view class="cat-name-row">
+          <text class="cat-name">
+            <block wx:if="{{hasSearched && item._hlName}}">
+              <text wx:for="{{item._hlName}}" wx:key="key" class="{{item.highlight ? 'hl-keyword' : ''}}">{{item.text}}</text>
+            </block>
+            <block wx:else>{{item.name}}</block>
+          </text>
+          <icon wx:if="{{item.gender === '公'}}" class="cat-gender gender-male" name="male" size="28" />
+          <icon wx:elif="{{item.gender === '母'}}" class="cat-gender gender-female" name="female" size="28" />
+          <text wx:else class="cat-gender gender-unknown">?</text>
+          <view wx:if="{{item.status && item.status !== 'normal'}}" class="cat-status-badge {{item.status === 'adopted' ? 'status-adopted' : item.status === 'lost' ? 'status-lost' : item.status === 'deceased' ? 'status-deceased' : ''}}">
+            <icon wx:if="{{item.status === 'adopted'}}" name="home" size="24" />
+            <icon wx:elif="{{item.status === 'lost'}}" name="siren" size="24" />
+            <icon wx:elif="{{item.status === 'deceased'}}" name="dove" size="24" />
+            <text class="badge-text">{{item.status === 'adopted' ? '已领养' : item.status === 'lost' ? '走失' : item.status === 'deceased' ? '已离世' : item.status}}</text>
+          </view>
+          <!-- 好猫星级（适合家养）：只给管理员评过星的猫渲染，未评级完全不占位 -->
+          <view wx:if="{{item.adoptLevel >= 3}}" class="cat-adopt-badge" aria-label="好猫星级 {{item.adoptLevel}} 星，适合家养">
+            <icon name="star-fill" size="24" />
+            <text class="badge-text">{{item.adoptLevel}}星</text>
+          </view>
+        </view>
+        <view wx:if="{{item.tags && item.tags.length > 0}}" class="cat-tags">
+          <text class="cat-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+        </view>
+        <view class="cat-meta">
+          <view class="cat-location-chip" wx:if="{{item.campus || item.location}}">
+            <view class="inline-row"><icon name="pin" size="28" /><text class="cat-location-text"><block wx:if="{{item.campus}}">
+                <block wx:if="{{hasSearched && item._hlCampus}}">
+                  <text wx:for="{{item._hlCampus}}" wx:key="key" class="{{item.highlight ? 'hl-keyword' : ''}}">{{item.text}}</text>
+                </block>
+                <block wx:else>{{item.campus}}</block>
+              </block><block wx:if="{{item.campus && item.location}}"> · </block><block wx:if="{{item.location}}">
+                <block wx:if="{{hasSearched && item._hlLocation}}">
+                  <text wx:for="{{item._hlLocation}}" wx:key="key" class="{{item.highlight ? 'hl-keyword' : ''}}">{{item.text}}</text>
+                </block>
+                <block wx:else>{{item.location}}</block>
+              </block></text></view>
+          </view>
+
+        </view>
+      </view>
+    </view>
+    </view>
+  </block>
+
+  <!-- 加载更多提示 -->
+  <view class="load-more" wx:if="{{!loading && !hasSearched && hasMore && !loadingMore}}">
+    <view class="load-more-btn" bindtap="loadMoreCats" hover-class="btn-hover" role="button" aria-label="加载更多猫咪">
+      <text class="load-more-icon">↓</text>
+      <text>加载更多</text>
+    </view>
+  </view>
+  
+  <view class="load-more loading-more" wx:if="{{loadingMore}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在加载…</text>
+  </view>
+  
+  <view class="load-more no-more" wx:if="{{!loading && !hasMore && cats.length > 0 && !hasSearched}}">
+    <view class="no-more-line"></view>
+    <text class="no-more-text">
+      <text>已经到底啦</text>
+      <icon name="paw" size="28" />
+    </text>
+    <view class="no-more-line"></view>
+  </view>
+
+  <!-- 空状态：搜索/筛选无结果 -->
+  <empty-state
+    wx:if="{{filteredCats.length === 0 && !loading && !isFiltering && hasSearched}}"
+    icon="search"
+    title="喵~ 没找到这只主子"
+    subtitle="试试名字、花色或地点，也可以清除条件查看全部猫咪"
+    showAction="{{true}}"
+    actionText="清除条件，看全部"
+    bindaction="onClearAllConditions"
+  />
+
+  <!-- 网络错误状态（增强版） -->
+  <view class="network-error enhanced" wx:if="{{networkError}}">
+    <view class="error-illustration">
+      <icon name="cat-sad" size="56" />
+    </view>
+    <text class="error-title">喵~ 网络走丢了</text>
+    <text class="error-desc">猫咪们暂时无法到达，请检查网络后重试</text>
+    
+    <view class="error-actions">
+      <button 
+        class="retry-btn primary" 
+        bindtap="onRetryLoad" 
+        hover-class="btn-hover"
+        aria-label="重新加载"
+      >
+        <icon name="refresh" size="28" />
+        <text>重新加载</text>
+      </button>
+      
+      <text 
+        class="auto-retry-hint" 
+        wx:if="{{autoRetryCountdown > 0}}"
+      >{{autoRetryCountdown}}秒后自动重试…</text>
+    </view>
+  </view>
+
+  <!-- 互动守则弹窗 -->
+  <custom-modal
+    show="{{agreementModal.show}}"
+    icon="{{agreementModal.showDetail ? 'book' : 'paw'}}"
+    title="{{agreementModal.showDetail ? '互动守则' : '欢迎来到猫猫世界'}}"
+    content="{{agreementModal.showDetail ? agreementModal.detailContent : agreementModal.briefContent}}"
+    confirmText="{{agreementModal.showDetail ? '我知道啦' : '同意'}}"
+    cancelText="{{agreementModal.showDetail ? '返回概要' : '查看完整守则'}}"
+    maskClosable="{{false}}"
+    bind:confirm="onAgreementConfirm"
+    bind:cancel="onAgreementCancelDispatch"
+  />
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover" role="button" aria-label="回到顶部">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+
+  <!-- 1 屏欢迎：只讲“这里是什么 + 三件事”，具体操作交给各页面的就地高亮 -->
+  <custom-modal
+    show="{{welcomeModal.show}}"
+    icon="cat"
+    title="欢迎来到猫猫世界"
+    confirmText="开始探索"
+    cancelText="先随便看看"
+    maskClosable="{{false}}"
+    bind:confirm="onWelcomeConfirm"
+    bind:cancel="onWelcomeSkip"
+  >
+    <view class="welcome-lines">
+      <view class="welcome-line">
+        <icon name="search" size="30" />
+        <text>首页翻图鉴，点开有档案和萌照</text>
+      </view>
+      <view class="welcome-line">
+        <icon name="paw" size="30" />
+        <text>偶遇猫咪，点「我遇到TA啦」记一次相遇</text>
+      </view>
+      <view class="welcome-line">
+        <icon name="heart" size="30" />
+        <text>喜欢就关注，TA 有动态会提醒你</text>
+      </view>
+    </view>
+  </custom-modal>
+
+  <!-- 版本更新卡：每版一次，内容来自 config.guidance.releases -->
+  <custom-modal
+    show="{{releaseModal.show}}"
+    icon="{{releaseModal.icon}}"
+    title="{{releaseModal.title}}"
+    confirmText="{{releaseModal.entry ? '去看看' : '知道了'}}"
+    cancelText="{{releaseModal.entry ? '知道了' : ''}}"
+    bind:confirm="onReleaseConfirm"
+    bind:cancel="onReleaseCancel"
+  >
+    <view class="release-list">
+      <view class="release-item" wx:for="{{releaseModal.items}}" wx:key="text">
+        <text class="release-dot">·</text>
+        <text class="release-text">{{item.text}}</text>
+      </view>
+    </view>
+  </custom-modal>
+
+  <!-- 全功能导览：在真实入口上分步教一遍（内容来自 config/guidance.js） -->
+  <coach-mark
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    selector="{{guideTour.selector}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    placement="{{guideTour.placement}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    bind:ready="onGuideTourReady"
+    bind:missing="onGuideTourMissing"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+</view>

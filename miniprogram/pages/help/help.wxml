@@ -1,0 +1,88 @@
+<!-- pages/help/help.wxml - 使用帮助 -->
+<view class="help-page page-enter">
+  <custom-navbar title="使用帮助" theme="warm" showBack="{{true}}" />
+
+  <view class="help-hero">
+    <text class="hero-title">不知道怎么用？先看这里</text>
+    <text class="hero-sub">点一条展开；没找到答案，最下面可以找管理员。</text>
+  </view>
+
+  <!-- 功能入口：页面内不再自动弹引导；这里按分组直达各功能 -->
+  <view class="help-group" wx:if="{{entryGroups.length}}">
+    <view class="group-title-row">
+      <text class="group-title">功能入口</text>
+    </view>
+    <text class="tour-intro">想找某个功能，从这里点「去看看」直达；没有按钮的入口需要先打开一只猫。</text>
+    <view class="tour-group" wx:for="{{entryGroups}}" wx:key="label" wx:for-item="group">
+      <text class="tour-group-label">{{group.label}}</text>
+      <view class="tour-list">
+        <view class="tour-item" wx:for="{{group.items}}" wx:key="id" wx:for-item="entry">
+          <view class="tour-main">
+            <text class="tour-label">{{entry.label}}</text>
+            <text class="tour-desc">{{entry.desc}}</text>
+          </view>
+          <view
+            wx:if="{{entry.linkable}}"
+            class="tour-action"
+            bindtap="onOpenEntry"
+            data-page="{{entry.page}}"
+            hover-class="tour-action-hover"
+            role="button"
+            aria-label="打开{{entry.label}}"
+          >去看看</view>
+          <text wx:else class="tour-action is-muted">入口内进入</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view>
+    <view class="help-group" wx:for="{{groups}}" wx:key="id" wx:for-item="group">
+      <view class="group-title">{{group.title}}</view>
+      <view class="faq-list">
+        <view
+          class="faq-item {{openId === item.id ? 'is-open' : ''}}"
+          wx:for="{{group.items}}"
+          wx:key="id"
+          wx:for-item="item"
+          bindtap="toggleItem"
+          data-id="{{item.id}}"
+          hover-class="faq-hover"
+        >
+          <view class="faq-q">
+            <text class="faq-q-text">{{item.q}}</text>
+            <text class="faq-arrow">{{openId === item.id ? '−' : '+'}}</text>
+          </view>
+          <view class="faq-a" wx:if="{{openId === item.id}}">
+            <text>{{item.a}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="help-group" wx:if="{{releases.length}}">
+    <view class="group-title">新功能</view>
+    <view class="release" wx:for="{{releases}}" wx:key="id" wx:for-item="release">
+      <view class="release-head">
+        <text class="release-title">{{release.title}}</text>
+        <text class="release-version">v{{release.version}}</text>
+      </view>
+      <view class="release-item" wx:for="{{release.items}}" wx:key="text" wx:for-item="item">
+        <text class="release-dot">·</text>
+        <text class="release-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="help-group">
+    <view class="group-title">还是要问人</view>
+    <view class="contact-card">
+      <view class="contact-row"><icon name="chat" size="30" /><text>微信：{{contact.wechat}}</text></view>
+      <view class="contact-row"><icon name="email" size="30" /><text>邮箱：{{contact.email}}</text></view>
+      <text class="contact-tip">反馈问题时，带上猫咪名字和页面截图会更快。</text>
+    </view>
+  </view>
+
+  <view class="help-footer">校园猫猫 v{{version}}</view>
+</view>

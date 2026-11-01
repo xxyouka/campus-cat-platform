@@ -1,0 +1,106 @@
+<!-- 照片管理 - 相册列表 -->
+<view class="page page-enter">
+  <custom-navbar title="照片管理" theme="warm" showBack="{{true}}" />
+
+  <!-- 搜索栏（与 cat-manage 同款，保证两个管理页手感一致） -->
+  <view class="search-section">
+    <view class="search-box">
+      <icon name="search" size="32" />
+      <input class="search-input" placeholder="搜索名字、花色、位置…" value="{{searchKeyword}}" bindinput="onSearchInput" confirm-type="search" maxlength="50" bindconfirm="onSearchConfirm" />
+      <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="onClearSearch" hover-class="btn-hover" role="button" aria-label="清除搜索">
+        <text class="clear-icon">×</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计：搜索态显示「找到 N 个相册」，否则「共 N 个」 -->
+  <view class="stats-bar" wx:if="{{!loading}}">
+    <text class="stats-text">{{hasSearched ? '找到' : '共'}} {{hasSearched ? searchTotal : totalAlbums}} 个相册</text>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-album-list" wx:if="{{loading}}">
+    <view class="skeleton-album-card" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-cover"></view>
+      <view class="skeleton-album-info">
+        <view class="skeleton-album-name"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载/搜索失败条：列表里还留着上一次的结果，不提示管理员会以为
+       「搜过了、就这些」，而真相是这次根本没搜成。可点重试。 -->
+  <view class="search-error-bar" wx:if="{{!loading && searchError && albums.length > 0}}" catchtap="onRetryLoad" hover-class="btn-hover" role="button" aria-label="{{searchError}}">
+    <icon name="warning" size="26" />
+    <text class="search-error-text">{{searchError}}</text>
+  </view>
+
+  <!-- 相册列表 -->
+  <view class="album-list" wx:if="{{!loading && albums.length > 0}}">
+    <view class="album-card" wx:for="{{albums}}" wx:key="catId" bindtap="onGoToAlbum" data-album="{{item}}" hover-class="card-hover">
+      <!-- 封面 -->
+      <view class="album-cover">
+        <lazy-image
+          wx:if="{{item.coverUrl || item.catAvatar}}"
+          class="cover-img"
+          src="{{item.coverUrl || item.catAvatar}}"
+          type="thumbnail"
+          lazy="{{true}}"
+          mode="aspectFill"
+          radius="16"
+          showLoading="{{true}}"
+        />
+        <view wx:else class="cover-placeholder">
+          <icon name="cat" size="32" />
+        </view>
+        <view class="photo-count-badge">
+          <text class="count-num">{{item.photoCount}}</text>
+          <text class="count-text">张</text>
+        </view>
+      </view>
+      <!-- 信息 -->
+      <view class="album-info">
+        <view class="album-left">
+          <text class="album-name">{{item.catName || item.name || '未知'}}</text>
+        </view>
+        <view class="album-arrow">
+          <text>›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索失败态：排在「没有找到」之前。两者过去共用一个空态，
+     管理员会以为搜出来的「暂无相册」是真的没有。 -->
+  <empty-state
+    wx:if="{{!loading && albums.length === 0 && searchError}}"
+    icon="warning"
+    title="加载失败了"
+    subtitle="没能取到相册，稍后再试试"
+    showAction="{{true}}"
+    actionText="重新加载"
+    bindaction="onRetryLoad"
+  />
+
+  <!-- 搜索无结果：与「真的没有相册」分开，
+       否则 CTA 会诱导管理员去建一个已经存在的相册 -->
+  <empty-state
+    wx:elif="{{!loading && albums.length === 0 && hasSearched}}"
+    icon="search"
+    title="没有找到匹配的相册"
+    subtitle="试试其他关键词，或清除搜索"
+  />
+
+  <!-- 空状态：真的没有相册 -->
+  <empty-state
+    wx:elif="{{!loading && albums.length === 0}}"
+    icon="camera-outline"
+    title="暂无猫咪相册"
+    subtitle="先去「添加猫咪」创建第一个猫咪档案吧"
+  />
+
+  <!-- 分页加载提示 -->
+  <view class="album-load-more" wx:if="{{!loading && (loadingMore || hasMoreAlbums)}}">
+    <text>{{loadingMore ? '正在加载更多…' : '上拉加载更多'}}</text>
+  </view>
+</view>

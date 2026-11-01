@@ -1,0 +1,9 @@
+{
+  "name": "submit-report",
+  "version": "1.0.0",
+  "description": "用户反馈：信息有误 / 受伤 / 疑似走失 / 其他",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,6 @@
+<!-- icon 组件：字体图标（名称未收录时不渲染；不做 PNG 兜底） -->
+<text
+  wx:if="{{showFont}}"
+  class="cat-icon {{fontFill ? 'cat-icon-fill' : ''}} icon-name-{{name}} {{customClass}}"
+  style="font-size:{{size}}rpx; line-height:1; {{customStyle}}"
+>{{fontChar}}</text>

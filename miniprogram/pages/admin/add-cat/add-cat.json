@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "添加猫咪",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "custom-navbar": "../../../components/custom-navbar/custom-navbar",
+    "custom-modal": "/components/custom-modal/custom-modal",
+    "lazy-image": "/components/lazy-image/lazy-image"
+  }
+}

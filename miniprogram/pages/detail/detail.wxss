@@ -1,0 +1,1687 @@
+/* 详情页样式 - 温馨高级风 */
+
+/* 撤销取消关注提示条（top 由 wxml 按导航栏高度动态设置，位于导航栏下方） */
+.undo-bar {
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 32rpx;
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  color: var(--bg-primary);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-100%);
+}
+
+.undo-bar-show {
+  transform: translateY(0);
+}
+
+.undo-bar-text {
+  flex: 1;
+  overflow: hidden;
+  font-size: 27rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.undo-bar-btn {
+  flex-shrink: 0;
+  margin-left: 24rpx;
+  padding: 10rpx 28rpx;
+  border-radius: 24rpx;
+  background: var(--primary-tint-90);
+  color: var(--bg-primary);
+  font-size: 26rpx;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.undo-bar-btn:active {
+  transform: scale(0.95);
+  background: var(--primary-color);
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+  background-blend-mode: normal;
+}
+
+/* 头部 - 沉浸式 */
+.detail-header {
+  position: relative;
+  padding: 0 40rpx 60rpx;
+  overflow: hidden;
+  border-radius: 0 0 64rpx 64rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+
+/* 导航栏由 custom-navbar 组件提供，自实现的 status-bar-placeholder / header-nav / back-btn 已移除 */
+
+/* .header-paw-bg 已抽到 styles/utilities.wxss 全局复用 */
+
+.detail-header::before {
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 440rpx;
+  height: 440rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-10);
+  content: '';
+}
+
+.detail-header::after {
+  position: absolute;
+  bottom: -20%;
+  left: -15%;
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  background: var(--overlay-white-08);
+  content: '';
+}
+
+.cat-profile {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.avatar-wrap {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 184rpx;
+  height: 184rpx;
+  margin-right: 36rpx;
+  padding: 6rpx;
+  overflow: hidden;
+  border-radius: 52rpx;
+  box-shadow: 0 16rpx 48rpx var(--warm-tint-15);
+  background: var(--overlay-white-40);
+}
+
+.cat-avatar {
+  overflow: hidden;
+  border-radius: 46rpx;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+}
+
+.gender-male {
+  color: var(--info-color);
+}
+
+.gender-female {
+  color: var(--danger-color);
+}
+
+.gender-unknown {
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.sterilized-yes {
+  color: var(--success-color);
+}
+
+.sterilized-no {
+  color: var(--warning-color);
+}
+
+.cat-basic {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.cat-name {
+  max-width: 320rpx;
+  overflow: hidden;
+  color: var(--bg-primary);
+  font-size: 52rpx;
+  font-weight: 700;
+  letter-spacing: -1rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 状态快捷标签（走失/离世/被领养），口径与首页 .cat-status-badge 一致 */
+.cat-status-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background: var(--overlay-black-05);
+  color: var(--text-tertiary);
+}
+
+.cat-status-badge .badge-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.cat-status-badge.status-adopted {
+  box-shadow: var(--shadow-status-adoptable);
+  background: var(--adoptable-tint-12);
+  color: var(--status-adoptable);
+}
+
+.cat-status-badge.status-lost {
+  box-shadow: var(--shadow-status-lost);
+  background: var(--danger-tint-12);
+  color: var(--urgent-color);
+}
+
+.cat-status-badge.status-deceased {
+  background: var(--gray-tint-15);
+  color: var(--text-secondary);
+}
+
+.cat-gender {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 52rpx;
+  font-size: 36rpx;
+  line-height: 1;
+}
+
+.cat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.cat-tags .tag {
+  padding: 10rpx 24rpx;
+  border: 2rpx solid var(--overlay-white-20);
+  border-radius: 40rpx;
+  background: var(--overlay-white-25);
+  color: var(--bg-primary);
+  font-size: 24rpx;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+/* 好猫星级（适合家养）：橙底上的 95% 白底药丸 + 深色标签 + 五颗实心金星。
+   品牌珊瑚 #E8927C 直接压在橙底渐变上会糊成一片，必须走白底；
+   标签用 --text-primary 保证对比度，星形用实心星（star-fill）+ 金色（--icon-gold）。
+   实心金星 = 已评星级，剩余槽位同款实心星降透明当「空位」——
+   空心线星在 26rpx 尺寸下压白底会发白（维护者反馈），实心才看得清。 */
+.adopt-pill {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 20rpx;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4rpx 12rpx var(--warm-tint-15);
+  background: var(--overlay-white-95);
+}
+
+.adopt-pill .adopt-pill-label {
+  color: var(--text-primary);
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.adopt-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2rpx;
+}
+
+.adopt-stars .star-off {
+  opacity: 0.2;
+}
+
+/* 定位信息容器：校区（campus）与具体位置（location）必须各占一行。
+   此前本类没有任何规则，campus 行用的是全局 .inline-row（inline-flex），
+   紧随其后的 location 是行内 <text>，两者会落进同一个 line box：
+   校区名和位置名横向挤在一起、基线又对不齐，看起来就是叠字。 */
+.cat-location-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+/* 容器内把 inline-flex 提成块级 flex，保证这一行独占整行宽度，
+   不会被后面的 location 文本挤到同一行（全局 .inline-row 不动，其他页面仍在用） */
+.cat-location-wrap .inline-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  max-width: 100%;
+}
+
+.cat-location {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--overlay-white-90);
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-section {
+  padding: 48rpx 40rpx 32rpx;
+}
+
+.section-title {
+  margin-bottom: 28rpx;
+  padding-left: 8rpx;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.info-card {
+  padding: 40rpx;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 44rpx;
+  box-shadow: var(--shadow-warm-sm4);
+  background: var(--bg-primary);
+}
+
+/* 信息卡片内部分割线 */
+.section-divider {
+  height: 2rpx;
+  margin: 8rpx 0 24rpx;
+  background: linear-gradient(90deg, transparent, var(--warm-tint-10), transparent);
+}
+
+/* 独立卡片容器（相遇/健康/关系区块） */
+.standalone-card {
+  margin-top: 28rpx;
+  padding: 28rpx;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 44rpx;
+  box-shadow: var(--shadow-warm-sm4);
+  background: var(--bg-primary);
+}
+
+/* 照片集卡片 */
+.photo-section-card {
+  margin: 12rpx 0;
+  padding: 28rpx;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 44rpx;
+  box-shadow: var(--shadow-warm-sm4);
+  background: var(--bg-primary);
+}
+
+.info-grid {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.info-chip {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 28rpx 16rpx 24rpx;
+  border: 2rpx solid var(--primary-tint-08);
+  border-radius: 32rpx;
+  background: linear-gradient(145deg, var(--bg-warm) 0%, var(--bg-secondary) 100%);
+}
+
+.chip-label {
+  margin-bottom: 8rpx;
+  color: var(--text-light);
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.chip-value {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 行布局 */
+.info-row {
+  display: flex;
+  padding: 16rpx 0;
+}
+
+/* 整行 */
+.info-full {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.info-label {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* 状况状态颜色 */
+.info-value.status-adopted,
+.chip-value.status-adopted {
+  color: var(--success-color);
+}
+
+.info-value.status-lost,
+.chip-value.status-lost {
+  color: var(--warning-color);
+}
+
+.info-value.status-deceased,
+.chip-value.status-deceased {
+  color: var(--danger-color);
+}
+
+/* 健康状态颜色 */
+.chip-value.health-good {
+  color: var(--success-color);
+}
+
+.chip-value.health-warning {
+  color: var(--danger-color);
+}
+
+/* ===== 性格气泡（书卷/气泡包裹） ===== */
+.personality-bubble {
+  position: relative;
+  padding: 32rpx 36rpx;
+  border-left: 6rpx solid var(--primary-color);
+  border-radius: 32rpx;
+  background: var(--gradient-warm-tint-light);
+}
+
+.bubble-label {
+  display: inline;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.bubble-text {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-secondary);
+  font-size: 30rpx;
+  line-height: 1.85;
+  letter-spacing: 0.4rpx;
+}
+
+/* ===== 基本信息 v3 纯净名片风格 ===== */
+.info-card.v3 { padding: 24rpx 20rpx; }
+
+/* 独立区块包裹在 standalone-card 中，padding/margin 由卡片管理 */
+
+/* 最后更新 */
+.last-update-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding: 12rpx 0;
+}
+.update-text { color: var(--text-tertiary); font-size: 23rpx; }
+
+/* 独立卡片已经给了底色与圆角，这里不再叠一层（原来双层盒子显得又厚又乱） */
+.relation-avatars {
+  padding: 0;
+}
+
+.relation-avatars-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.relation-avatars-title {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 计数改文字：原先白字压 --primary-color(#E8927C) 只有 ≈2.4:1，
+   深色主题的 #F5A593 更浅、更读不清 */
+.relation-avatars-count {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* 管理员入口（普通用户不可见）：低调一行，不与关系头像抢注意力 */
+.relation-manage-entry {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 10rpx 20rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 24rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* 横向关系条 + 右侧渐隐提示 */
+.relation-strip {
+  position: relative;
+}
+
+.relation-strip-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 48rpx;
+  background: linear-gradient(90deg, transparent, var(--bg-primary));
+  pointer-events: none;
+}
+
+.relation-avatars-scroll {
+  white-space: nowrap;
+}
+
+.relation-avatars-list {
+  display: flex;
+  gap: 28rpx;
+  padding-bottom: 8rpx;
+}
+
+/* 竖排三段：头像 / 名字 / 类型胶囊，彼此不再叠压 */
+.relation-avatar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  width: 104rpx;
+}
+
+.relation-avatar-img {
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
+  border: 3rpx solid var(--primary-tint-30);
+  border-radius: 50%;
+}
+
+.relation-avatar-placeholder {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--bg-primary);
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+/* 关系胶囊：名字下方的独立一行（不再是 absolute 叠压）。
+   白字 + 原 pastel 底色（底色由 wxml 内联 relationColor 注入，不做任何加深处理）。 */
+.relation-type-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 32rpx;
+  max-width: 104rpx;
+  height: 36rpx;
+  padding: 0 12rpx;
+  border-radius: var(--radius-pill);
+  color: var(--text-on-dark);
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.relation-avatar-name {
+  max-width: 104rpx;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tip-section {
+  padding: 0 40rpx 40rpx;
+}
+
+.tip-card {
+  display: flex;
+  align-items: flex-start;
+  padding: 32rpx 36rpx;
+  border: 3rpx solid var(--primary-tint-15);
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, var(--bg-warm) 0%, var(--primary-light) 100%);
+}
+
+.tip-icon {
+  flex-shrink: 0;
+  margin-right: 24rpx;
+  font-size: 44rpx;
+}
+
+.tip-content {
+  flex: 1;
+}
+
+.tip-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.tip-desc {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+/* 警告提示（口炎等） */
+.tip-card.warning {
+  border-color: var(--danger-tint-30);
+  background: var(--gradient-danger-tint);
+}
+
+.tip-card.warning .tip-title {
+  color: var(--danger-color);
+}
+
+.tip-card.warning .tip-desc {
+  color: var(--danger-color);
+}
+
+.photos-section {
+  padding: 0 40rpx 32rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.photo-count {
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.photo-stats {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.photo-likes {
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+  background: var(--primary-tint-10);
+  color: var(--primary-color);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+  padding-bottom: 24rpx;
+}
+
+.photo-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36rpx;
+  box-shadow: 0 4rpx 24rpx var(--warm-tint-05);
+  aspect-ratio: 1;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-tertiary);
+}
+
+/* 照片点赞按钮：悬浮在照片右下角（无样式会被 overflow:hidden 裁出可视区） */
+.photo-like-btn {
+  position: absolute;
+  right: 16rpx;
+  bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  min-width: 56rpx;
+  height: 56rpx;
+  padding: 0 16rpx;
+  border-radius: 28rpx;
+
+  /* 55% 黑：照片最亮处白字也从 2.4:1 提到 4.7:1（2026-10-14 维护者定） */
+  background: var(--mask-bg-dark);
+  color: var(--text-on-dark);
+}
+
+.photo-like-btn .like-count {
+  color: var(--text-on-dark);
+  font-size: 22rpx;
+}
+
+.photo-like-btn.liked .like-icon {
+  /* 品牌暖橘（--primary-color），原 #ff6b81 属粉系，与小程序暖橘大地色不统一 */
+  color: var(--primary-color);
+}
+
+/* 骨架屏样式（使用全局系统） */
+.skeleton-container.visible {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* 详情头部 slideUp 淡入 */
+.detail-header.fade-in {
+  animation: detailSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes detailSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-container {
+  padding: 60rpx 20rpx 30rpx;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding: 0 10rpx;
+}
+
+.skeleton-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 120rpx;
+  height: 120rpx;
+  margin-right: 18rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+}
+
+.skeleton-avatar::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--gradient-shimmer-white);
+  background-size: 200% 100%;
+  animation: skeletonShimmerEnhanced 2s ease-in-out infinite;
+  content: '';
+}
+
+.skeleton-header-info {
+  flex: 1;
+}
+
+.skeleton-card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  border: 2rpx solid var(--skeleton-border);
+  border-radius: 20rpx;
+  box-shadow:
+    var(--shadow-warm-xl3),
+    var(--shadow-warm-xs2);
+  background: var(--bg-primary);
+}
+
+.skeleton-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-row:last-child {
+  margin-bottom: 0;
+}
+
+.skeleton-info-item {
+  flex: 1;
+}
+
+.skeleton-info-full {
+  width: 100%;
+}
+
+.skeleton-divider {
+  height: 2rpx;
+  margin: 16rpx 0;
+  background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+}
+
+.skeleton-tip {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+  padding: 18rpx 20rpx;
+  border: 2rpx solid var(--skeleton-border);
+  border-radius: 16rpx;
+  box-shadow:
+    var(--shadow-warm-xl3),
+    var(--shadow-warm-xs2);
+  background: var(--bg-primary);
+}
+
+.skeleton-icon {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 14rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+}
+
+.skeleton-tip-content {
+  flex: 1;
+}
+
+.skeleton-photos {
+  padding: 0 10rpx;
+}
+
+.skeleton-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.skeleton-photo {
+  position: relative;
+  border-radius: 18rpx;
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+  aspect-ratio: 1;
+}
+
+.skeleton-photo::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 18rpx;
+  background: var(--gradient-shimmer-white);
+  background-size: 200% 100%;
+  animation: skeletonShimmerEnhanced 2s ease-in-out infinite;
+  content: '';
+}
+
+/* 文本占位（使用全局暖色调） */
+.skeleton-text {
+  margin-bottom: 10rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, var(--border-light), var(--border-color));
+}
+
+.skeleton-text.name {
+  width: 60%;
+  height: 32rpx;
+  margin-bottom: 14rpx;
+}
+
+.skeleton-text.tag {
+  display: inline-block;
+  width: 80rpx;
+  height: 28rpx;
+  margin-right: 10rpx;
+  border-radius: 14rpx;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary-light));
+}
+
+.skeleton-text.campus {
+  width: 55%;
+  height: 26rpx;
+}
+
+.skeleton-text.label {
+  width: 48rpx;
+  height: 22rpx;
+  margin-bottom: 8rpx;
+}
+
+.skeleton-text.value {
+  width: 85%;
+  height: 26rpx;
+}
+
+.skeleton-text.value.long {
+  width: 100%;
+  height: 56rpx;
+}
+
+.skeleton-text.title {
+  width: 140rpx;
+  height: 28rpx;
+  margin-bottom: 8rpx;
+}
+
+.skeleton-text.desc {
+  width: 100%;
+  height: 26rpx;
+}
+
+.skeleton-text.section-title {
+  width: 180rpx;
+  height: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 流光动画（覆盖旧版） */
+.shimmer,
+.skeleton-avatar.shimmer,
+.skeleton-icon.shimmer,
+.skeleton-photo.shimmer {
+  animation: skeletonShimmerEnhanced 2s ease-in-out infinite;
+}
+
+/* 加载更多 - 优化样式 */
+.load-more {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20rpx;
+  padding: 48rpx 40rpx 64rpx;
+}
+
+/* 加载动画容器 */
+.loading-spinner-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+/* 旋转动画 */
+.loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 5rpx solid var(--primary-tint-15);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* 底部操作栏增强 */
+.bottom-bar.enhanced {
+  display: flex;
+  gap: 16rpx;
+
+  /* 左右 40rpx 与页面卡片（.info-card 等）对齐；原先 24rpx 会让按钮外扩 8px */
+  padding: 16rpx 40rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+}
+
+/* 关注按钮 */
+.action-btn.favorited {
+  border-color: var(--danger-color) !important;
+  background: var(--primary-light) !important;
+  color: var(--danger-color) !important;
+}
+
+/* 打卡完成状态：改用暖色底 + 成功色描边，避免与全站暖色系跳色的纯绿按钮
+   （原写法是 linear-gradient(同色 0%, 同色 100%)，等价于纯色，属无意义渐变） */
+.btn-primary.met-today {
+  border: 2rpx solid var(--success-color) !important;
+  background: var(--primary-light) !important;
+  color: var(--text-primary) !important;
+  opacity: 1;
+}
+
+
+/* 加载文字 */
+.load-text {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 500;
+  letter-spacing: 1rpx;
+}
+
+/* 上拉提示 */
+.load-hint {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 24rpx 40rpx;
+  border: 2rpx solid var(--primary-tint-10);
+  border-radius: 40rpx;
+  background: var(--primary-tint-06);
+}
+
+.load-hint-icon {
+  color: var(--primary-color);
+  font-size: 28rpx;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+.load-hint-text {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* 已到底提示 */
+.load-end {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.load-end-line {
+  width: 80rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+/* 页面加载状态 */
+.loading {
+  padding: 120rpx;
+  text-align: center;
+}
+
+.loading .loading-spinner {
+  width: 72rpx;
+  height: 72rpx;
+  margin: 0 auto 24rpx;
+  border: 6rpx solid var(--border-light);
+  border-top-color: var(--primary-color);
+}
+
+.loading .loading-text {
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}
+
+.bottom-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 24rpx;
+  padding: 28rpx 40rpx;
+  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -8rpx 48rpx var(--warm-tint-08);
+  background: var(--overlay-white-95);
+  backdrop-filter: blur(20px);
+}
+
+.action-btn {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 28rpx;
+  border: none;
+  border-radius: 28rpx;
+  background-color: transparent;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: normal;
+  transition: all 0.2s;
+}
+
+/* 确保 button 不自带额外样式 */
+button.action-btn {
+  margin: 0;
+  padding: 28rpx;
+  border: none;
+  background-color: transparent;
+  line-height: normal;
+}
+
+button.action-btn::after {
+  border: none;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+.btn-icon {
+  font-size: 36rpx;
+}
+
+.btn-primary {
+  box-shadow: var(--shadow-primary-md);
+  background: var(--primary-cta-gradient);
+  color: var(--primary-cta-text);
+}
+
+/* 底部占位（给固定操作栏留空间） */
+.bottom-placeholder {
+  /* 必须与 .bottom-bar 的实际高度对齐（含安全区）：固定栏内边距为 16rpx + 按钮 ~92rpx
+     + calc(16rpx + env(safe-area-inset-bottom))，异形屏 inset≈68rpx 时栏高 ≈208rpx，
+     原来固定 160rpx 会让最后约 48rpx 内容（照片网格底 / 「已经到底啦」）被半透明栏压住 */
+  height: calc(160rpx + env(safe-area-inset-bottom));
+}
+
+/* 错误空状态（猫咪不存在） */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 240rpx 48rpx 120rpx;
+  text-align: center;
+}
+
+.error-icon-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 48rpx;
+  border-radius: 56rpx;
+  box-shadow: var(--shadow-primary-2xl);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+}
+
+.error-icon {
+  font-size: 96rpx;
+}
+
+.error-title {
+  margin-bottom: 16rpx;
+  color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.error-desc {
+  margin-bottom: 56rpx;
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}
+
+.error-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.error-btn {
+  padding: 24rpx 64rpx;
+  border-radius: 48rpx;
+  box-shadow: var(--shadow-primary-md);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--bg-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+/* 次级按钮：错误态里「返回」不再与「重新加载」抢主色，主操作只留一个 */
+.error-btn.ghost {
+  box-shadow: none;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+/* ========== 相遇打卡面板 ========== */
+.meet-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-modal);
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  visibility: hidden;
+}
+
+.meet-panel.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.meet-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: var(--mask-bg);
+}
+
+.meet-content {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  box-sizing: border-box;
+
+  /* 小屏设备（键盘弹起后）内容可滚动，避免提交按钮不可达 */
+  max-height: 85vh;
+  padding: 48rpx 40rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  border-radius: 48rpx 48rpx 0 0;
+  background: var(--bg-primary);
+  animation: slideUp 0.25s ease;
+  -webkit-overflow-scrolling: touch;
+}
+
+.meet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48rpx;
+}
+
+.meet-title {
+  color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+/* 打卡规则前置：此前只有触发冷却后才弹「1小时内已打卡」，用户事前不知道 */
+.meet-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  margin: -24rpx 0 28rpx;
+  padding: 16rpx 20rpx;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+/* 分区标签 */
+.meet-section-label {
+  margin-bottom: 12rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 地点输入框（无地图选点：wx.chooseLocation 需平台单独开通接口权限，
+   该账号未获批，调用会弹「接口无权限」框；相遇地点一律手输，语义不受影响） */
+.meet-loc-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 80rpx;
+  margin-bottom: 24rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 14rpx;
+  background: var(--bg-warm);
+  color: var(--text-primary);
+  font-size: 28rpx;
+  transition: border-color 0.2s ease;
+}
+
+.meet-loc-input:focus {
+  border-color: var(--primary-color);
+}
+
+.meet-input-ph {
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}
+
+/* 地图选点入口：跟地点输入框同宽同高，看起来是一组 */
+.meet-loc-row {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 24rpx;
+}
+
+/* 地图选点常驻提示：一次性的高亮在面板里会被撑高/滚动带偏，这里改成常驻一行 */
+.meet-loc-tip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin: -12rpx 0 20rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+/* 输入框自己不再留底边距 —— 间距交给外层行，否则两层叠加 */
+.meet-loc-row .meet-loc-input {
+  margin-bottom: 0;
+}
+
+/* 右侧有动作组时给输入框留位，别让文字钻到按钮底下 */
+.meet-loc-row.has-acts .meet-loc-input {
+  padding-right: 164rpx;
+}
+
+.meet-loc-row.has-acts.has-clear .meet-loc-input {
+  padding-right: 228rpx;
+}
+
+/* 动作组：贴在输入框右内缘，左侧一条分隔线把「输入区」和「按钮区」分开 */
+.meet-loc-acts {
+  position: absolute;
+  top: 2rpx;
+  right: 2rpx;
+  bottom: 2rpx;
+  display: flex;
+  align-items: center;
+  border-left: 2rpx solid var(--border-color);
+}
+
+/* 清除：只在选了位置后出现，撤掉坐标和自动填进去的名字 */
+.meet-loc-clear {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64rpx;
+  height: 100%;
+  color: var(--text-tertiary);
+}
+
+/* 地图选点：文字按钮，不用图标 —— 图标在这个位置容易和左侧的 pin 标签语义撞车 */
+.meet-loc-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 152rpx;
+  height: 100%;
+  color: var(--primary-color);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 自定义状态输入 */
+.meet-custom-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 76rpx;
+  margin-bottom: 20rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid var(--primary-color);
+  border-radius: 14rpx;
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-size: 27rpx;
+  transition: border-color 0.2s ease;
+}
+
+.meet-custom-input:focus {
+  border-color: var(--primary-dark);
+}
+
+.meet-hidden {
+  display: none;
+}
+
+.meet-close {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--border-light);
+  color: var(--text-tertiary);
+  font-size: 32rpx;
+  line-height: 88rpx;
+  text-align: center;
+}
+
+.meet-status-grid {
+  display: grid;
+
+  /* 4 列布局：7 个状态项两行排完，压缩面板整体高度 */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+  overflow: hidden;
+}
+
+.meet-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 24rpx 8rpx;
+  border: 4rpx solid transparent;
+  border-radius: 28rpx;
+  background: linear-gradient(145deg, var(--bg-warm) 0%, var(--bg-secondary) 100%);
+  transition: all 0.2s ease;
+}
+
+.meet-status-item.selected {
+  border-color: var(--primary-color);
+  background: linear-gradient(145deg, var(--primary-light) 0%, var(--primary-light) 100%);
+}
+
+.meet-status-icon {
+  margin-bottom: 16rpx;
+}
+
+.meet-status-text {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.meet-status-item.selected .meet-status-text {
+  color: var(--primary-color);
+}
+
+.meet-status-item.selected .meet-status-icon {
+  color: var(--primary-color);
+}
+
+.meet-submit {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  box-shadow: var(--shadow-primary-md);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--bg-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+/* 备注输入 */
+.meet-note-wrap {
+  position: relative;
+  margin-bottom: 24rpx;
+}
+
+.meet-note-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 80rpx;
+  padding: 18rpx 20rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 28rpx;
+  background: var(--bg-warm);
+  color: var(--text-primary);
+  font-size: 27rpx;
+  transition: border-color 0.2s ease;
+}
+
+.meet-note-input:focus {
+  border-color: var(--primary-color);
+}
+
+.meet-note-ph {
+  color: var(--text-tertiary);
+  font-size: 27rpx;
+}
+
+.meet-note-count {
+  position: absolute;
+  right: 16rpx;
+  bottom: 12rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+}
+
+/* ========== 相遇动态 ========== */
+.meets-section {
+  padding: 0;
+}
+
+.meet-today-count {
+  color: var(--primary-color);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.meets-list {
+  padding: 32rpx;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 36rpx;
+  box-shadow: var(--shadow-warm-sm4);
+  background: var(--bg-primary);
+}
+
+.meet-item.v3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+
+.meet-item.v3 .meet-item-left {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.meet-item.v3 .meet-status {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.meet-item.v3 .meet-location {
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.meet-item.v3 .meet-time {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  font-size: 23rpx;
+}
+
+.meet-item {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+
+.meet-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.meet-item:first-child {
+  padding-top: 0;
+}
+
+.meet-status {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+}
+
+.meet-time {
+  flex-shrink: 0;
+  color: var(--text-light);
+  font-size: 24rpx;
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  .page {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  }
+
+  .undo-bar {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .detail-header {
+    background: linear-gradient(135deg, var(--gradient-primary-mid) 0%, var(--gradient-primary-dark) 100%);
+  }
+
+  .header-paw-bg {
+    opacity: 0.06;
+  }
+
+  .cat-name { color: var(--bg-primary); }
+  .cat-location { color: var(--dark-warm-text-85); }
+
+  .cat-tags .tag {
+    border-color: var(--overlay-white-20);
+    background: var(--overlay-white-12);
+    color: var(--bg-primary);
+  }
+
+  .avatar-wrap {
+    box-shadow: var(--shadow-dark-md);
+  }
+
+  /* no equivalent class */
+
+  .info-card {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .info-chip {
+    border-color: var(--border-color);
+    background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
+  }
+
+  /* 底部操作栏 — 深色毛玻璃 */
+  .bottom-bar {
+    box-shadow: var(--shadow-sheet-up-dark-lg);
+    background: var(--overlay-dark-92);
+    backdrop-filter: blur(20px);
+  }
+
+  .photos-section { background: transparent; }
+
+  .section-title { color: var(--text-primary); }
+
+  .tag { background: var(--bg-tertiary); color: var(--text-secondary); }
+  .cat-status-badge { border-color: var(--border-color); background: var(--bg-tertiary); }
+
+  /* no equivalent class for btn-outline */
+
+  .meet-item { border-color: var(--border-color); background: var(--bg-card); }
+  .meet-content { background: var(--bg-card); }
+
+  .meet-status-item {
+    background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
+  }
+
+  .meet-status-item.selected {
+    border-color: var(--primary-color);
+    background: var(--primary-light);
+  }
+
+  .relation-avatars { background: transparent; }
+
+  .tip-card {
+    border-color: var(--primary-tint-20);
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--primary-light) 100%);
+  }
+
+  .standalone-card {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .photo-section-card {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .section-divider {
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  }
+}
+
+.report-entry {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 18rpx;
+  padding: 16rpx 4rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.report-entry-arrow {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 30rpx;
+}

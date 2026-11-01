@@ -1,0 +1,174 @@
+<!-- subpackages/map/campus-map/campus-map.wxml - 校园寻猫地图 -->
+<view class="cmap-page page-enter {{mode === 'select' ? 'picking' : 'browsing'}}">
+
+  <custom-navbar title="{{mode === 'select' ? '选择相遇位置' : '校园寻猫地图'}}" theme="warm" showBack="{{true}}" />
+
+  <!-- ══════════ 浏览模式：信息条 ══════════
+       必须是正常流里的一条，**不能**浮在画布上：微信把 canvas 合成到独立层，
+       页面级绝对定位元素（任意 z-index）都盖不过它 —— 之前那两个角标
+       就是因为浮在画布上而从来没渲染出来过。 -->
+  <view class="cmap-info" id="coach-map-info" wx:if="{{mode === 'browse' && !loadError && (!loading || switching)}}">
+    <!-- 已有底图的校区不止一个时给切换条；只有一个就还是原来那行静态校区 -->
+    <scroll-view class="cmap-zones" scroll-x="true" wx:if="{{zoneTabs.length > 1}}">
+      <view
+        class="cmap-zone {{item === campusZone ? 'active' : ''}}"
+        wx:for="{{zoneTabs}}"
+        wx:key="*this"
+        data-zone="{{item}}"
+        bindtap="onZoneTap"
+        hover-class="btn-press"
+      >{{item}}</view>
+    </scroll-view>
+    <view class="cmap-info-zone" wx:else>
+      <icon name="pin" size="22" />
+      <text>{{campusZone}}</text>
+    </view>
+    <view class="cmap-info-right">
+      <text class="cmap-info-count" wx:if="{{!loading}}">
+        <text class="cmap-info-n">{{total}}</text> 只猫在这里
+      </text>
+      <text class="cmap-info-count" wx:else>正在找猫…</text>
+      <text class="cmap-info-reset" bindtap="onResetView" hover-class="btn-press">全图</text>
+    </view>
+  </view>
+
+  <!-- 地图本体 -->
+  <view class="cmap-stage {{mode === 'select' ? 'fill' : 'grow'}}">
+    <campus-map
+      id="campusMap"
+      zone="{{campusZone}}"
+      marks="{{marks}}"
+      mode="{{mode}}"
+      pending="{{pending}}"
+      activeId="{{activeId}}"
+      crosshair="{{crosshair}}"
+      bindpick="onPick"
+      bindpickchange="onPickChange"
+      bindpickout="onPickOut"
+      bindpickreject="onPickReject"
+      bindselectmark="onSelectMark"
+      bindselectcluster="onSelectCluster"
+      bindselectnone="onSelectNone"
+      bindselectfeature="onSelectFeature" />
+  </view>
+
+  <!-- ══════════ 选点模式：底部确定栏 ══════════
+       只有这一条。不做搜索、不做地点列表 —— 针跟着地图走本身就是在实时选，
+       再叠一层列表只会分心。 -->
+  <view class="cmap-confirm" wx:if="{{mode === 'select'}}">
+    <view class="cmap-confirm-row">
+      <view class="cmap-confirm-text">
+        <text class="cmap-confirm-label">{{pending ? (pending.label || '校内空地') : '这里在校外'}}</text>
+        <text class="cmap-confirm-hint">{{pending ? (pickTouched ? '针指着这儿啦，继续拖动可微调' : '拖动地图，让针对准相遇的地方') : '针跑到校外啦，拖回校园里再选~'}}</text>
+      </view>
+      <view class="cmap-sheet-btn primary sm {{pending ? '' : 'disabled'}}"
+            bindtap="onConfirmPick" hover-class="btn-press">
+        <text class="cmap-sheet-btn-t">确定</text>
+      </view>
+    </view>
+    <view class="cmap-confirm-foot">
+      <text class="cmap-reset-link" bindtap="onResetView" hover-class="btn-press">回到全图</text>
+    </view>
+  </view>
+
+  <!-- ══════════ 浏览模式：选中猫的卡片 ══════════ -->
+  <view class="cmap-detail" wx:if="{{mode === 'browse' && activeCat}}">
+    <view class="cmap-detail-head">
+      <view class="cmap-detail-ava" wx:if="{{activeCat.avatar}}">
+        <lazy-image src="{{activeCat.avatar}}" radius="50%" mode="aspectFill" lazy="{{false}}" />
+      </view>
+      <view class="cmap-detail-info">
+        <view class="inline-row">
+          <text class="cmap-detail-name">{{activeCat.name}}</text>
+          <text class="cmap-detail-badge {{activeCat.status}}">{{activeCat.statusText}}</text>
+        </view>
+        <text class="cmap-detail-where">{{activeCat.timeAgo}}在这被遇到</text>
+      </view>
+    </view>
+    <view class="cmap-detail-actions">
+      <view class="cmap-sheet-btn ghost sm" bindtap="onCloseActive" hover-class="btn-press">
+        <text class="cmap-sheet-btn-t">关闭</text>
+      </view>
+      <view class="cmap-sheet-btn primary" bindtap="goToCat" hover-class="btn-press">
+        <text class="cmap-sheet-btn-t">去看看TA</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══════════ 浏览模式：一坨猫的名单 ══════════
+       点到聚合球时出现。多只猫常常是在同一个地方分别打卡记下的（坐标一模一样），
+       针怎么放都还是一个球、也点不开第二只 —— 这里就是「这里都有谁」的唯一出口。
+       点其中一只换成详情卡片；「收起」回到底部横向猫列表。 -->
+  <view class="cmap-cluster" wx:if="{{mode === 'browse' && clusterCats.length > 0}}">
+    <view class="cmap-cluster-head">
+      <text class="cmap-cluster-title">这里有 {{clusterCats.length}} 只猫</text>
+      <text class="cmap-cluster-close" bindtap="onCloseActive" hover-class="btn-press">收起</text>
+    </view>
+    <scroll-view class="cmap-cluster-list" scroll-x="true">
+      <view class="cmap-cat" wx:for="{{clusterCats}}" wx:key="id"
+            data-id="{{item.id}}" bindtap="onTapCatChip" hover-class="btn-press">
+        <view class="cmap-cat-ava" wx:if="{{item.avatar}}">
+          <lazy-image src="{{item.avatar}}" radius="50%" mode="aspectFill" lazy="{{false}}" />
+        </view>
+        <view class="cmap-cat-text">
+          <text class="cmap-cat-name">{{item.name}}</text>
+          <text class="cmap-cat-when">{{item.timeAgo}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ══════════ 浏览模式：猫列表（横向）══════════
+       地图上几个针叠在一起时点不准，而且没法按名字找猫 ——
+       这条列表补上这两件事：点一项地图就飞过去并选中它。
+       打开「一坨猫名单」或选中某只时收起，底部一次只出一块。 -->
+  <scroll-view class="cmap-cats" id="coach-map-list" scroll-x="true"
+                wx:if="{{mode === 'browse' && !activeCat && !clusterCats.length && marks.length > 0}}">
+    <view class="cmap-cat" wx:for="{{marks}}" wx:key="id"
+          data-id="{{item.id}}" bindtap="onTapCatChip" hover-class="btn-press">
+      <view class="cmap-cat-ava" wx:if="{{item.avatar}}">
+        <lazy-image src="{{item.avatar}}" radius="50%" mode="aspectFill" lazy="{{false}}" />
+      </view>
+      <view class="cmap-cat-text">
+        <text class="cmap-cat-name">{{item.name}}</text>
+        <text class="cmap-cat-when">{{item.timeAgo}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- ══════════ 加载中 ══════════ -->
+  <view class="cmap-center" wx:if="{{loading}}">
+    <text class="cmap-center-t">正在找猫…</text>
+  </view>
+
+  <!-- ══════════ 失败 ══════════ -->
+  <view class="cmap-center" wx:if="{{!loading && loadError}}">
+    <text class="cmap-center-t">没能取到猫的位置</text>
+    <text class="cmap-center-s">检查网络后再试一次</text>
+    <view class="cmap-retry" bindtap="onRetry" hover-class="btn-press">
+      <text class="cmap-retry-t">重新加载</text>
+    </view>
+  </view>
+
+  <!-- ══════════ 空态：一张有坐标的猫都没有 ══════════ -->
+  <view class="cmap-center" wx:if="{{!loading && !loadError && total === 0 && mode === 'browse'}}">
+    <empty-state
+      icon="pin"
+      title="还没有猫被标在地图上"
+      subtitle="遇到猫时在打卡面板里选个位置，它就会出现在这里" />
+  </view>
+
+  <guide-card
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    offset-bottom="190"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+
+</view>

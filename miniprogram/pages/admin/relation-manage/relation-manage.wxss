@@ -1,0 +1,896 @@
+.container {
+  min-height: 100vh;
+  background: var(--bg-warm);
+}
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+/* padding-right 由 wxml 内联下发（胶囊实测宽度）；此处只给左右基础边距 */
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  height: 88rpx;
+  padding-left: 32rpx;
+}
+
+.nav-back {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 28rpx;
+  border: 3rpx solid var(--overlay-white-35);
+  border-radius: 40rpx;
+  background: var(--overlay-white-15);
+  color: var(--bg-primary);
+  backdrop-filter: blur(6px);
+}
+
+/* CSS 绘制的返回箭头（与 custom-navbar 组件同款，替换裸「←」） */
+.back-arrow {
+  display: inline-block;
+  width: 14rpx;
+  height: 14rpx;
+  margin-right: 4rpx;
+  border-bottom: 4rpx solid currentcolor;
+  border-left: 4rpx solid currentcolor;
+  transform: rotate(45deg) translate(2rpx, -2rpx);
+}
+
+.back-label {
+  color: inherit;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.nav-title { flex: 1; color: var(--bg-primary); font-size: 34rpx; font-weight: 500; text-align: center; text-shadow: 0 2rpx 4rpx var(--overlay-black-10); }
+
+.main-content { padding-top: 176rpx; padding-bottom: env(safe-area-inset-bottom); }
+
+/* ============ 工具条：搜索 + 添加关系 ============ */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 24rpx 32rpx 16rpx;
+  background: var(--bg-primary);
+}
+
+.search-bar {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12rpx;
+  box-sizing: border-box;
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 36rpx;
+  background: var(--bg-warm);
+}
+
+/* CSS 绘制的放大镜（比再引一个 icon 组件更轻，且能随文字色翻转） */
+.search-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 22rpx;
+  height: 22rpx;
+  border: 3rpx solid var(--text-light);
+  border-radius: 50%;
+}
+
+.search-icon::after {
+  content: '';
+  position: absolute;
+  width: 12rpx;
+  height: 3rpx;
+  margin: 14rpx 0 0 14rpx;
+  background: var(--text-light);
+  transform: rotate(45deg);
+}
+
+.search-input { flex: 1; height: 72rpx; font-size: 28rpx; }
+
+.search-clear {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+.add-btn {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6rpx;
+  height: 72rpx;
+  padding: 0 28rpx;
+  border-radius: 36rpx;
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.add-plus { font-size: 34rpx; font-weight: 400; line-height: 1; }
+.add-label { line-height: 1; }
+
+/* ============ 概览行 + 分组段筛选 ============ */
+
+.stats-line {
+  padding: 8rpx 32rpx;
+  background: var(--bg-primary);
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.filter-scroll { background: var(--bg-primary); white-space: nowrap; }
+
+.filter-row {
+  display: flex;
+  gap: 12rpx;
+  padding: 4rpx 32rpx 20rpx;
+}
+
+.filter-chip {
+  flex-shrink: 0;
+  padding: 10rpx 26rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 32rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.2;
+}
+
+.filter-chip.chip-active {
+  border-color: var(--primary-tint-30);
+  background: var(--primary-tint-12);
+
+  /* 深墨压浅珊瑚底 ≈9:1；--primary-dark 只有 ≈3:1，正文级字号达不到 4.5:1 */
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ============ 筛选提示 ============ */
+
+.filter-hint {
+  padding: 14rpx 32rpx;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.loading-box { display: flex; flex-direction: column; align-items: center; padding: 160rpx 0; }
+.loading-spinner { width: 80rpx; height: 80rpx; border: 6rpx solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { margin-top: 24rpx; color: var(--text-tertiary); font-size: 28rpx; }
+
+.empty-box { display: flex; flex-direction: column; align-items: center; padding: 160rpx 0; }
+.empty-box.slim { padding: 80rpx 0; }
+.empty-text { margin-bottom: 40rpx; color: var(--text-tertiary); font-size: 28rpx; }
+.empty-btn { margin-bottom: 16rpx; padding: 20rpx 48rpx; border-radius: 40rpx; background: var(--primary-color); color: var(--bg-primary); font-size: 28rpx; }
+
+/* ============ 猫卡片列表（按猫聚合） ============ */
+
+/* 上方固定区 ≈ 导航 176 + 工具条 112 + 概览 50 + 段选 76 ≈ 414rpx */
+.card-list { height: calc(100vh - 416rpx); }
+
+.list-bottom-pad { height: 32rpx; }
+
+/* ============ 列表底部：双向展示说明 + 补入口 ============ */
+
+.list-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 32rpx 40rpx 8rpx;
+}
+
+.list-footer-hint {
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.list-footer-btn {
+  padding: 16rpx 32rpx;
+  border: 2rpx dashed var(--primary-tint-30);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.4;
+}
+
+.cat-card {
+  margin: 24rpx 32rpx 0;
+  padding: 24rpx 28rpx 20rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 2rpx 8rpx var(--overlay-black-04);
+  background: var(--bg-primary);
+  transition: box-shadow 0.3s;
+}
+
+/* chip 跳转 / 详情页入口的定位高亮：一圈珊瑚描边，1.4s 自动消退 */
+.cat-card.card-flash {
+  box-shadow: 0 0 0 6rpx var(--primary-tint-30), var(--shadow-md);
+}
+
+.cc-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.cc-cat {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 16rpx;
+  min-width: 0;
+}
+
+.cc-avatar { flex-shrink: 0; width: 72rpx; height: 72rpx; border-radius: 50%; }
+
+.cc-avatar-ph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: var(--bg-primary);
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.cc-info { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+
+.cc-name { overflow: hidden; color: var(--text-primary); font-size: 30rpx; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+
+.cc-meta { overflow: hidden; color: var(--text-tertiary); font-size: 22rpx; white-space: nowrap; text-overflow: ellipsis; }
+
+/* 卡片上的「＋ 添加」：基准猫直接预填，管理员的操作只剩选类型 + 选对方猫。
+   高度与头像同档（72rpx），加上左右 24rpx 内边距，热区约 60×36px */
+.cc-add {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 72rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 28rpx;
+  background: var(--primary-tint-12);
+
+  /* 深墨压浅珊瑚底 ≈9:1（同 .filter-chip.chip-active 口径） */
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.cc-group { margin-top: 20rpx; }
+
+.cc-gname { display: block; margin-bottom: 12rpx; color: var(--text-tertiary); font-size: 22rpx; }
+
+.cc-chips { display: flex; flex-wrap: wrap; gap: 12rpx; }
+
+/* 关系 chip：一条关系 = 角色胶囊（类型配色）+ 对方猫名 + 删除 ×。
+   边框 / 底色用类型色的半透明变体（内联注入），深浅色模式都只是「淡淡的类型色」 */
+.rel-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 2rpx solid;
+  border-radius: var(--radius-pill);
+}
+
+.chip-main {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  max-width: 420rpx;
+  padding: 8rpx 8rpx 8rpx 10rpx;
+  border-radius: var(--radius-pill);
+}
+
+/* 角色胶囊：白字 + 类型 pastel 底（与列表 tag 同一口径） */
+.chip-role {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-pill);
+  color: var(--text-on-dark);
+  font-size: 20rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.chip-name { overflow: hidden; color: var(--text-primary); font-size: 24rpx; white-space: nowrap; text-overflow: ellipsis; }
+
+/* 删除 × 降级为次级热区：撤销条兜底后它是低频低险操作 */
+.chip-x {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 44rpx;
+  height: 44rpx;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+}
+
+/* ============ 删除撤销条 ============ */
+
+/* 固定在底部浮层之上、添加面板之下：z-index 介于列表(0)与面板(200)之间，
+   保证「删完立刻能反悔」，又不会盖住打开中的添加面板 */
+.undo-bar {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(24rpx + env(safe-area-inset-bottom));
+  left: 24rpx;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-sizing: border-box;
+  padding: 20rpx 24rpx;
+  border-radius: 24rpx;
+  box-shadow: var(--shadow-md);
+  background: var(--bg-card);
+}
+
+.undo-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.undo-title {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 26rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.undo-note {
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.undo-action {
+  flex-shrink: 0;
+  padding: 10rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--primary-tint-12);
+  color: var(--text-primary);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.undo-close {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 44rpx;
+  height: 44rpx;
+  color: var(--text-tertiary);
+  font-size: 30rpx;
+}
+
+/* ============ 添加关系面板（一屏化） ============ */
+.panel-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  background: var(--mask-bg);
+}
+
+.add-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 85vh;
+  border-radius: 48rpx 48rpx 0 0;
+  background: var(--bg-primary);
+}
+
+/* 面板内三层都带左右 40rpx padding，必须显式 border-box。
+   否则 content-box 下每层实际宽度 = 100% + 80rpx（实测 402 → 444px），
+   把面板整体顶出屏幕右侧。 */
+.panel-header,
+.sentence,
+.panel-body,
+.panel-footer { box-sizing: border-box; }
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 40rpx 32rpx;
+}
+
+.panel-title { color: var(--text-primary); font-size: 36rpx; font-weight: 600; }
+.panel-close { display: flex; justify-content: center; align-items: center; width: 72rpx; height: 72rpx; border-radius: 50%; background: var(--bg-warm); color: var(--text-tertiary); font-size: 36rpx; }
+
+/* 方向预览条 */
+.sentence {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin: 0 40rpx 8rpx;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid var(--primary-tint-30);
+  border-radius: 24rpx;
+  background: var(--bg-secondary);
+  font-size: 28rpx;
+}
+
+/* 猫名是可点的编辑入口：点它滚到对应选猫器并聚焦。
+   热区单独撑到 56rpx 高（≈44px 高），低于这个值手指很难点准。 */
+.s-edit {
+  display: flex;
+  flex-shrink: 1;
+  align-items: center;
+  gap: 6rpx;
+  min-width: 0;
+  padding: 8rpx 12rpx;
+  border-radius: 16rpx;
+}
+
+.s-edit-hover { background: var(--primary-tint-12); }
+
+.s-name { overflow: hidden; color: var(--text-primary); font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+
+/* 编辑面板两端只读：不套 .s-edit 的可点样式，但仍要在长名字时收缩截断 */
+.sentence > .s-name {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* 占位名用 secondary（≈5.3:1）而不是 tertiary/light（≈3.1~3.8:1）：
+   它同时是「点这里去选」的指示，读不清就等于没有指示。仍比真实名字浅一档。 */
+.s-edit.s-ph .s-name { color: var(--text-secondary); font-weight: 400; }
+.s-word { flex-shrink: 0; color: var(--text-tertiary); }
+
+/* 对方猫可以一次选多只：这一端取剩余宽度，名字过长由 .s-name 截断 */
+.s-multi {
+  flex: 1;
+  min-width: 0;
+}
+
+/* scroll-view 必须有**确定高度**才会滚动（小程序渲染器里 flex:1 的内容不被裁切、
+   会直接溢出盖住提交按钮），故用显式上限；chrome 高度未变（header 76px +
+   sentence 54px + footer 126px ≈ 256px），口径仍为 85vh - 490rpx。
+   一屏化后内容 ≈ 870rpx < 常规机型的可用预算，仅小屏 / 候选列表展开时兜底滚动。 */
+.panel-body {
+  flex: 1;
+  min-height: 320rpx;
+  max-height: calc(85vh - 490rpx);
+  padding: 24rpx 40rpx 8rpx;
+}
+
+/* 一屏化：section 间距收紧（原 40rpx 是「反正要滚」时代的排布） */
+.form-section { margin-bottom: 24rpx; }
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.step {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: var(--primary-tint-12);
+
+  /* 序号圈内是 20rpx 数字，同口径走深墨 */
+  color: var(--text-primary);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.section-label { color: var(--text-secondary); font-size: 28rpx; font-weight: 500; }
+
+.section-tip { color: var(--text-tertiary); font-size: 22rpx; }
+
+/* 类型平铺网格：2 行 × 4 个等宽，替代原 4 组分组（原排布把第 3 步顶出屏幕） */
+.type-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.type-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: calc(25% - 12rpx);
+  padding: 16rpx 4rpx;
+  border: 4rpx solid var(--border-color);
+  border-radius: 24rpx;
+}
+
+.type-label { color: var(--text-secondary); font-size: 28rpx; }
+.type-btn.type-active .type-label { color: var(--text-primary); font-weight: 600; }
+
+.section-hint { margin-top: 12rpx; color: var(--text-tertiary); font-size: 22rpx; }
+
+/* 备注改单行：选填项不值得 3 行 textarea 的垂直预算 */
+.form-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 80rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 20rpx;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+.panel-footer {
+  padding: 32rpx 40rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid var(--border-color);
+}
+
+.submit-btn {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 28rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--bg-primary);
+  font-size: 32rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.submit-btn.disabled { opacity: 0.45; }
+
+/* 类型胶囊（面板预览条用）：白字 + pastel 底 */
+.relation-type-tag {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  min-height: 36rpx;
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-pill);
+  color: var(--text-on-dark);
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ============ 对方猫：可多选 ============ */
+
+.picked-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.picked-chip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  max-width: 320rpx;
+  padding: 6rpx 8rpx 6rpx 6rpx;
+  border: 2rpx solid var(--primary-tint-30);
+  border-radius: var(--radius-pill);
+  background: var(--bg-secondary);
+}
+
+.picked-chip-avatar {
+  flex-shrink: 0;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+}
+
+.picked-chip-avatar-ph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-tint-12);
+
+  /* 深墨压浅珊瑚底 ≈9:1（同 .opt-avatar-ph 口径） */
+  color: var(--text-primary);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.picked-chip-name {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 26rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picked-chip-x {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+.picked-more {
+  padding: 12rpx 24rpx;
+  border-radius: var(--radius-pill);
+  background: var(--primary-tint-12);
+  color: var(--text-primary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* 还没选人时的入口：整行可点，88rpx 高（≈44px） */
+.pick-entry {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+  min-height: 88rpx;
+  border: 2rpx dashed var(--border-color);
+  border-radius: 20rpx;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.pick-entry-plus { color: var(--text-primary); font-size: 32rpx; line-height: 1; }
+.pick-entry-text { line-height: 1.4; }
+
+/* 一批提交完成的回执（面板不关，接着加下一种） */
+.add-success {
+  margin-bottom: 16rpx;
+  color: var(--status-adoptable-deep);
+  font-size: 24rpx;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ============ 选猫面板（多选） ============ */
+
+/* 叠在添加面板之上：先选基准猫与类型，再一次性勾完对方 */
+.picker-overlay { z-index: 300; }
+
+.picker-panel { max-height: 90vh; }
+
+.picker-counter {
+  margin-right: auto;
+  margin-left: 16rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.picker-search {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 0 40rpx 12rpx;
+  padding: 0 24rpx;
+  border-radius: 36rpx;
+  background: var(--bg-warm);
+}
+
+.picker-input {
+  flex: 1;
+  height: 72rpx;
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+/* 同 .panel-body：scroll-view 必须拿到确定高度才滚得动 */
+.picker-scroll {
+  flex: 1;
+  min-height: 240rpx;
+  max-height: calc(90vh - 420rpx);
+}
+
+.picker-opt {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin: 0 24rpx;
+  padding: 16rpx;
+  border-bottom: 2rpx solid var(--border-color);
+}
+
+.picker-opt:last-child { border-bottom: none; }
+
+.picker-opt.is-disabled { opacity: 0.45; }
+
+.picker-opt.is-selected { background: var(--primary-tint-05); }
+
+.picker-avatar {
+  flex-shrink: 0;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+}
+
+.picker-avatar-ph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-tint-12);
+  color: var(--text-primary);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.picker-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.picker-name {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picker-color { color: var(--text-tertiary); font-size: 22rpx; }
+
+.picker-badge {
+  flex-shrink: 0;
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 20rpx;
+}
+
+.picker-check {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-primary);
+}
+
+.picker-check.is-checked {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+}
+
+/* 勾：CSS 画的对勾，白字口径同类型胶囊（不会出现浅底浅勾） */
+.picker-check.is-checked::after {
+  content: '';
+  width: 10rpx;
+  height: 18rpx;
+  margin-top: -4rpx;
+  border-right: 4rpx solid var(--text-on-dark);
+  border-bottom: 4rpx solid var(--text-on-dark);
+  transform: rotate(45deg);
+}
+
+.picker-tip {
+  padding: 32rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  text-align: center;
+}
+
+/* ============ 编辑关系面板 ============ */
+
+.edit-note {
+  margin: 0 40rpx 8rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 16rpx;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+.edit-body { max-height: calc(85vh - 420rpx); }
+
+.edit-footer {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.edit-delete {
+  flex-shrink: 0;
+  padding: 24rpx 40rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 48rpx;
+  background: var(--bg-primary);
+  color: var(--urgent-deep);
+  font-size: 30rpx;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.edit-save {
+  flex: 1;
+  width: auto;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .nav-bar {
+    background: linear-gradient(135deg, var(--gradient-primary-mid) 0%, var(--gradient-primary-dark) 100%);
+  }
+
+  .toolbar,
+  .filter-scroll,
+  .stats-line {
+    background: var(--bg-card);
+  }
+
+  .search-bar {
+    background: var(--bg-tertiary);
+  }
+
+  .cat-card {
+    background: var(--bg-card);
+  }
+
+  .add-panel {
+    background: var(--bg-card);
+  }
+
+  .panel-close {
+    background: var(--bg-tertiary);
+  }
+
+  /* 5% 的珊瑚底在深色上几乎看不出勾选态，深色下提一档 */
+  .picker-opt.is-selected {
+    background: var(--primary-tint-12);
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "cat-picker": "/pages/admin/components/cat-picker/cat-picker"
+  },
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true
+}

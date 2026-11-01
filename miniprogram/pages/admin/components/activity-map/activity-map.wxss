@@ -1,0 +1,68 @@
+/* pages/admin/components/activity-map/activity-map.wxss */
+
+/* 配色（画布底色）与 campus-map 保持一致，两个地图区并排看不会像两套系统 */
+.amap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--map-paper);
+}
+
+.amap-canvas {
+  display: block;
+  width: 100%;
+}
+
+/* 手势层：透明盖在画布上，catch 掉 touchmove —— 拖图时页面不跟着滚。
+   只在 zoomable 模式下渲染（见 wxml），单猫详情页不受影响 */
+.amap-gesture {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* 「回到全图」：放大/拖动后出现；配色与底图上的标签同一套 */
+.amap-reset {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  padding: 8rpx 22rpx;
+  border: 2rpx solid var(--map-chip-border);
+  border-radius: 999rpx;
+  box-shadow: var(--map-chip-shadow);
+  background: var(--map-chip-bg);
+}
+
+.amap-reset-t {
+  color: var(--map-chip-text);
+  font-size: 22rpx;
+}
+
+.amap-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--map-paper);
+}
+
+.amap-mask-t {
+  margin-bottom: 8px;
+  color: var(--map-mask-title);
+  font-size: 15px;
+}
+
+.amap-mask-s {
+  padding: 0 40px;
+  color: var(--map-mask-sub);
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}

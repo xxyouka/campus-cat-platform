@@ -1,0 +1,9 @@
+{
+  "name": "getCatRank",
+  "version": "1.0.0",
+  "description": "猫咪排行榜云函数 - 支持云吸/关注/相遇三类排行",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

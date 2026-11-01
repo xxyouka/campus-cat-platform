@@ -1,0 +1,67 @@
+<view class="cm-root" wx:if="{{show || _leaving}}">
+  <view class="cm-mask {{show ? 'cm-mask-enter' : 'cm-mask-leave'}}" bindtap="onMaskTap" catchtouchmove="preventDefault">
+  </view>
+  <view class="cm-wrap {{show ? 'cm-wrap-enter' : 'cm-wrap-leave'}}" catchtap="onStopPropagation">
+
+    <!-- 顶部装饰渐变条 -->
+    <view class="cm-header-bar">
+      <view class="cm-header-pattern"></view>
+    </view>
+
+    <!-- 图标区域 - 带圆形背景 -->
+    <view class="cm-icon-wrap" wx:if="{{icon}}">
+      <view class="cm-icon-circle">
+        <icon name="{{icon}}" size="48" />
+      </view>
+    </view>
+
+    <!-- 标题 -->
+    <view class="cm-title" wx:if="{{title}}">{{title}}</view>
+
+    <!-- 内容区 -->
+    <view class="cm-body">
+      <view class="cm-content" wx:if="{{content}}">{{content}}</view>
+
+      <!-- 自定义内容 slot -->
+      <slot></slot>
+
+      <!-- 输入框（可选） -->
+      <view class="cm-input-wrap" wx:if="{{inputMode}}">
+        <input
+          class="cm-input"
+          value="{{_inputValue}}"
+          placeholder="{{inputPlaceholder}}"
+          password="{{inputPassword}}"
+          type="{{inputType || 'text'}}"
+          maxlength="{{inputMaxlength || 50}}"
+          bindinput="onInput"
+          focus="{{inputFocus}}"
+          adjust-position="false"
+        />
+      </view>
+
+      <!-- 第二个输入框（可选，用于密码确认等） -->
+      <view class="cm-input-wrap" wx:if="{{input2Mode}}">
+        <input
+          class="cm-input"
+          value="{{_input2Value}}"
+          placeholder="{{input2Placeholder}}"
+          password="{{input2Password}}"
+          maxlength="{{input2Maxlength || 50}}"
+          bindinput="onInput2"
+        />
+      </view>
+    </view>
+
+    <!-- 按钮区 -->
+    <view class="cm-buttons {{(showCancel || cancelText) ? 'cm-two-btn' : 'cm-one-btn'}}">
+      <view class="cm-btn cm-cancel-btn" wx:if="{{showCancel || cancelText}}" bindtap="onCancel" hover-class="cm-btn-hover">
+        {{cancelText || '取消'}}
+      </view>
+      <view class="cm-btn cm-confirm-btn" bindtap="onConfirm" hover-class="cm-btn-hover">
+        {{confirmText || '确定'}}
+      </view>
+    </view>
+
+  </view>
+</view>

@@ -1,0 +1,1 @@
+{"name": "markNotificationRead", "version": "1.0.0", "description": "标记通知为已读", "main": "index.js", "dependencies": {"wx-server-sdk": "~2.6.3"}}

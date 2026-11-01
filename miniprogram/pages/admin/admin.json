@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "管理员后台",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "custom-modal": "/components/custom-modal/custom-modal"
+  }
+}

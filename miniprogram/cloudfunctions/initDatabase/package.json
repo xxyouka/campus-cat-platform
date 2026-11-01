@@ -1,0 +1,1 @@
+{"name": "initDatabase", "version": "1.0.0", "description": "数据库集合初始化脚本 - 自动创建所有必需的集合", "main": "index.js", "dependencies": {"wx-server-sdk": "~2.6.3"}}

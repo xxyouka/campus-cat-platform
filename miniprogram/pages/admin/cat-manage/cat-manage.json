@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "猫咪管理",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "custom-navbar": "../../../components/custom-navbar/custom-navbar",
+    "custom-modal": "/components/custom-modal/custom-modal",
+    "lazy-image": "/components/lazy-image/lazy-image",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

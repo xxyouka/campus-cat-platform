@@ -1,0 +1,103 @@
+<!-- 猫咪行动分析 · 全部小猫总轨迹（仅超级管理员，只读） -->
+<view class="page page-enter">
+  <custom-navbar title="全部小猫总轨迹" theme="warm" showBack="{{true}}" />
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-block shimmer" wx:for="{{skeletonItems}}" wx:key="*this"></view>
+  </view>
+
+  <block wx:else>
+    <!-- 加载失败：可重试（与业务空态分开，故障不伪装成「没有数据」） -->
+    <view class="load-failed" wx:if="{{loadFailed}}">
+      <icon name="warning" size="48" />
+      <text class="load-failed-title">{{errorText}}</text>
+      <view class="retry-btn" bindtap="onRetryLoad">重新加载</view>
+    </view>
+
+    <block wx:else>
+      <!-- 时间窗独立于数据状态：空态下也能换窗口再看看 -->
+      <view class="control-card">
+        <view class="range-chips">
+          <view
+            class="range-chip {{rangeIndex === index ? 'active' : ''}}"
+            wx:for="{{ranges}}"
+            wx:key="days"
+            bindtap="onRangeTap"
+            data-index="{{index}}"
+            hover-class="btn-press"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <!-- 切换时间窗时只提示一次，不把旧窗口的图留在屏幕上冒充新窗口 -->
+      <view class="refresh-note" wx:if="{{refreshing}}">
+        <text>正在按新时间窗重新分析…</text>
+      </view>
+
+      <block wx:else>
+        <block wx:if="{{hasData}}">
+          <!-- 校区切换：一张底图配一套坐标，多校区的猫不能混画。
+               只有一个校区有数据时不显示这一行（不占垂直空间）。 -->
+          <view class="control-card" wx:if="{{zoneTabs.length > 1}}">
+            <view class="range-chips">
+              <view
+                class="range-chip {{zone === item ? 'active' : ''}}"
+                wx:for="{{zoneTabs}}"
+                wx:key="*this"
+                bindtap="onZoneTap"
+                data-zone="{{item}}"
+                hover-class="btn-press"
+              >{{item}}</view>
+            </view>
+          </view>
+
+          <view class="card">
+            <view class="inline-row">
+              <icon name="pin" size="32" />
+              <text class="card-title">{{zone}}总轨迹地图</text>
+            </view>
+
+            <view class="map-box">
+              <activity-map height="{{mapHeight}}" zone="{{zone}}" tracks="{{tracks}}" focus-id="{{focusId}}" zoomable="{{true}}" />
+            </view>
+
+            <view class="map-legend">
+              <text class="legend-item">每只猫一种颜色</text>
+              <text class="legend-item">虚线：同一天内的连续行动</text>
+              <text class="legend-item">点图例可聚焦某只猫</text>
+              <text class="legend-item">双指缩放 · 拖动查看</text>
+            </view>
+
+            <!-- 图例：点选聚焦某只猫的路线，再点一次取消 -->
+            <view class="trail-chips">
+              <view
+                class="trail-chip {{focusId === item.id ? 'active' : ''}}"
+                wx:for="{{legend}}"
+                wx:key="id"
+                bindtap="onChipTap"
+                data-id="{{item.id}}"
+                hover-class="btn-press"
+              >
+                <view class="chip-dot" style="background: {{item.color}};"></view>
+                <text class="chip-name">{{item.name}}</text>
+                <text class="chip-count">{{item.countText}}</text>
+              </view>
+            </view>
+
+            <text class="totals-text">{{totalsText}}</text>
+          </view>
+
+          <!-- 数据说明：样本量摊开讲，避免把小样本读成规律 -->
+          <view class="footnote">
+            <text class="footnote-title">数据说明</text>
+            <text class="footnote-line" wx:for="{{footnote}}" wx:key="*this">{{item}}</text>
+            <text class="footnote-line">本页为只读自动分析，不保存任何结论；每次打开都按最新打卡现算。</text>
+          </view>
+        </block>
+
+        <empty-state wx:else icon="paw" title="{{emptyTitle}}" subtitle="{{emptySubtitle}}" />
+      </block>
+    </block>
+  </block>
+</view>

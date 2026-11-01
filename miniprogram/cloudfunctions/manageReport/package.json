@@ -1,0 +1,9 @@
+{
+  "name": "manage-report",
+  "version": "1.0.0",
+  "description": "管理端反馈处理：用户反馈队列 / 已处理 / 未采纳",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

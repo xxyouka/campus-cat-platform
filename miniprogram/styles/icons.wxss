@@ -1,0 +1,183 @@
+/* =========================================================
+ * styles/icons.wxss - 图标语义配色（2026-10-08）
+ *
+ * 每个图标按「含义」自动着色：<icon> 组件在字形节点上渲染
+ * icon-name-<name> 类，本文件按名给色，调用点无需改动。
+ * 深浅色两套 token 自动切换；彩色底上的图标用下方「继承覆盖」保持随文色。
+ * 新增图标配色：在 assets/icons/manifest.js 加图标后，在这里补一条 icon-name-xxx 规则。
+ * ========================================================= */
+
+page {
+  /* 图标语义色（浅色模式；小图标在浅底上的对比度按 3:1 校准） */
+  --icon-brand: #D4785F;    /* 猫咪/爪印/品牌元素 */
+  --icon-rose: #E8697D;     /* 爱心/关注 */
+  --icon-gold: #D9A43C;     /* 奖杯/勋章/星标/灯泡/铃铛 */
+  --icon-blue: #5B9BD5;     /* 眼睛/相机/日历/信息/链接/分享/时间外 */
+  --icon-indigo: #7C86D9;   /* 睡觉/夜晚 */
+  --icon-green: #5FA463;    /* 健康/找回/图表/下载 */
+  --icon-orange: #E8843C;   /* 吃饭/公告/火焰/地点 */
+  --icon-purple: #9B7EDE;   /* 玩耍/思考/调色 */
+  --icon-earth: #B08A5A;    /* 学校/书本/包裹（大地色） */
+  --icon-red: #E5534B;      /* 警告/走失/急救/删除 */
+  --icon-gray: #8FA0B5;     /* 中性信息类（文件/时间/工具/用户） */
+  --icon-silver: #9AA5B1;   /* 银牌 */
+  --icon-bronze: #C07A4E;   /* 铜牌 */
+}
+
+@media (prefers-color-scheme: dark) {
+  page {
+    --icon-brand: #F0A48E;
+    --icon-rose: #F28CA0;
+    --icon-gold: #E8BE6A;
+    --icon-blue: #8CB8E8;
+    --icon-indigo: #A6ADF0;
+    --icon-green: #8CC48F;
+    --icon-orange: #F0A468;
+    --icon-purple: #BBA5F0;
+    --icon-earth: #D4B896;
+    --icon-red: #F08A84;
+    --icon-gray: #A8B8CC;
+    --icon-silver: #B8C2CC;
+    --icon-bronze: #D49A72;
+  }
+}
+
+/* ===== 按图标名着色（品牌/猫咪）===== */
+.icon-name-cat,
+.icon-name-cat-outline,
+.icon-name-cat-happy,
+.icon-name-cat-sad,
+.icon-name-paw,
+.icon-name-home,
+.icon-name-tag,
+.icon-name-target,
+.icon-name-point-up,
+.icon-name-plus { color: var(--icon-brand); }
+
+/* ===== 爱心/关注 ===== */
+.icon-name-heart,
+.icon-name-heart-double,
+.icon-name-heart-gift,
+.icon-name-heart-handshake { color: var(--icon-rose); }
+
+.icon-name-heart-outline { color: var(--text-tertiary); }
+
+/* ===== 金色（成就/提醒/光亮）===== */
+.icon-name-trophy,
+.icon-name-medal-gold,
+.icon-name-star,
+.icon-name-star-fill,
+.icon-name-sparkle,
+.icon-name-lightbulb,
+.icon-name-lightning,
+.icon-name-bell,
+.icon-name-folder,
+.icon-name-edit,
+.icon-name-wave { color: var(--icon-gold); }
+
+.icon-name-medal-silver { color: var(--icon-silver); }
+.icon-name-medal-bronze { color: var(--icon-bronze); }
+
+/* ===== 蓝（信息/媒体/时间工具）===== */
+.icon-name-eye,
+.icon-name-eyes,
+.icon-name-camera,
+.icon-name-camera-outline,
+.icon-name-calendar,
+.icon-name-info,
+.icon-name-link,
+.icon-name-share,
+.icon-name-save,
+.icon-name-email,
+.icon-name-chat,
+.icon-name-search,
+.icon-name-refresh,
+.icon-name-waves { color: var(--icon-blue); }
+
+/* ===== 靛蓝（睡觉/夜晚）===== */
+.icon-name-moon { color: var(--icon-indigo); }
+
+/* ===== 绿（健康/成功/数据）===== */
+.icon-name-check,
+.icon-name-check-circle,
+.icon-name-chart,
+.icon-name-chart-up,
+.icon-name-import,
+.icon-name-tree,
+.icon-name-leaf,
+.icon-name-stethoscope { color: var(--icon-green); }
+
+/* ===== 橙（饮食/公告/地点/火焰）===== */
+.icon-name-utensils,
+.icon-name-announce,
+.icon-name-fire,
+.icon-name-pin { color: var(--icon-orange); }
+
+/* ===== 紫（玩耍/思考/创作）===== */
+.icon-name-gamepad,
+.icon-name-thought,
+.icon-name-palette,
+.icon-name-celebrate { color: var(--icon-purple); }
+
+/* ===== 大地色 ===== */
+.icon-name-school,
+.icon-name-book,
+.icon-name-package { color: var(--icon-earth); }
+
+/* ===== 红（急救/警告/走失/删除）===== */
+.icon-name-warning,
+.icon-name-health,
+.icon-name-siren,
+.icon-name-trash { color: var(--icon-red); }
+
+/* ===== 中性灰蓝 ===== */
+.icon-name-clock,
+.icon-name-hourglass,
+.icon-name-stopwatch,
+.icon-name-scissors,
+.icon-name-file,
+.icon-name-note,
+.icon-name-clipboard,
+.icon-name-settings,
+.icon-name-tools,
+.icon-name-lock,
+.icon-name-unlock,
+.icon-name-user,
+.icon-name-users,
+.icon-name-bell-off,
+.icon-name-dove { color: var(--icon-gray); }
+
+/* ===== 彩色底上的图标：随宿主文字色（覆盖上方按名着色）===== */
+.action-btn .cat-icon,
+.retry-btn .cat-icon,
+.status-chip .cat-icon,
+.cat-status-badge .cat-icon,
+.cat-adopt-badge .cat-icon,
+.notify-type .cat-icon,
+.cat-duration .cat-icon,
+.campus-act-btn.active .cat-icon,
+
+/* ===== 品牌面上的图标必须跟着面走（2026-10-14 白字口径）=====
+   图标名自带颜色（.icon-name-* 的 --icon-* 系列）会盖掉继承色：
+   「支持」胶囊里的 heart-gift 就是粉的、文字是白的（维护者截图反馈）。
+   以下容器底色都是品牌珊瑚 + 白字，图标一律改成继承，让面与字同色。 */
+.stat-action .cat-icon,
+.push-mode .cat-icon,
+.cat-follow-btn .cat-icon,
+.rank-tab.active .cat-icon,
+.meet-status .cat-icon,
+.day-detail-tag .cat-icon,
+.quick-pill:active .cat-icon,
+.action-btn.ghost .cat-icon,
+.btn-opt.active .cat-icon,
+.empty-btn .cat-icon,
+.empty-action-btn .cat-icon { color: inherit; }
+
+/* ===== 管理端表单：性别选项符号色（公→蓝 / 母→粉，与卡片上的性别色一致）===== */
+.btn-opt .icon-name-male { color: var(--icon-blue); }
+.btn-opt .icon-name-female { color: var(--icon-rose); }
+
+/* ===== 头部暖色渐变带：图标随标题色（浅色白字 / 深色深字，随主题翻转）===== */
+.warm-header .cat-icon,
+.admin-header .cat-icon,
+.top-card .cat-icon { color: var(--bg-primary); }

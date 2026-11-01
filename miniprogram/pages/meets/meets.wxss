@@ -1,0 +1,661 @@
+/* 相遇打卡页面 - 日历主视觉布局 */
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  background: var(--bg-secondary);
+}
+.page-enter { animation: pageEnter 0.4s ease; }
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== 日历主视觉区 ==================== */
+.calendar-section {
+  margin: 24rpx 40rpx 0;
+  padding: 32rpx 32rpx 24rpx;
+  border: 2rpx solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-primary);
+}
+
+/* 月份导航 */
+.cal-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32rpx;
+  margin-bottom: 32rpx;
+}
+
+.cal-nav-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 触控区 ≥ 88rpx(44px)，此前 56rpx 偏小易误触 */
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  transition: all 0.2s ease;
+}
+
+.cal-nav-btn-hover {
+  background: var(--primary-light);
+  transform: scale(0.9);
+}
+
+.cal-nav-arrow {
+  color: var(--text-secondary);
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.cal-nav-title {
+  min-width: 240rpx;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* 星期标题 */
+.cal-weekdays {
+  display: flex;
+  margin-bottom: 16rpx;
+}
+
+.cal-weekday {
+  flex: 1;
+  padding: 8rpx 0;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* 日期网格 */
+.cal-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cal-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 14.28%;
+
+  /* 96rpx ≈ 48px，满足 44pt 最小触摸目标 */
+  min-height: 96rpx;
+  padding: 8rpx 0;
+}
+
+.cal-day-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.cal-day-text {
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* 空白 / 未来 */
+.cal-cell-empty .cal-day-text { color: transparent; }
+.cal-cell-future .cal-day-text { color: var(--text-light); }
+
+/* 打卡日：数字在粉色圆圈里 */
+.cal-day-checked {
+  box-shadow: 0 8rpx 8rpx var(--primary-tint-35);
+  background: var(--primary-color);
+}
+
+.cal-day-checked .cal-day-text {
+  color: var(--bg-primary);
+  font-weight: 700;
+}
+
+/* 今天（未打卡）：品牌实心圆 + 白字（口径同主按钮，2026-10-14 维护者定） */
+.cal-day-today {
+  border: none;
+  background: var(--primary-cta-bg);
+}
+
+.cal-day-today .cal-day-text {
+  color: var(--primary-cta-text);
+  font-weight: 700;
+}
+
+/* 今天（已打卡）：实心圆 */
+.cal-day-today-checked {
+  border: none;
+  box-shadow: 0 8rpx 16rpx var(--primary-tint-45);
+  background: var(--primary-cta-bg);
+}
+
+.cal-day-today-checked .cal-day-text {
+  color: var(--primary-cta-text);
+  font-weight: 800;
+}
+
+/* 选中日期：放大 + 更亮的阴影 */
+.cal-day-selected {
+  transform: scale(1.2);
+  box-shadow: 0 12rpx 24rpx var(--primary-tint-55);
+}
+
+/* ==================== 统计卡片 ==================== */
+.stats-section {
+  display: flex;
+  gap: 24rpx;
+  padding: 24rpx 40rpx 0;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 24rpx 16rpx;
+  border: 2rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  text-align: center;
+}
+
+.stat-card-streak {
+  border-color: var(--primary-tint-20);
+}
+
+.icon-fire {
+  animation: fireShake 0.8s ease-in-out infinite;
+}
+
+@keyframes fireShake {
+  0%, 100% { transform: rotate(0) scale(1); }
+  25% { transform: rotate(-5deg) scale(1.1); }
+  75% { transform: rotate(5deg) scale(1.1); }
+}
+
+.stat-value {
+  display: block;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1rpx;
+}
+
+.stat-label {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* ==================== 打卡日详情 ==================== */
+.day-detail-section {
+  margin: 24rpx 40rpx 0;
+  overflow: hidden;
+  border: 2rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  animation: slideDownWithBounce 0.4s ease;
+}
+
+@keyframes slideDownWithBounce {
+  0% { opacity: 0; transform: translateY(-20rpx) scale(0.95); }
+  60% { transform: translateY(0) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.day-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx 16rpx;
+}
+
+.day-detail-title {
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.day-detail-close {
+  position: relative;
+
+  /* 视觉高约 48rpx（padding 8rpx + icon 28rpx），低于 44pt 最小热区。
+     用透明伪元素把可点区域外扩到 88rpx(44px)：不改变视觉尺寸，也不撑高标题行。
+     注：任务书写的是 detail.wxss，实际类在 meets.wxss（打卡日详情区） */
+  padding: 8rpx 16rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.day-detail-close::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 88rpx;
+  height: 88rpx;
+  content: '';
+  transform: translate(-50%, -50%);
+}
+
+.day-detail-list {
+  padding: 0 32rpx 16rpx;
+}
+
+.day-detail-card {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+.day-detail-card:last-child { border-bottom: none; }
+
+.day-detail-avatar {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+}
+
+.day-detail-avatar-inner {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.day-detail-avatar-fallback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64rpx;
+  height: 64rpx;
+  font-size: 32rpx;
+}
+
+.day-detail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.day-detail-name {
+  display: block;
+  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.day-detail-location {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.day-detail-tag {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+
+  /* 品牌面 + 白字（口径同主按钮）；16rpx(8px) 远低于可读下限，字号提到 22rpx */
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+/* ==================== 列表标题 ==================== */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx 40rpx 16rpx;
+}
+
+.list-title {
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.list-count {
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+/* ==================== 相遇记录列表 ==================== */
+.meet-list { padding: 0 40rpx; }
+
+.meet-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
+  padding: 32rpx;
+  border: 2rpx solid var(--border-light);
+  border-radius: 28rpx;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meet-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-md);
+}
+
+.meet-card-enter {
+  animation: cardSlideUp 0.5s ease-out both;
+}
+
+@keyframes cardSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.meet-avatar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-tertiary));
+}
+
+.meet-avatar-img {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.meet-avatar image { width: 100%; height: 100%; }
+.avatar-placeholder { font-size: 40rpx; }
+
+.meet-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.meet-name-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.meet-name {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.meet-location {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.meet-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.meet-status {
+  /* 品牌面 + 白字（口径同主按钮） */
+  padding: 2rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.meet-note {
+  max-width: 200rpx;
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.meet-time {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--text-light);
+
+  /* 16rpx(8px) 不可读，提到 22rpx */
+  font-size: 22rpx;
+}
+
+.meet-arrow {
+  flex-shrink: 0;
+  color: var(--text-light);
+  font-size: 24rpx;
+}
+
+/* ==================== 分页加载 ==================== */
+.load-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  margin: 0 40rpx;
+  padding: 32rpx 0 16rpx;
+}
+
+.load-more text {
+  color: var(--secondary-color);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.load-more-icon {
+  font-size: 24rpx;
+  animation: loadArrow 2s ease-in-out infinite;
+}
+
+@keyframes loadArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4rpx); }
+}
+
+.load-more.no-more {
+  gap: 16rpx;
+  padding: 32rpx 0 48rpx;
+}
+
+.no-more-line {
+  flex: 1;
+  max-width: 200rpx;
+  height: 8rpx;
+  background: linear-gradient(90deg, transparent, var(--text-light), transparent);
+}
+
+.no-more-text {
+  color: var(--text-light);
+  font-size: 24rpx;
+  white-space: nowrap;
+}
+
+/* ==================== 空状态 ==================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx 64rpx;
+}
+
+.empty-emoji {
+  display: block;
+  margin-bottom: 24rpx;
+  font-size: var(--icon-md);
+  animation: emptyFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12rpx); }
+}
+
+.empty-title {
+  margin-bottom: 16rpx;
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.empty-desc {
+  margin-bottom: 40rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.empty-btn {
+  padding: 24rpx 48rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 40rpx var(--primary-tint-30);
+
+  /* 按钮内 24rpx 文字属小字，需 4.5:1：品牌珊瑚实底 + 深可可字（5.3:1） */
+  background: var(--primary-cta-bg);
+  transition: all 0.25s ease;
+}
+
+.empty-btn text {
+  color: var(--primary-cta-text);
+  font-size: 24rpx;
+  font-weight: 600;
+  letter-spacing: 8rpx;
+}
+
+/* ==================== 骨架屏 ==================== */
+.skeleton-section {
+  padding: 24rpx 40rpx 0;
+}
+
+.skeleton-calendar {
+  margin-bottom: 24rpx;
+  padding: 32rpx;
+  border-radius: var(--radius-xl);
+  background: var(--bg-primary);
+}
+
+.skeleton-nav {
+  width: 240rpx;
+  height: 32rpx;
+  margin: 0 auto 32rpx;
+  border-radius: 8rpx;
+}
+
+.skeleton-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.skeleton-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 14.28%;
+  height: 76rpx;
+
+  /* 占位必须与真格子同形：真日期是 .cal-day-wrap 的 72rpx 正圆。
+     给 14.28% 宽的格子直接写 50% 会渲染成 98×76 椭圆（2026-10-14 全项目检查修复），
+     故外框只做布局，圆与流光都交给 ::after（渐变口径同本文件 .shimmer）。 */
+}
+
+.skeleton-cell.shimmer {
+  background: none;
+  animation: none;
+}
+
+.skeleton-cell::after {
+  content: '';
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-warm) 50%, var(--bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmerMove 1.5s infinite;
+}
+
+.skeleton-stats {
+  height: 120rpx;
+  border-radius: var(--radius-lg);
+}
+
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-warm) 50%, var(--bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmerMove 1.5s infinite;
+}
+
+@keyframes shimmerMove {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  .meet-card { border-color: var(--border-color); background: var(--bg-card); }
+  .meet-card:active { background: var(--bg-warm); }
+  .cal-cell { border-color: var(--border-color); background: var(--bg-card); }
+
+  /* 删除了此前的 .cal-cell.today —— wxml 里没有这个类名（实际是内层的 cal-day-today），
+     该规则从未生效；今天的圆环已由 .cal-day-today 自己负责 */
+  .stat-card { border-color: var(--border-color); background: var(--bg-card); }
+
+  /* 深色下打卡日底色改为 --primary-light(#3D2B26 深棕)，文字必须同步翻成浅色：
+     否则 .cal-day-text 仍是 --bg-primary(#1B1816)，深底深字对比仅约 1.2:1，日期数字几乎不可见 */
+  .cal-day-checked { background: var(--primary-light); }
+  .cal-day-checked .cal-day-text { color: var(--text-primary); }
+
+  /* 「今天」已改品牌实心圆 + 白字、相遇状态标签已铺品牌底：
+     底色/字色都随 --primary-cta-* 自动翻转，无需在此指回品牌色 */
+  .meet-status { background: var(--primary-cta-bg); color: var(--primary-cta-text); }
+  .day-detail-card { border-color: var(--border-color); background: var(--bg-card); }
+
+  /* load-more uses global styles */
+}

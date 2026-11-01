@@ -1,0 +1,9 @@
+{
+  "name": "sweepLostCats",
+  "version": "1.0.0",
+  "description": "定时扫描久未相遇的猫并自动标记走失",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

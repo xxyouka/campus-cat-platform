@@ -1,0 +1,355 @@
+/* 相册详情页面样式 */
+
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%);
+  background-image:
+    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-warm) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 160rpx 160rpx;
+}
+
+/* 上传卡片 */
+.upload-card {
+  display: flex;
+  align-items: center;
+  margin: 30rpx 32rpx;
+  padding: 32rpx;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 40rpx;
+  box-shadow: 0 8rpx 32rpx var(--warm-tint-07);
+  background: var(--bg-primary);
+  transition: all 0.2s ease;
+}
+
+.upload-card:active {
+  transform: scale(0.99);
+  box-shadow: 0 4rpx 16rpx var(--warm-tint-05);
+}
+
+.upload-icon-wrap {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: 28rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.upload-icon {
+  color: var(--bg-primary);
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.upload-text-wrap {
+  flex: 1;
+}
+
+.upload-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.upload-desc {
+  display: block;
+  color: var(--text-light);
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.upload-arrow {
+  color: var(--secondary-color);
+  font-size: 40rpx;
+  font-weight: 300;
+}
+
+/* 上传进度遮罩 */
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--mask-bg-heavy);
+  backdrop-filter: blur(4px);
+}
+
+.upload-progress-card {
+  width: 560rpx;
+  padding: 56rpx 48rpx;
+  border-radius: 48rpx;
+  box-shadow: 0 40rpx 120rpx var(--warm-tint-18);
+  background: var(--bg-primary);
+  text-align: center;
+}
+
+.upload-progress-icon {
+  margin-bottom: 20rpx;
+  font-size: 80rpx;
+}
+
+.upload-progress-title {
+  margin-bottom: 16rpx;
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.upload-progress-file {
+  margin-bottom: 30rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.progress-bar-bg {
+  flex: 1;
+  height: 12rpx;
+  overflow: hidden;
+  border-radius: 6rpx;
+  background: var(--border-light);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.progress-bar-fill.completed {
+  background: linear-gradient(90deg, var(--success-color) 0%, var(--info-color) 100%);
+  animation: progressPulse 1s ease-in-out;
+}
+
+@keyframes progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.progress-text {
+  min-width: 60rpx;
+  color: var(--primary-color);
+  font-size: 26rpx;
+  font-weight: 600;
+  text-align: right;
+  transition: color 0.3s ease;
+}
+
+.progress-text.completed {
+  color: var(--success-color);
+}
+
+.upload-stage-hint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  animation: stageFadeIn 0.3s ease-out;
+}
+
+@keyframes stageFadeIn {
+  from { opacity: 0; transform: translateY(-10rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stage-dot {
+  display: inline-block;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+}
+
+.stage-dot.compressing {
+  background: var(--warning-color);
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+.stage-dot.uploading {
+  background: var(--primary-color);
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+.stage-dot.saving {
+  background: var(--info-color);
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+.stage-dot.done {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: var(--success-color);
+  color: var(--bg-primary);
+  font-size: 20rpx;
+  font-weight: bold;
+  line-height: 28rpx;
+  text-align: center;
+  animation: none;
+}
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.upload-progress-total {
+  margin-bottom: 32rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.upload-cancel-btn {
+  display: inline-block;
+  margin-top: 24rpx;
+  padding: 20rpx 48rpx;
+  border-radius: 40rpx;
+  background: var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.upload-cancel-btn text {
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.upload-cancel-btn:active {
+  background: var(--bg-tertiary);
+  transform: scale(0.96);
+}
+
+/* 加载 */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx;
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+}
+
+/* 骨架屏 */
+.skeleton-photo-section {
+  padding: 0 32rpx;
+}
+
+.skeleton-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+}
+
+.skeleton-photo-item {
+  aspect-ratio: 1;
+  border-radius: 32rpx;
+  background: linear-gradient(90deg, var(--border-light) 25%, var(--bg-tertiary) 50%, var(--border-light) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* 照片区域 */
+.photo-section {
+  padding: 0 32rpx;
+}
+
+.section-title {
+  margin-bottom: 24rpx;
+  color: var(--text-tertiary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+}
+
+.photo-item {
+  position: relative;
+  overflow: hidden;
+  border: 2rpx solid var(--warm-tint-07);
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+  aspect-ratio: 1;
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-time {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 12rpx 16rpx;
+  overflow: hidden;
+  background: linear-gradient(transparent, var(--mask-bg));
+  color: var(--bg-primary);
+  font-size: 20rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: var(--mask-bg-light);
+  transition: background 0.2s;
+  backdrop-filter: blur(4px);
+}
+
+.delete-btn:active {
+  background: var(--danger-overlay);
+}
+
+.delete-btn text {
+  color: var(--bg-primary);
+  font-size: 26rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 160rpx 40rpx;
+  text-align: center;
+}
+
+.empty-title {
+  margin-bottom: 16rpx;
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 600;
+}

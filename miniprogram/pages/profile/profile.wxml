@@ -1,0 +1,245 @@
+<!-- 我的页面 -->
+<view class="page page-enter">
+  <!-- 顶部卡片（沉浸式自定义导航 + 打卡日历）
+       E+G 布局：日历整块坐进橘色头部，原 logo / 名称 / 副标题让位，只留一行小品牌（.brandline）；
+       原头部的「关注 / 相遇 / 新动态」统计行整行下沉成日历下方的三格快捷条（.quick-card），
+       菜单里「我的记录」组随之下线 —— 同一组数字首屏只出现一次（2026-10-12 拍板）。 -->
+  <view class="top-card">
+    <!-- 状态栏安全占位 -->
+    <view class="status-bar-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <!-- 猫爪底纹 SVG -->
+    <view class="header-paw-bg"></view>
+
+    <!-- 一行小品牌：守住 App 身份，不再占 logo 的尺寸 -->
+    <view class="brandline">
+      <icon name="cat" size="32" />
+      <text class="brandline-text">校园猫猫</text>
+    </view>
+
+    <!-- 打卡日历 -->
+    <view class="calendar-card">
+      <view class="calendar-head" id="coach-profile-calendar">
+        <view class="calendar-switch" bindtap="onPrevMonth" hover-class="btn-press"><text class="calendar-switch-icon">‹</text></view>
+        <text class="calendar-title">{{calendar.title}}</text>
+        <view class="calendar-switch" bindtap="onNextMonth" hover-class="btn-press"><text class="calendar-switch-icon">›</text></view>
+      </view>
+      <view class="calendar-week">
+        <text class="calendar-week-day" wx:for="{{weekLabels}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="calendar-grid">
+        <view class="calendar-cell {{item.meeted ? 'meeted' : ''}} {{item.isToday ? 'today' : ''}}" wx:for="{{calendar.cells}}" wx:key="key">
+          <text class="calendar-day {{item.meeted ? 'meeted' : ''}} {{item.isToday ? 'today' : ''}}">{{item.day || ''}}</text>
+          <view class="calendar-dot" wx:if="{{item.meeted}}"></view>
+        </view>
+      </view>
+      <view class="calendar-error" wx:if="{{calendar.loadFailed && !calendar.loading}}" bindtap="onRetryCalendar" hover-class="btn-press" role="button" aria-label="日历加载失败，点击重试">
+        <icon name="warning" size="28" />
+        <text class="calendar-error-text">日历加载失败，点击重试</text>
+      </view>
+      <view class="calendar-stats" wx:if="{{!calendar.loading && !calendar.loadFailed && firstScreenReady}}">
+        <view class="calendar-stat">
+          <text class="calendar-stat-num">{{calendar.stats.monthDays}}</text>
+          <text class="calendar-stat-label">本月打卡</text>
+        </view>
+        <view class="calendar-stat">
+          <text class="calendar-stat-num">{{calendar.stats.streakDays}}</text>
+          <text class="calendar-stat-label">连续天数</text>
+        </view>
+        <view class="calendar-stat">
+          <text class="calendar-stat-num">{{calendar.stats.totalDays}}</text>
+          <text class="calendar-stat-label">累计天数</text>
+        </view>
+      </view>
+      <!-- 日历统计同样等首屏就绪：三个数字是一次云调用回来的，
+           不该先以 0 呈现再跳成 200/177/164 -->
+      <view class="calendar-stats" wx:elif="{{!calendar.loadFailed}}">
+        <view class="calendar-stat" wx:for="{{skeletonStats}}" wx:key="*this">
+          <view class="push-skeleton-num shimmer"></view>
+          <view class="push-skeleton-label shimmer"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 记录快捷条：关注 / 相遇 / 新动态（原头部统计行整行下沉）
+       首屏门禁口径同日历统计：labels 与 icon 是静态资源立即可用，只把会变的数字换灰条；
+       三格分别承接原菜单「我的记录」两项（关注 / 相遇）与头部「新动态」入口。 -->
+  <view class="quick-card" id="coach-profile-quick">
+    <view class="quick-cell" hover-class="stat-hover" bindtap="onGoFavorites" role="button" aria-label="我的关注">
+      <view class="quick-icon fav"><icon name="heart-double" size="30" /></view>
+      <text class="quick-name">关注</text>
+      <text class="quick-num" wx:if="{{firstScreenReady}}">{{favoriteCount || 0}}</text>
+      <view class="quick-num-skeleton shimmer" wx:else></view>
+    </view>
+    <view class="quick-cell" hover-class="stat-hover" bindtap="onGoMeets" role="button" aria-label="我的相遇">
+      <view class="quick-icon meet"><icon name="paw" size="30" /></view>
+      <text class="quick-name">相遇</text>
+      <block wx:if="{{firstScreenReady}}">
+        <text class="quick-num {{meetCountError ? 'is-error' : ''}}">{{meetCount || 0}}</text>
+        <!-- 失败时保留原值（不伪装成 0）+ 就地重试；catchtap 阻止冒泡，避免误跳「我的相遇」 -->
+        <text class="quick-retry" wx:if="{{meetCountError}}" catchtap="onRetryMeetCount" role="button" aria-label="相遇次数读取失败，点击重试">重试</text>
+      </block>
+      <view class="quick-num-skeleton shimmer" wx:else></view>
+    </view>
+    <view class="quick-cell" hover-class="stat-hover" bindtap="onGoNotifications" role="button" aria-label="动态">
+      <view class="quick-icon noti">
+        <icon name="bell" size="30" />
+        <!-- 未读红点口径同首页 .badge-dot：挂在图标右上角，白卡上用实色 + 白描边 -->
+        <view class="quick-badge" wx:if="{{unreadUpdateCount > 0}}"></view>
+      </view>
+      <text class="quick-name">动态</text>
+      <text class="quick-num" wx:if="{{firstScreenReady}}">{{unreadUpdateCount || 0}}</text>
+      <view class="quick-num-skeleton shimmer" wx:else></view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="menu-list">
+    <view class="menu-section">
+      <view class="menu-section-header" id="coach-profile-menu">
+        <text class="menu-section-label">探索发现</text>
+      </view>
+      <view class="menu-item" bindtap="onGoRank" hover-class="menu-hover">
+        <view class="menu-left">
+          <icon name="trophy" size="36" />
+          <text class="menu-name">猫咪排行榜</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 设置 -->
+    <view class="menu-section">
+      <view class="menu-section-header">
+        <text class="menu-section-label">设置</text>
+      </view>
+      <view class="menu-item" bindtap="onGoHelp" hover-class="menu-hover">
+        <view class="menu-left">
+          <icon name="book" size="36" />
+          <text class="menu-name">使用帮助</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+
+      <view class="menu-item" bindtap="onPrivacy" hover-class="menu-hover">
+        <view class="menu-left">
+          <icon name="clipboard" size="36" />
+          <text class="menu-name">隐私政策</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+
+      <view class="menu-item" bindtap="onAbout" hover-class="menu-hover">
+        <view class="menu-left">
+          <icon name="info" size="36" />
+          <text class="menu-name">关于我们</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部版本 -->
+  <view class="footer">
+    <text class="version" bindtap="onVersionTap" hover-class="hover-none">{{version}}</text>
+    <!-- 版权行：年份取运行时（copyrightYear），避免来年过期；
+         版权符号不用 U+00A9 —— check-ui-emoji 按 Unicode Extended_Pictographic
+         扫描，U+00A9 在 Unicode 15+ 属于该集合，会被图标门禁拦下。
+         版权人＝个人（根 LICENSE：版权所有 (c) 2026 维护者，All Rights Reserved），
+         2026-10-13 按本人要求把学校名从版权行摘掉（学校仍作为「场景来源」出现在
+         「关于我们」弹窗的 .about-school 块里，那处是鸣谢不是权利声明）。 -->
+    <text class="copyright">{{copyrightYear}} 维护者 · 版权所有</text>
+  </view>
+
+  <!-- 管理员登录弹窗 -->
+  <view class="login-overlay" wx:if="{{modal.adminLogin.show}}" catchtap="onCancelLogin">
+    <view class="login-box" catchtap="stopPropagation">
+      <!-- 标题 -->
+      <view class="login-title-row">
+        <text class="login-title">管理员登录</text>
+        <view class="login-close" bindtap="onCancelLogin"><icon name="close" size="28" /></view>
+      </view>
+      
+      <!-- 账号 -->
+      <view class="field">
+        <text class="field-label">账号</text>
+        <view class="field-input {{errors.account ? 'error' : ''}}">
+          <input type="text" placeholder="请输入账号" bindinput="onAccountInput" value="{{account}}" confirm-type="next" maxlength="50" />
+        </view>
+        <text class="field-error" wx:if="{{errors.account}}">{{errors.account}}</text>
+      </view>
+      
+      <!-- 密码 -->
+      <view class="field">
+        <text class="field-label">密码</text>
+        <view class="field-input {{errors.password ? 'error' : ''}}">
+          <input type="text" password="{{!showPwd}}" placeholder="请输入密码" bindinput="onPasswordInput" value="{{password}}" confirm-type="done" maxlength="50" />
+          <view class="toggle-pwd" catchtap="onTogglePwd"><icon name="{{showPwd ? 'eye-off' : 'eye'}}" size="28" /></view>
+        </view>
+        <text class="field-error" wx:if="{{errors.password}}">{{errors.password}}</text>
+      </view>
+      
+      <!-- 登录按钮 -->
+      <view class="btn-login {{logging ? 'loading' : ''}}" bindtap="onConfirmLogin" hover-class="btn-hover">
+        <text>{{logging ? '登录中…' : '登录'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关于弹窗 -->
+  <view class="modal-wrap" wx:if="{{modal.about.show}}">
+    <view class="about-modal">
+      <view class="about-header">
+        <icon name="cat" size="56" />
+        <text class="about-name">校园猫猫</text>
+        <text class="about-version">{{version}}</text>
+      </view>
+      <view class="about-body">
+        <text class="about-desc">校园猫咪信息展示平台</text>
+        <text class="about-desc">记录校园里的每一个小可爱</text>
+        <view class="about-divider"></view>
+        <view class="about-contact">
+          <text class="contact-title">联系我们</text>
+          <view class="contact-item" bindtap="onOpenFeedback" hover-class="btn-hover" role="button" aria-label="提交意见反馈">
+            <icon name="chat" size="28" />
+            <text class="contact-text contact-link">意见反馈：点这里告诉我们</text>
+          </view>
+          <view class="contact-item">
+            <icon name="chat" size="28" />
+            <text class="contact-text">微信：{{contact.wechat}}</text>
+          </view>
+          <view class="contact-item">
+            <icon name="email" size="28" />
+            <text class="contact-text">邮箱：{{contact.email}}</text>
+          </view>
+        </view>
+        <view class="about-divider"></view>
+        <view class="about-school">
+          <text class="school-text">{{school.name}}</text>
+          <text class="school-sub">{{school.department}}</text>
+        </view>
+      </view>
+      <view class="about-footer">
+        <view class="about-btn" bindtap="onModalClose" hover-class="btn-hover">
+          <text>知道了</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <coach-mark
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    selector="{{guideTour.selector}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    placement="{{guideTour.placement}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    bind:ready="onGuideTourReady"
+    bind:missing="onGuideTourMissing"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "migrateCatListSort",
+  "version": "1.0.0",
+  "description": "一次性数据回填：猫咪列表排序值 listSort",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

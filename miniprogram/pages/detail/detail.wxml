@@ -1,0 +1,488 @@
+<!-- 猫咪详情页 - 简洁浏览版 -->
+<view class="page page-enter">
+  <!-- 撤销取消关注提示条（位于导航栏下方，避免被导航栏遮挡） -->
+  <view class="undo-bar {{showUndoBar ? 'undo-bar-show' : ''}}" wx:if="{{showUndoBar}}" style="top: {{navBarTotalHeight ? navBarTotalHeight : 100}}px">
+    <text class="undo-bar-text">已取消关注「{{undoCatName}}」</text>
+    <view class="undo-bar-btn" bindtap="onUndoUnfavorite" hover-class="btn-hover">撤销</view>
+  </view>
+
+  <!-- 骨架屏加载状态 -->
+  <view class="skeleton-container {{loading ? 'visible' : ''}}" wx:if="{{loading}}">
+    <!-- 头部骨架 -->
+    <view class="skeleton-header">
+      <view class="skeleton-avatar shimmer"></view>
+      <view class="skeleton-header-info">
+        <view class="skeleton-text name shimmer"></view>
+        <view class="skeleton-text tag shimmer"></view>
+        <view class="skeleton-text campus shimmer"></view>
+      </view>
+    </view>
+    <!-- 信息卡片骨架 -->
+    <view class="skeleton-card">
+      <view class="skeleton-row">
+        <view class="skeleton-info-item">
+          <view class="skeleton-text label shimmer"></view>
+          <view class="skeleton-text value shimmer"></view>
+        </view>
+        <view class="skeleton-info-item">
+          <view class="skeleton-text label shimmer"></view>
+          <view class="skeleton-text value shimmer"></view>
+        </view>
+        <view class="skeleton-info-item">
+          <view class="skeleton-text label shimmer"></view>
+          <view class="skeleton-text value shimmer"></view>
+        </view>
+      </view>
+      <view class="skeleton-divider"></view>
+      <view class="skeleton-row">
+        <view class="skeleton-info-full">
+          <view class="skeleton-text label shimmer"></view>
+          <view class="skeleton-text value long shimmer"></view>
+        </view>
+      </view>
+    </view>
+    <!-- 提示卡片骨架 -->
+    <view class="skeleton-tip">
+      <view class="skeleton-icon shimmer"></view>
+      <view class="skeleton-tip-content">
+        <view class="skeleton-text title shimmer"></view>
+        <view class="skeleton-text desc shimmer"></view>
+      </view>
+    </view>
+    <!-- 照片区骨架 -->
+    <view class="skeleton-photos">
+      <view class="skeleton-text section-title shimmer"></view>
+      <view class="skeleton-photo-grid">
+        <view class="skeleton-photo shimmer" wx:for="{{skeletonItems}}" wx:key="*this"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误空状态：区分「猫咪不存在」与「加载失败」 -->
+  <view class="error-state" wx:if="{{loadError && !loading}}">
+    <view class="error-icon-wrap">
+      <icon name="{{loadErrorType === 'notfound' ? 'cat-sad' : 'warning'}}" size="56" />
+    </view>
+    <text class="error-title">{{loadErrorType === 'notfound' ? '找不到这只猫咪' : '加载失败'}}</text>
+    <text class="error-desc">{{loadErrorType === 'notfound' ? '可能已被删除或链接失效' : '网络或服务开了小差，稍后再试试'}}</text>
+    <view class="error-actions">
+      <view class="error-btn {{loadErrorType === 'notfound' ? '' : 'ghost'}}" bindtap="onBack" hover-class="btn-hover">
+        <view class="inline-row"><icon name="arrow-left" size="28" /><text>返回</text></view>
+      </view>
+      <view class="error-btn" wx:if="{{loadErrorType !== 'notfound'}}" bindtap="onRetryLoad" hover-class="btn-hover">
+        <view class="inline-row"><icon name="refresh" size="28" /><text>重新加载</text></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 温馨头部（淡入过渡，沉浸式自定义导航） -->
+  <block wx:if="{{!loadError}}">
+  <view class="detail-header {{!loading ? 'fade-in' : ''}}" wx:if="{{!loading}}">
+    <!-- 使用统一 custom-navbar 组件替代手工导航栏 -->
+    <custom-navbar
+      title="{{cat.name || '猫咪详情'}}"
+      subtitle="{{cat.campus || ''}}"
+      theme="{{navbarScrolled ? 'default' : 'transparent'}}"
+      showBack="{{true}}"
+      bind:heightchange="onNavbarHeightChange"
+    />
+    <!-- 猫爪底纹 SVG -->
+    <view class="header-paw-bg"></view>
+    <view class="header-bg"></view>
+    <view class="cat-profile" style="padding-top: {{navBarTotalHeight ? navBarTotalHeight + 8 : 100}}px;">
+      <view class="avatar-wrap">
+        <!-- 使用懒加载组件 -->
+        <lazy-image
+          class="cat-avatar"
+          src="{{cat.avatar}}"
+          type="detail"
+          lazy="{{false}}"
+          mode="aspectFill"
+          radius="46"
+          showLoading="{{true}}"
+          bind:error="onAvatarError"
+        />
+      </view>
+      <view class="cat-basic">
+        <view class="name-row">
+          <text class="cat-name">{{cat.name}}</text>
+          <icon wx:if="{{cat.gender === '公'}}" class="cat-gender gender-male" name="male" size="28" />
+          <icon wx:elif="{{cat.gender === '母'}}" class="cat-gender gender-female" name="female" size="28" />
+          <text wx:else class="cat-gender gender-unknown">?</text>
+          <view wx:if="{{cat.status && cat.status !== 'normal'}}" class="cat-status-badge {{cat.status === 'adopted' ? 'status-adopted' : cat.status === 'lost' ? 'status-lost' : cat.status === 'deceased' ? 'status-deceased' : ''}}">
+            <icon wx:if="{{cat.status === 'adopted'}}" name="home" size="24" />
+            <icon wx:elif="{{cat.status === 'lost'}}" name="siren" size="24" />
+            <icon wx:elif="{{cat.status === 'deceased'}}" name="dove" size="24" />
+            <text class="badge-text">{{cat.status === 'adopted' ? '已领养' : cat.status === 'lost' ? '走失' : cat.status === 'deceased' ? '已离世' : cat.status}}</text>
+          </view>
+        </view>
+        <view class="cat-tags">
+          <!-- 好猫星级（适合家养）：橙底上的白底药丸，五颗星展示（实心数 = 星级）。
+               未评级不渲染，标注「好猫星级」便于理解 -->
+          <view wx:if="{{cat.adoptLevel >= 3}}" class="adopt-pill" bindtap="onShowAdoptHelp" aria-label="好猫星级 {{cat.adoptLevel}} 星，适合家养">
+            <text class="adopt-pill-label">好猫星级</text>
+            <view class="adopt-stars">
+              <icon wx:for="{{starSlots}}" wx:key="*this" name="star-fill" size="26" class="{{index < cat.adoptLevel ? 'star-on' : 'star-off'}}" />
+            </view>
+          </view>
+          <text class="tag" wx:for="{{cat.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view class="cat-location-wrap" wx:if="{{cat.campus || cat.location}}">
+          <view class="inline-row" wx:if="{{cat.campus}}"><icon name="pin" size="28" /><text class="cat-location">{{cat.campus}}</text></view>
+          <text class="cat-location" wx:if="{{cat.location}}">{{cat.location}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 基本信息卡片（竖向图标卡片风格） -->
+  <view class="info-section" wx:if="{{!loading}}">
+    <view class="info-card">
+      <!-- 核心属性：竖向图标卡片 -->
+      <view class="info-grid">
+        <view class="info-chip">
+          <icon name="palette" size="32" />
+          <text class="chip-label">毛色</text>
+          <text class="chip-value">{{cat.color || '未知'}}</text>
+        </view>
+        <view class="info-chip">
+          <icon name="scissors" size="32" />
+          <text class="chip-label">绝育</text>
+          <text class="chip-value {{cat.sterilized === true ? 'sterilized-yes' : cat.sterilized === false ? 'sterilized-no' : ''}}">{{cat.sterilized === true ? '已绝育' : cat.sterilized === false ? '未绝育' : '未知'}}</text>
+        </view>
+        <view class="info-chip">
+          <icon name="health" size="32" />
+          <text class="chip-label">健康</text>
+          <!-- 健康档案模块已移除：此处只展示猫咪自身的 healthStatus 字段
+               （口炎/皮肤病/良好），不再拼接健康记录时间线 -->
+          <text class="chip-value {{cat.healthStatus === 'stomatitis' || cat.healthStatus === 'skin' ? 'health-warning' : 'health-good'}}">{{cat.healthStatus === 'stomatitis' ? '口炎' : cat.healthStatus === 'skin' ? '皮肤病' : '良好'}}</text>
+        </view>
+        <view class="info-chip" wx:if="{{cat.viewCount > 0}}">
+          <icon name="eye" size="32" />
+          <text class="chip-label">人气</text>
+          <text class="chip-value">{{viewCountDisplay}}</text>
+        </view>
+      </view>
+
+      <view class="section-divider" wx:if="{{cat.description || cat.appearance || cat.notes}}"></view>
+
+      <!-- 性格描述 -->
+      <view class="info-row" wx:if="{{cat.description}}">
+        <view class="info-full">
+          <view class="personality-bubble">
+            <icon name="thought" size="32" />
+            <text class="bubble-label">性格</text>
+            <text class="bubble-text">{{cat.description}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 外貌特征 -->
+      <view class="info-row" wx:if="{{cat.appearance}}">
+        <view class="info-full">
+          <view class="inline-row"><icon name="eyes" size="28" /><text class="info-label">外貌</text></view>
+          <text class="info-value">{{cat.appearance}}</text>
+        </view>
+      </view>
+
+      <!-- 备注 -->
+      <view class="info-row" wx:if="{{cat.notes}}">
+        <view class="info-full">
+          <view class="inline-row"><icon name="note" size="28" /><text class="info-label">备注</text></view>
+          <text class="info-value">{{cat.notes}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="report-entry" id="coach-detail-report" bindtap="onOpenReport" hover-class="btn-press" role="button" aria-label="反馈信息有误">
+      <icon name="announce" size="26" />
+      <text>信息有误或发现异常？点此反馈</text>
+      <text class="report-entry-arrow">›</text>
+    </view>
+
+    <!-- 最近相遇（独立区块） -->
+    <view class="standalone-card" wx:if="{{recentMeets.length > 0}}">
+    <view class="meets-section">
+      <view class="section-header">
+        <view class="inline-row"><icon name="paw" size="32" /><text class="section-title">最近相遇</text></view>
+        <text class="meet-today-count" wx:if="{{todayMeetCount > 0}}">今日我已打卡 {{todayMeetCount}} 次</text>
+      </view>
+      <view class="meets-list">
+        <view class="meet-item v3" wx:for="{{recentMeets}}" wx:key="_id">
+          <view class="meet-item-left">
+            <view class="meet-status inline-row" wx:if="{{item.statusText}}"><icon name="{{item.statusIcon}}" size="28" /><text>{{item.statusText}}</text></view>
+            <view class="inline-row" wx:if="{{item.location}}"><icon name="pin" size="28" /><text class="meet-location">{{item.location}}</text></view>
+          </view>
+          <text class="meet-time">{{item.timeAgo}}</text>
+        </view>
+      </view>
+    </view>
+    </view>
+
+    <!-- 关系头像 -->
+    <view class="standalone-card" wx:if="{{relationCats.length > 0}}">
+    <view class="relation-avatars">
+      <view class="relation-avatars-header">
+        <view class="inline-row">
+          <icon name="link" size="28" />
+          <text class="relation-avatars-title">TA的关系</text>
+          <text class="relation-avatars-count">{{relationCats.length}} 条</text>
+        </view>
+      </view>
+      <!-- 管理员入口：普通用户看不到（见 detail.js 的 isAdminEntryVisible）。
+           从这里进来时 relation-manage 会把「基准猫咪」填成当前这只、面板自动打开，
+           不用再在选猫器里把当前猫重选一遍。
+           独立一行而不是塞进标题行：管理入口不该挤占关系头像区的注意力。 -->
+      <view wx:if="{{isAdminEntryVisible}}" class="relation-manage-entry" bindtap="onOpenRelationManage" hover-class="btn-hover">
+        <text>管理这段关系</text>
+      </view>
+      <view class="relation-strip">
+        <scroll-view scroll-x class="relation-avatars-scroll" enhanced show-scrollbar="{{false}}">
+          <view class="relation-avatars-list">
+            <view class="relation-avatar-item" wx:for="{{relationCats}}" wx:key="id" bindtap="onRelationCatTap" data-id="{{item.id}}">
+              <!-- 版式改为竖排三段：头像 → 名字 → 关系胶囊。
+                   原来徽标 absolute 压在头像下缘（bottom:-4rpx）而名字行只隔 8rpx，
+                   徽标一压就把名字遮掉一半（见 detail.wxss .relation-type-badge 注释） -->
+              <image wx:if="{{item.avatar}}" class="relation-avatar-img" src="{{item.avatar}}" mode="aspectFill"></image>
+              <view wx:else class="relation-avatar-placeholder">{{item.initialName}}</view>
+              <text class="relation-avatar-name">{{item.name}}</text>
+              <view class="relation-type-badge" style="background: {{item.relationColor}}">
+                <text >{{item.relationLabel}}</text>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+        <!-- 横滚提示：右侧渐隐，告诉用户后面还有 -->
+        <view wx:if="{{relationCats.length > 3}}" class="relation-strip-fade"></view>
+      </view>
+    </view>
+    </view>
+
+    <!-- 最后更新（轻量提示） -->
+    <view class="last-update-row" wx:if="{{cat.updateTime}}">
+      <icon name="clock" size="28" />
+      <text class="update-text">最后更新：{{cat.updateTime}}</text>
+    </view>
+  </view>
+
+  <!-- 互动提示：直接展示（此前是可折叠区块，须点击标题才展开；产品要求进来即可见） -->
+  <view class="tip-section" wx:if="{{!loading}}">
+    <view class="tip-card {{cat.healthStatus === 'stomatitis' ? 'warning' : ''}}">
+      <icon class="tip-icon {{cat.healthStatus !== 'stomatitis' ? 'bulb-glow' : ''}}" name="{{cat.healthStatus === 'stomatitis' ? 'warning' : 'lightbulb'}}" size="28" />
+      <view class="tip-content">
+        <text class="tip-title">{{cat.healthStatus === 'stomatitis' ? '重要提醒' : '互动提示'}}</text>
+        <text class="tip-desc">{{cat.healthStatus === 'stomatitis' ? '该猫咪患有口炎，请勿喂食猫条等湿粮，建议喂食干粮或遵医嘱的特殊猫粮。' : '温柔对待，不惊扰，不随意投喂'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 照片集 -->
+  <view class="photos-section" wx:if="{{!loading}}">
+    <view class="photo-section-card">
+    <view class="section-header" id="coach-detail-photos">
+      <view class="inline-row"><icon name="camera" size="32" /><text class="section-title">照片集</text></view>
+      <view class="photo-stats">
+        <text class="photo-count">{{photoTotal || photos.length}} 张</text>
+        <view class="inline-row" wx:if="{{totalLikes > 0}}"><icon name="heart" size="28" /><text class="photo-likes">{{totalLikes}}</text></view>
+      </view>
+    </view>
+    
+    <view class="photo-grid" wx:if="{{photos.length > 0}}">
+      <view class="photo-item" wx:for="{{photos}}" wx:key="_id" hover-class="card-hover">
+        <lazy-image
+          wx:if="{{item.displayUrl || item._cloudFileID}}"
+          class="photo-image"
+          src="{{item.displayUrl || item._cloudFileID}}"
+          type="gallery"
+          disableProgressive="{{true}}"
+          lazy="{{true}}"
+          mode="aspectFill"
+          radius="12"
+          showLoading="{{true}}"
+          bindtap="onPreviewPhoto"
+          data-index="{{index}}"
+          aria-label="查看{{item.description || '猫咪照片'}}"
+        />
+        <view class="photo-like-btn {{item._liked ? 'liked' : ''}}" catchtap="onTogglePhotoLike" data-photo-id="{{item._id}}" data-index="{{index}}" role="button" aria-label="{{item._liked ? '取消点赞' : '点赞'}}">
+          <icon class="like-icon" name="{{item._liked ? 'heart' : 'heart-outline'}}" size="28" />
+          <text class="like-count" wx:if="{{item.likeCount > 0}}">{{item.likeCount}}</text>
+        </view>
+      </view>
+    </view>
+      
+    <!-- 加载更多提示 -->
+    <view class="load-more" wx:if="{{photos.length > 0}}">
+      <!-- 加载中状态 -->
+      <view class="loading-spinner-wrap" wx:if="{{loadingMore}}">
+        <view class="loading-spinner"></view>
+      </view>
+      <text class="load-text" wx:if="{{loadingMore}}">加载中…</text>
+      
+      <!-- 上拉提示 -->
+      <view class="load-hint" wx:if="{{!loadingMore && hasMorePhotos}}">
+        <text class="load-hint-icon">↓</text>
+        <text class="load-hint-text">上拉加载更多</text>
+      </view>
+      
+      <!-- 已到底 -->
+      <view class="load-end" wx:if="{{!hasMorePhotos && !loadingMore}}">
+        <view class="load-end-line"></view>
+        <view class="inline-row"><text>已经到底啦</text><icon name="paw" size="28" /></view>
+        <view class="load-end-line"></view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <empty-state
+      wx:if="{{photos.length === 0 && !loading}}"
+      icon="camera"
+      title="还没有照片"
+    />
+    </view>
+  </view>
+
+
+  <!-- 底部占位（给固定操作栏留空间） -->
+  <view class="bottom-placeholder"></view>
+
+  <!-- 底部固定操作栏（增强版） -->
+  <view class="bottom-bar enhanced" wx:if="{{!loading}}">
+    <!-- 关注/收藏按钮 -->
+    <view
+      class="action-btn {{isFavorite ? 'favorited' : ''}}"
+      id="coach-detail-fav"
+      bindtap="toggleFavorite"
+      hover-class="btn-press"
+      role="button"
+      aria-pressed="{{isFavorite}}"
+    >
+      <icon class="btn-icon" animation="{{heartAnimation}}" name="{{isFavorite ? 'heart' : 'heart-outline'}}" size="28" />
+      <text>{{isFavorite ? '已关注' : '关注'}}</text>
+    </view>
+    
+    <!-- 相遇打卡主按钮（优化） -->
+    <view
+      class="action-btn btn-primary {{hasMetToday ? 'met-today' : ''}}"
+      id="coach-detail-meet"
+      bindtap="onOpenMeetPanel"
+      hover-class="btn-press"
+    >
+      <icon class="btn-icon" name="{{hasMetToday ? 'check' : 'paw'}}" size="28" />
+      <text>{{hasMetToday ? '今日已打卡' : '我遇到TA啦'}}</text>
+    </view>
+  </view>
+
+  <!-- 相遇打卡面板 -->
+  <view class="meet-panel {{showMeetPanel ? 'show' : ''}}" wx:if="{{showMeetPanel}}">
+    <view class="meet-mask" bindtap="onCloseMeetPanel" catchtouchmove="preventDefault"></view>
+    <view class="meet-content">
+      <view class="meet-header">
+        <view class="inline-row"><icon name="paw" size="32" /><text class="meet-title">记录相遇时刻</text></view>
+        <view class="meet-close" bindtap="onCloseMeetPanel"><icon name="close" size="28" /></view>
+      </view>
+
+      <view class="meet-rule">
+        <icon name="info" size="24" />
+        <text>同一只猫 1 小时内只能打卡一次，打卡会记进你的相遇日历。</text>
+      </view>
+
+      <!-- 在哪相遇的 -->
+      <view class="meet-section-label inline-row"><icon name="pin" size="28" /><text>在哪相遇的（可选）</text></view>
+      <view class="meet-loc-row {{canPickMapPoint ? 'has-acts' : ''}} {{meetPoint ? 'has-clear' : ''}}">
+        <input class="meet-loc-input"
+               type="text"
+               placeholder="不填则记为校园内"
+               placeholder-class="meet-input-ph"
+               value="{{selectedLocation}}"
+               bindinput="onLocationInput"
+               maxlength="20"
+               adjust-position
+               confirm-type="next" />
+        <!-- 右侧动作组：清除 + 定位。V1 只有本部有底图，别的校区不显示 -->
+        <view class="meet-loc-acts" wx:if="{{canPickMapPoint}}">
+          <view class="meet-loc-clear" wx:if="{{meetPoint}}" catchtap="onClearMapPoint" hover-class="btn-press">
+            <icon name="close" size="22" />
+          </view>
+          <view id="coach-meet-map" class="meet-loc-btn" bindtap="onPickMapPoint" hover-class="btn-press">
+            <text>地图选点</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 地图选点常驻提示：比一次性高亮稳，也不会被面板滚动/撑高带偏 -->
+      <view class="meet-loc-tip" wx:if="{{canPickMapPoint}}">
+        <icon name="info" size="22" />
+        <text>可在地图上标记相遇点，也可以只填写地点文字</text>
+      </view>
+
+      <!-- TA在干嘛 -->
+      <view class="meet-section-label inline-row"><icon name="cat-happy" size="28" /><text>TA在干嘛（可选）</text></view>
+      <view class="meet-status-grid">
+        <view class="meet-status-item {{selectedStatusTag === item.text ? 'selected' : ''}}"
+              wx:for="{{meetStatusTags}}" wx:key="text"
+              bindtap="onSelectStatusTag" data-tag="{{item.text}}" hover-class="btn-press">
+          <icon class="meet-status-icon" name="{{item.icon}}" size="52" />
+          <text class="meet-status-text">{{item.text}}</text>
+        </view>
+        <view class="meet-status-item {{isCustomStatus ? 'selected' : ''}}"
+              bindtap="onTapCustomStatus" hover-class="btn-press">
+          <icon name="edit" size="28" />
+          <text class="meet-status-text">自定义</text>
+        </view>
+      </view>
+
+      <!-- 自定义状态输入（选中"自定义"时显示） -->
+      <input class="meet-custom-input {{isCustomStatus ? '' : 'meet-hidden'}}"
+             type="text"
+             placeholder="输入TA在做什么~"
+             placeholder-class="meet-input-ph"
+             value="{{customStatusText}}"
+             bindinput="onCustomStatusInput"
+             maxlength="10"
+             adjust-position
+             focus="{{isCustomStatus}}"
+             confirm-type="done"
+             bindconfirm="onCustomStatusConfirm" />
+
+      <!-- 备注（可选） -->
+      <view class="meet-note-wrap">
+        <textarea class="meet-note-input"
+                  placeholder="记录相遇的故事吧~（可选）"
+                  placeholder-class="meet-note-ph"
+                  maxlength="200"
+                  value="{{meetNote}}"
+                  bindinput="onMeetNoteInput"
+                  confirm-type="done"
+                  auto-height
+                  adjust-position />
+        <text class="meet-note-count">{{meetNote.length}}/200</text>
+      </view>
+
+      <view class="meet-submit" bindtap="onSubmitMeet" hover-class="{{meetSubmitting ? 'none' : 'btn-press'}}" role="button" aria-disabled="{{meetSubmitting}}" aria-label="{{meetSubmitting ? '正在记录相遇' : '记录这一刻'}}">
+        <text>{{meetSubmitting ? '提交中…' : '记录这一刻'}}</text>
+      </view>
+    </view>
+  </view>
+  </block>
+
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover" role="button" aria-label="回到顶部">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+
+  <coach-mark
+    id="guide-tour"
+    show="{{guideTour.show}}"
+    selector="{{guideTour.selector}}"
+    title="{{guideTour.title}}"
+    desc="{{guideTour.desc}}"
+    placement="{{guideTour.placement}}"
+    step-text="{{guideTour.stepText}}"
+    done-text="{{guideTour.doneText}}"
+    skip-text="{{guideTour.skipText}}"
+    bind:ready="onGuideTourReady"
+    bind:missing="onGuideTourMissing"
+    bind:done="onGuideTourNext"
+    bind:skip="onGuideTourSkip"
+  />
+</view>

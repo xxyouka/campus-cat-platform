@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "我的",
+  "navigationStyle": "custom",
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "custom-modal": "/components/custom-modal/custom-modal"
+  }
+}

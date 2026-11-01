@@ -1,0 +1,9 @@
+{
+  "name": "togglePhotoLike",
+  "version": "1.0.0",
+  "description": "照片点赞/取消点赞",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

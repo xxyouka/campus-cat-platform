@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "custom-navbar": "/components/custom-navbar/custom-navbar",
+    "icon": "/components/icon/icon"
+  },
+  "navigationStyle": "custom",
+  "backgroundColor": "#FDF8F5",
+  "backgroundTextStyle": "dark"
+}

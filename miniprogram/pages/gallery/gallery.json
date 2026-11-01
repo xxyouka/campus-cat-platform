@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "lazy-image": "/components/lazy-image/lazy-image",
+    "empty-state": "/components/empty-state/empty-state"
+  },
+  "enablePullDownRefresh": true,
+  "navigationStyle": "custom",
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C",
+  "navigationBarTitleText": "猫咪相册"
+}

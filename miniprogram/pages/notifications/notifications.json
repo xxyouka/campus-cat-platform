@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "最新动态",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "navigationStyle": "custom",
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C",
+  "usingComponents": {
+    "custom-navbar": "../../components/custom-navbar/custom-navbar",
+    "icon": "/components/icon/icon",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

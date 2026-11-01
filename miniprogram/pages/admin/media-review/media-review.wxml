@@ -1,0 +1,116 @@
+<!-- pages/admin/media-review/media-review.wxml - 内容复核队列 -->
+<view class="page page-enter">
+  <custom-navbar title="内容复核" theme="warm" showBack="{{true}}" />
+
+  <view class="intro-card">
+    <view class="inline-row">
+      <icon name="warning" size="34" />
+      <text class="intro-title">被内容安全标记的照片与头像</text>
+    </view>
+    <text class="intro-text">「待复核」表示微信只给了提醒，内容仍在展示；「已拦截」表示照片已从公开相册隐藏。通过会恢复展示并清除标记；拦截会隐藏照片，头像则立即清空（可在编辑猫咪里重新上传）。</text>
+  </view>
+
+  <view class="stats-row" wx:if="{{!loading && !loadFailed}}">
+    <view class="stat-chip">
+      <text class="stat-num">{{total}}</text>
+      <text class="stat-label">条待处理</text>
+    </view>
+  </view>
+
+  <scroll-view class="filter-scroll" scroll-x="true" wx:if="{{!loading && !loadFailed}}">
+    <view class="filter-row">
+      <view
+        class="filter-chip {{filter === item.key ? 'active' : ''}}"
+        wx:for="{{filters}}"
+        wx:key="key"
+        data-filter="{{item.key}}"
+        bindtap="onFilterTap"
+        hover-class="btn-press"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-row" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-thumb shimmer"></view>
+      <view class="skeleton-info">
+        <view class="skeleton-line shimmer"></view>
+        <view class="skeleton-line short shimmer"></view>
+        <view class="skeleton-line shorter shimmer"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="state-card" wx:if="{{loadFailed}}">
+    <icon name="warning" size="40" />
+    <text class="state-title">加载失败</text>
+    <text class="state-sub">请检查网络后重试</text>
+    <view class="primary-btn" bindtap="onRetryLoad">重新加载</view>
+  </view>
+
+  <block wx:if="{{!loading && !loadFailed}}">
+    <view class="empty-card" wx:if="{{items.length === 0}}">
+      <icon name="check-circle" size="44" />
+      <text class="empty-title">没有待处理的内容</text>
+      <text class="empty-sub">新的内容安全提醒会出现在这里</text>
+    </view>
+
+    <view class="review-list" wx:else>
+      <view class="review-card" wx:for="{{items}}" wx:key="_id">
+        <view class="thumb-wrap">
+          <image
+            wx:if="{{item.mediaUrl}}"
+            class="thumb"
+            src="{{item.mediaUrl}}"
+            mode="aspectFill"
+            lazy-load
+          />
+          <view wx:else class="thumb thumb-placeholder">
+            <icon name="camera-outline" size="40" />
+          </view>
+          <view class="target-tag">{{item.targetText}}</view>
+        </view>
+
+        <view class="review-body">
+          <view class="review-head">
+            <text class="cat-name">{{item.catName || '未知猫咪'}}</text>
+            <text class="status status-{{item.statusClass}}">{{item.statusText}}</text>
+          </view>
+          <text class="review-meta">检测编号 {{item.traceId || '—'}} · {{item.timeStr}}</text>
+          <text class="review-missing" wx:if="{{item.missing}}">目标对象已删除，可直接归档</text>
+
+          <view class="review-actions">
+            <view
+              wx:if="{{item.canGo}}"
+              class="action-btn ghost"
+              bindtap="onGoTarget"
+              data-target="{{item.target}}"
+              data-cat-id="{{item.catId}}"
+              data-cat-name="{{item.catName}}"
+              hover-class="btn-press"
+            >去处理</view>
+            <view
+              class="action-btn keep {{busyId === item._id ? 'disabled' : ''}}"
+              bindtap="onKeep"
+              data-id="{{item._id}}"
+              hover-class="btn-press"
+            >{{item.status === 'risky' ? '恢复展示' : '通过'}}</view>
+            <view
+              wx:if="{{item.status === 'review'}}"
+              class="action-btn block {{busyId === item._id ? 'disabled' : ''}}"
+              bindtap="onBlock"
+              data-id="{{item._id}}"
+              hover-class="btn-press"
+            >拦截</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="list-footer">
+        <text wx:if="{{loadingMore}}">加载中…</text>
+        <text wx:elif="{{hasMore}}">上拉加载更多</text>
+        <text wx:else>已经到底啦</text>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "recordMeet",
+  "version": "1.0.0",
+  "description": "相遇打卡 - 记录猫咪偶遇",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

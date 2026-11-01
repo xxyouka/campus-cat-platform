@@ -1,0 +1,176 @@
+<!-- pages/admin/report-manage/report-manage.wxml - 反馈处理队列 -->
+<view class="page page-enter">
+  <custom-navbar title="反馈处理" theme="warm" showBack="{{true}}" />
+
+  <view class="intro-card">
+    <view class="inline-row">
+      <icon name="announce" size="34" />
+      <text class="intro-title">用户反馈</text>
+    </view>
+    <text class="intro-text">信息有误、受伤等反馈会出现在这里。处理后会给反馈人发一条站内动态。</text>
+  </view>
+
+  <view class="insight-card" wx:if="{{statsLoaded}}">
+    <view class="insight-head">
+      <view class="inline-row">
+        <icon name="chart" size="30" />
+        <text class="insight-title">高频问题</text>
+      </view>
+      <text class="insight-window">近 {{stats.windowDays}} 天 {{stats.recent.days30}} 条</text>
+    </view>
+
+    <view class="metric-row">
+      <view class="metric">
+        <text class="metric-num">{{stats.status.pending}}</text>
+        <text class="metric-label">待处理</text>
+      </view>
+      <view class="metric">
+        <text class="metric-num">{{stats.recent.days7}}</text>
+        <text class="metric-label">近 7 天</text>
+      </view>
+      <view class="metric">
+        <text class="metric-num">{{stats.total}}</text>
+        <text class="metric-label">累计</text>
+      </view>
+    </view>
+
+    <view class="type-row" wx:if="{{stats.recent.days30 > 0}}">
+      <view
+        class="type-filter {{typeFilter === item.type ? 'active' : ''}}"
+        wx:for="{{stats.byType}}"
+        wx:key="type"
+        data-type="{{item.type}}"
+        bindtap="onTypeFilterTap"
+        hover-class="btn-press"
+      >
+        <text>{{item.label}}</text>
+        <text class="type-count">{{item.count}}</text>
+      </view>
+    </view>
+
+    <view class="top-block" wx:if="{{stats.topCats.length > 0}}">
+      <view class="top-head">
+        <icon name="fire" size="26" />
+        <text class="top-title">反复被反馈</text>
+      </view>
+      <view
+        class="top-cat"
+        wx:for="{{stats.topCats}}"
+        wx:key="catId"
+        data-cat-id="{{item.catId}}"
+        data-cat-name="{{item.catName}}"
+        bindtap="onCatFilterTap"
+        hover-class="btn-press"
+      >
+        <text class="top-cat-name">{{item.catName}}</text>
+        <text class="top-cat-count">{{item.count}} 条</text>
+        <text class="top-cat-last">{{item.lastStr}}</text>
+      </view>
+    </view>
+
+    <view class="active-filter" wx:if="{{filterText}}">
+      <text class="active-filter-text">筛选：{{filterText}}</text>
+      <view class="clear-filter" bindtap="onClearFilters" hover-class="btn-press">
+        <icon name="close" size="22" />
+        <text>清除</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="stats-row" wx:if="{{!loading && !loadFailed}}">
+    <view class="stat-chip">
+      <text class="stat-num">{{total}}</text>
+      <text class="stat-label">条记录</text>
+    </view>
+  </view>
+
+  <scroll-view class="filter-scroll" scroll-x="true" wx:if="{{!loading && !loadFailed}}">
+    <view class="filter-row">
+      <view
+        class="filter-chip {{filter === item.key ? 'active' : ''}}"
+        wx:for="{{filters}}"
+        wx:key="key"
+        data-filter="{{item.key}}"
+        bindtap="onFilterTap"
+        hover-class="btn-press"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="skeleton-section" wx:if="{{loading}}">
+    <view class="skeleton-row" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-thumb shimmer"></view>
+      <view class="skeleton-info">
+        <view class="skeleton-line shimmer"></view>
+        <view class="skeleton-line short shimmer"></view>
+        <view class="skeleton-line shorter shimmer"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="state-card" wx:if="{{loadFailed}}">
+    <icon name="warning" size="40" />
+    <text class="state-title">加载失败</text>
+    <text class="state-sub">请检查网络后重试</text>
+    <view class="primary-btn" bindtap="onRetryLoad">重新加载</view>
+  </view>
+
+  <block wx:if="{{!loading && !loadFailed}}">
+    <view class="empty-card" wx:if="{{items.length === 0}}">
+      <icon name="check-circle" size="44" />
+      <text class="empty-title">没有待处理的反馈</text>
+      <text class="empty-sub">新的用户反馈会出现在这里</text>
+    </view>
+
+    <view class="report-list" wx:else>
+      <view class="report-card" wx:for="{{items}}" wx:key="_id">
+        <view class="report-head">
+          <view class="report-cat">
+            <image wx:if="{{item.catAvatar}}" class="report-avatar" src="{{item.catAvatar}}" mode="aspectFill" lazy-load />
+            <view wx:else class="report-avatar report-avatar-placeholder"><icon name="cat" size="36" /></view>
+            <view class="report-cat-info">
+              <text class="report-cat-name">{{item.catName || '未知猫咪'}}</text>
+              <text class="report-type">{{item.typeText}} · {{item.timeStr}}</text>
+            </view>
+          </view>
+          <text class="status status-{{item.statusClass}}">{{item.statusText}}</text>
+        </view>
+
+        <text class="report-desc">{{item.description}}</text>
+        <text class="report-note" wx:if="{{item.handleNote}}">处理说明：{{item.handleNote}}</text>
+
+        <view class="report-actions">
+          <view
+            wx:if="{{item.canGo}}"
+            class="action-btn ghost"
+            bindtap="onGoCat"
+            data-cat-id="{{item.catId}}"
+            hover-class="btn-press"
+          >看档案</view>
+          <block wx:if="{{item.status === 'pending'}}">
+            <view
+              class="action-btn keep {{busyId === item._id ? 'disabled' : ''}}"
+              bindtap="onResolve"
+              data-id="{{item._id}}"
+              data-status="resolved"
+              hover-class="btn-press"
+            >已处理</view>
+            <view
+              class="action-btn block {{busyId === item._id ? 'disabled' : ''}}"
+              bindtap="onResolve"
+              data-id="{{item._id}}"
+              data-status="rejected"
+              hover-class="btn-press"
+            >未采纳</view>
+          </block>
+        </view>
+      </view>
+
+      <view class="list-footer">
+        <text wx:if="{{loadingMore}}">加载中…</text>
+        <text wx:elif="{{hasMore}}">上拉加载更多</text>
+        <text wx:else>已经到底啦</text>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校园矢量地图编辑器 v3.4·20261019</title>
+<style>
+:root{
+  --primary:#E8927C; --primary-deep:#8A4B2C; --primary-tint-10:rgb(232 146 124 / 10%);
+  --text-primary:#3D3D3D; --text-secondary:#6B6B6B; --text-tertiary:#8C8C8C;
+  --bg-secondary:#FDF8F5; --bg-warm:#FAF6F2; --border-color:rgb(139 109 79 / 10%);
+  --danger:#E87C7C; --ok:#5E9C6B;
+}
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; }
+body{
+  background:#F3EFEA; color:var(--text-primary); overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+kbd{
+  display:inline-block; padding:1px 6px; border-radius:5px; background:#E9E2DA;
+  color:#6B5B4D; font-family:Consolas,monospace; font-size:11px; border:1px solid rgb(139 109 79 / 12%);
+}
+
+/* ── 布局 ─────────────────────────────────────── */
+#app{ display:flex; height:100%; }
+#side{
+  width:270px; flex:none; background:var(--bg-secondary);
+  border-right:1px solid var(--border-color); display:flex; flex-direction:column;
+}
+.brand{ padding:14px 16px 11px; border-bottom:1px solid var(--border-color); }
+.brand h1{ margin:0; font-size:14.5px; }
+.brand p{ margin:3px 0 0; font-size:11px; color:var(--text-tertiary); }
+.scroll{ flex:1; overflow-y:auto; padding:12px 14px 18px; }
+.sect{ margin-bottom:16px; }
+.sect > h2{
+  margin:0 0 8px; font-size:10.5px; font-weight:700; letter-spacing:1.1px;
+  color:var(--text-tertiary); text-transform:uppercase;
+}
+
+.btn{
+  display:block; width:100%; padding:7px 10px; margin-bottom:5px;
+  border:1px solid var(--border-color); border-radius:8px;
+  background:#FBF9F7; color:var(--text-primary); font-size:12.5px;
+  cursor:pointer; text-align:left; transition:.13s;
+}
+.btn:hover{ background:#F5EFE9; border-color:var(--primary); }
+.btn.primary{ background:var(--primary); color:#fff; border-color:var(--primary); text-align:center; font-weight:600; }
+.btn.primary:hover{ background:#DE8070; }
+.btn.danger{ color:var(--danger); }
+.btn.danger:hover{ background:#FCF2F2; border-color:var(--danger); }
+
+#baseInfo{ padding:8px 10px; border-radius:8px; background:var(--primary-tint-10);
+  font-size:11px; color:var(--primary-deep); line-height:1.6; word-break:break-all; }
+
+/* 校区切换：一个校区一份草稿 + 一个导出文件名（见 ZONES） */
+#zones{ display:flex; flex-wrap:wrap; gap:5px; }
+.zchip{
+  display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px;
+  border:1px solid var(--border-color); background:#FBF9F7; font-size:12.5px;
+  color:var(--text-primary); cursor:pointer; transition:.13s;
+}
+.zchip:hover{ border-color:var(--primary); }
+.zchip.active{ border-color:var(--primary); background:var(--primary-tint-10);
+  color:var(--primary-deep); font-weight:600; box-shadow:inset 2px 0 0 var(--primary); }
+.zchip .zc{ font-size:10.5px; color:var(--text-tertiary); font-variant-numeric:tabular-nums; }
+.zchip.active .zc{ color:var(--primary-deep); }
+.znote{ margin:7px 0 0; font-size:10.5px; color:var(--text-tertiary); line-height:1.6; }
+
+.layer{
+  display:flex; align-items:center; gap:7px; padding:6px 8px; margin-bottom:4px;
+  border:1px solid var(--border-color); border-radius:8px; background:#FBF9F7; cursor:pointer; transition:.13s;
+}
+.layer:hover{ border-color:var(--primary); }
+.layer.active{ border-color:var(--primary); background:var(--primary-tint-10); box-shadow:inset 2px 0 0 var(--primary); }
+.layer .sw{ width:12px; height:12px; border-radius:3px; border:1.5px solid; flex:none; }
+.layer .nm{ flex:1; font-size:12.5px; }
+.layer .ct{ font-size:11px; color:var(--text-tertiary); font-variant-numeric:tabular-nums; }
+.layer .eye{ width:19px; height:19px; flex:none; border:none; background:none; cursor:pointer;
+  color:var(--text-tertiary); font-size:12px; line-height:1; border-radius:5px; padding:0; }
+.layer .eye:hover{ background:rgba(0,0,0,.06); }
+.layer.off .nm,.layer.off .sw,.layer.off .ct{ opacity:.3; }
+
+.prog{ margin-bottom:6px; cursor:help; }
+.prog .row{ display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px; }
+.prog .row b{ font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-secondary); }
+.prog .bar{ height:3px; border-radius:2px; background:#EDE4DC; overflow:hidden; }
+.prog .bar i{ display:block; height:100%; background:var(--primary); border-radius:2px; transition:.2s; }
+.prog.done .row b{ color:var(--ok); }
+
+.flist{ max-height:180px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px; }
+.fitem{ display:flex; align-items:center; gap:6px; padding:4px 8px; font-size:11.5px;
+  cursor:pointer; border-bottom:1px solid var(--border-color); }
+.fitem:last-child{ border-bottom:none; }
+.fitem:hover{ background:var(--primary-tint-10); }
+.fitem.sel{ background:var(--primary-tint-10); font-weight:600; }
+.fitem .dot{ width:6px; height:6px; border-radius:50%; flex:none; }
+.fitem .tx{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* 底图丢失提示：非阻塞，贴在左上角，不占画布中央 */
+#noBase{
+  position:absolute; top:56px; left:12px; z-index:16; display:none;
+  align-items:center; gap:10px; padding:8px 12px; border-radius:10px;
+  background:rgba(253,248,245,.96); border:1px solid #E8A87C;
+  box-shadow:0 4rpx 16rpx rgb(60 45 35 / 14%); font-size:12px; color:#9A6428; max-width:calc(100% - 24px);
+}
+#noBase.on{ display:flex; }
+#noBase button{
+  border:1px solid #E8A87C; background:#fff; color:#9A6428; cursor:pointer;
+  border-radius:7px; padding:4px 10px; font-size:12px; font-family:inherit;
+}
+#noBase button:hover{ background:#FDF3E8; }
+#noBase .x{ border:none; background:none; cursor:pointer; color:#B08A5E; font-size:14px; padding:0 2px; }
+
+/* 选中条：调整图元层级 */
+#selbar{
+  position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  display:none; align-items:center; gap:7px; padding:8px 12px; border-radius:12px;
+  background:rgba(253,248,245,.97); border:1px solid var(--primary);
+  box-shadow:0 8px 26px rgb(60 45 35 / 20%); z-index:18; white-space:nowrap;
+}
+#selbar.on{ display:flex; }
+#selbar .sbname{ font-size:12.5px; font-weight:600; color:#3D3D3D; max-width:140px;
+  overflow:hidden; text-overflow:ellipsis; }
+#selbar .sbz{ font-size:11.5px; color:var(--text-tertiary); }
+#selbar .sbz b{ color:var(--primary-deep); font-variant-numeric:tabular-nums; }
+#selbar button{
+  border:1px solid var(--border-color); background:#fff; color:#6B5B4D; cursor:pointer;
+  border-radius:7px; padding:4px 9px; font-size:11.5px; font-family:inherit;
+}
+#selbar button:hover{ background:var(--primary-tint-10); border-color:var(--primary); color:var(--primary-deep); }
+#selbar #sbClose{ border:none; background:none; padding:0 3px; font-size:14px; }
+
+.fitem .fo{ border:none; background:none; color:var(--text-tertiary); cursor:pointer; font-size:13px; padding:0 2px; }
+.fitem .fo:hover{ color:var(--primary); }
+.fitem .rn{ border:none; background:none; color:var(--text-tertiary); cursor:pointer; font-size:11px; padding:0 2px; }
+.fitem .rn:hover{ color:var(--primary); }
+.fitem .dl{ border:none; background:none; color:var(--text-tertiary); cursor:pointer; font-size:12px; padding:0 2px; }
+.fitem .dl:hover{ color:var(--danger); }
+.empty{ padding:12px 10px; text-align:center; font-size:11.5px; color:var(--text-tertiary); }
+
+/* ── 主区 ─────────────────────────────────────── */
+#main{ flex:1; display:flex; flex-direction:column; min-width:0; }
+#toolbar{
+  display:flex; align-items:center; gap:6px; padding:8px 12px;
+  background:var(--bg-secondary); border-bottom:1px solid var(--border-color); flex-wrap:wrap;
+}
+.tool{
+  padding:6px 12px; border:1px solid var(--border-color); border-radius:8px;
+  background:#FBF9F7; font-size:12.5px; cursor:pointer; transition:.13s; color:var(--text-primary);
+}
+.tool:hover{ border-color:var(--primary); }
+.tool.on{ background:var(--primary); color:#fff; border-color:var(--primary); font-weight:600; }
+.tool:disabled{ opacity:.38; cursor:not-allowed; }
+.tool.go{ background:var(--ok); color:#fff; border-color:var(--ok); font-weight:600; padding:6px 18px; }
+.tool.go:hover{ background:#549061; }
+.sep{ width:1px; height:20px; background:var(--border-color); margin:0 2px; }
+.check{ display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-secondary); cursor:pointer; user-select:none; }
+.curlayer{
+  display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary);
+  padding:4px 10px; border-radius:8px; background:var(--primary-tint-10); color:var(--primary-deep); font-weight:600;
+}
+.curlayer .sw{ width:11px; height:11px; border-radius:3px; border:1.5px solid; }
+
+#stage{ flex:1; position:relative; overflow:hidden; background:#EAE4DC; }
+#cv{ display:block; width:100%; height:100%; }
+
+/* 画布中央浮动提示 —— 告诉用户「现在该干什么」 */
+#hint{
+  position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:10px; padding:8px 16px; border-radius:20px;
+  background:rgba(253,248,245,.96); border:1px solid var(--border-color);
+  box-shadow:0 4px 18px rgb(60 45 35 / 13%); font-size:13px; pointer-events:none;
+  white-space:nowrap; max-width:90%;
+}
+#hint .dotc{ width:8px; height:8px; border-radius:50%; background:var(--primary); flex:none; }
+#hint.live .dotc{ animation:pulse 1.1s infinite; }
+#hint b{ color:var(--primary-deep); font-weight:700; }
+#hint .n{ font-variant-numeric:tabular-nums; background:#EFE7E0; padding:1px 7px; border-radius:9px; font-weight:700; }
+@keyframes pulse{ 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.82)} }
+
+/* 底部中央：绘制中的「结束」按钮 —— 这就是要找的确认键 */
+#actbar{
+  position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  display:none; align-items:center; gap:8px; padding:9px 12px; border-radius:12px;
+  background:rgba(253,248,245,.97); border:1px solid var(--border-color);
+  box-shadow:0 8px 26px rgb(60 45 35 / 20%);
+}
+#actbar.on{ display:flex; }
+#actbar .btn{ margin:0; padding:7px 14px; display:inline-block; width:auto; text-align:center; }
+#actbar .btn.primary{ color:#fff; }
+
+/* 内联命名器 —— 画完就地改名，不弹模态 */
+#inline{
+  position:absolute; display:none; z-index:20; padding:8px;
+  background:var(--bg-secondary); border:1px solid var(--primary); border-radius:10px;
+  box-shadow:0 10px 30px rgb(60 45 35 / 26%); width:216px;
+}
+#inline.on{ display:block; }
+#inline .tip{ font-size:10.5px; color:var(--text-tertiary); margin:0 0 6px; }
+#inline input,#inline select{
+  width:100%; padding:6px 8px; margin-bottom:5px; font-size:12.5px; font-family:inherit;
+  border:1px solid var(--border-color); border-radius:7px; background:#fff; color:var(--text-primary);
+}
+#inline input:focus,#inline select:focus{ outline:none; border-color:var(--primary); }
+#inline .row{ display:flex; gap:5px; }
+#inline .row .btn{ margin:0; padding:6px; width:auto; text-align:center; }
+#inline .row .btn.primary{ flex:1; }
+
+/* 空态 */
+#empty{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+#empty .box{ padding:28px 38px; border:2px dashed #C9BCAE; border-radius:18px;
+  background:rgb(255 255 255 / 62%); text-align:center; max-width:470px; }
+#empty h3{ margin:0 0 8px; font-size:16px; }
+#empty p{ margin:0; font-size:13px; color:var(--text-secondary); line-height:1.95; }
+
+#status{ display:flex; align-items:center; gap:14px; padding:5px 12px;
+  background:var(--bg-secondary); border-top:1px solid var(--border-color);
+  font-size:11.5px; color:var(--text-secondary); font-variant-numeric:tabular-nums; }
+#status .k{ color:var(--text-tertiary); }
+#status .saved{ color:var(--ok); }
+
+/* 覆盖率缩略图 —— 一眼看出哪块还没画 */
+#mini{
+  position:absolute; top:12px; right:12px; z-index:15;
+  padding:6px; border-radius:10px; background:rgba(253,248,245,.94);
+  border:1px solid var(--border-color); box-shadow:0 4px 16px rgb(60 45 35 / 13%);
+  transition:opacity .15s;
+}
+#mini.hide{ opacity:0; pointer-events:none; }
+#mini canvas{ display:block; border-radius:6px; background:#EFE8E0; cursor:pointer; }
+#mini .cap{ margin-top:4px; font-size:10px; color:var(--text-tertiary); text-align:center; font-variant-numeric:tabular-nums; }
+
+/* 绘制校验提示 */
+#valid{
+  position:absolute; top:58px; left:50%; transform:translateX(-50%);
+  display:none; align-items:center; gap:6px; padding:5px 13px; border-radius:16px;
+  background:#FDF3E8; border:1px solid #E8A87C; color:#9A6428; font-size:12px;
+  white-space:nowrap; box-shadow:0 3px 12px rgb(60 45 35 / 12%);
+}
+#valid.on{ display:flex; }
+
+/* Toast */
+#toasts{ position:absolute; top:14px; right:14px; display:flex; flex-direction:column; gap:7px; z-index:30; }
+.toast{
+  padding:8px 15px; border-radius:9px; background:rgba(253,248,245,.97);
+  border:1px solid var(--border-color); box-shadow:0 4px 16px rgb(60 45 35 / 15%);
+  font-size:12.5px; animation:tin .2s; max-width:280px;
+}
+.toast.ok{ border-color:var(--ok); color:var(--ok); }
+.toast.warn{ border-color:var(--primary); color:var(--primary-deep); }
+@keyframes tin{ from{opacity:0;transform:translateX(14px)} }
+
+/* 结算模态 */
+#mask{ position:fixed; inset:0; background:rgb(40 32 26 / 42%); display:none;
+  align-items:center; justify-content:center; z-index:50; }
+#mask.on{ display:flex; }
+#modal{ width:400px; padding:22px 24px; border-radius:16px; background:var(--bg-secondary);
+  box-shadow:0 18px 48px rgb(0 0 0 / 22%); }
+#modal h3{ margin:0 0 4px; font-size:16px; }
+#modal .sub{ margin:0 0 14px; font-size:11.5px; color:var(--text-tertiary); line-height:1.6; }
+#modal table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:12px; }
+#modal td{ padding:5px 0; border-bottom:1px solid var(--border-color); }
+#modal td:last-child{ text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+#modal .warns{ margin:0 0 14px; padding:9px 12px; border-radius:8px;
+  background:#FDF3E8; color:#9A6428; font-size:11.5px; line-height:1.75; }
+#modal .warns b{ display:block; margin-bottom:3px; }
+#modal .acts{ display:flex; gap:8px; }
+#modal .acts .btn{ margin:0; text-align:center; }
+#modal .acts .btn.primary{ flex:1; }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="brand">
+      <h1>校园矢量地图编辑器</h1>
+      <p>一个校区一份底图 → 直接进小程序</p>
+      <p id="build" style="margin:5px 0 0;font-size:10px;color:#8A4B2C;font-family:Consolas,monospace;background:rgb(232 146 124 / 10%);display:inline-block;padding:2px 7px;border-radius:5px;">v3.4·20261019</p>
+    </div>
+    <div class="scroll">
+      <div class="sect">
+        <h2>校区</h2>
+        <div id="zones"></div>
+        <p class="znote">每个校区独立存档，互不覆盖 · 底图不跟随切换，换了校区要重新拖图</p>
+      </div>
+
+      <div class="sect">
+        <h2>底图</h2>
+        <button class="btn primary" id="btnLoad">载入图片…</button>
+        <div id="baseInfo">未载入 · 也可把图拖进画布</div>
+      </div>
+
+      <div class="sect">
+        <h2>图层</h2>
+        <div id="layers"></div>
+      </div>
+
+      <div class="sect">
+        <h2>进度</h2>
+        <div id="progress"></div>
+      </div>
+
+      <div class="sect">
+        <h2>图元（双击改名）</h2>
+        <div class="flist" id="flist"><div class="empty">还没有图元</div></div>
+      </div>
+
+      <div class="sect">
+        <h2>数据</h2>
+        <button class="btn" id="btnImport">导入 JSON…</button>
+        <button class="btn danger" id="btnClear">清空全部</button>
+        <input type="file" id="fileIn" accept="application/json,.json,.js,text/javascript" hidden>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div id="toolbar">
+      <button class="tool on" data-tool="select">选择</button>
+      <button class="tool" data-tool="poly">画多边形</button>
+      <button class="tool" data-tool="point">画点</button>
+      <button class="tool" data-tool="delete">删除</button>
+      <div class="sep"></div>
+      <span class="curlayer" id="curLayer"></span>
+      <div class="sep"></div>
+      <label class="check" title="画点时对齐到网格或已有顶点，描建筑边缘更整齐">
+        <input type="checkbox" id="ckSnap"> 吸附
+        <select id="selSnap" style="margin-left:2px;font-size:11.5px;padding:2px 4px;
+          border:1px solid var(--border-color);border-radius:5px;background:#fff;color:var(--text-primary)">
+          <option value="5">5px</option>
+          <option value="10">10px</option>
+          <option value="0">关</option>
+        </select>
+      </label>
+      <div class="sep"></div>
+      <label class="check"><input type="checkbox" id="ckMini" checked> 缩略图</label>
+      <label class="check"><input type="checkbox" id="ckGrid" checked> 网格</label>
+      <label class="check"><input type="checkbox" id="ckLabels" checked> 名称</label>
+      <div class="sep"></div>
+      <button class="tool" id="btnFit">适应</button>
+      <button class="tool" id="btnUndo" disabled>撤销</button>
+      <div class="sep"></div>
+      <button class="tool go" id="btnDone">✓ 完成并导出</button>
+      <div class="sep"></div>
+      <button class="tool" id="btnPreview">📱 小程序预览</button>
+      <button class="tool" id="btnDark" style="display:none">🌙 暗色</button>
+    </div>
+
+    <div id="stage">
+      <canvas id="cv"></canvas>
+      <div id="toasts"></div>
+
+      <div id="mini">
+        <canvas id="miniCv" width="150" height="92"></canvas>
+        <div class="cap" id="miniCap">—</div>
+      </div>
+
+      <div id="valid"><span>⚠</span><span id="validTxt"></span></div>
+
+      <div id="hint">
+        <span class="dotc"></span>
+        <span id="hintTxt">载入底图后，按 <kbd>M</kbd> 画多边形 · <kbd>P</kbd> 画点</span>
+      </div>
+
+      <div id="actbar">
+        <button class="btn primary" id="abOk">结束并确认（双击/回车）</button>
+        <button class="btn" id="abUndo">撤回上一点</button>
+        <button class="btn" id="abCancel">取消</button>
+      </div>
+
+      <div id="inline">
+        <p class="tip" id="inTip">给它起个名（可直接回车跳过）</p>
+        <input id="inName" placeholder="例如：新建图书馆">
+        <select id="inKind"></select>
+        <div class="row">
+          <button class="btn primary" id="inOk">确定</button>
+          <button class="btn" id="inSkip">跳过</button>
+        </div>
+      </div>
+
+      <div id="selbar">
+        <span class="sbname" id="sbName"></span>
+        <span class="sbz">层 <b id="sbZ">0</b></span>
+        <button data-z="-5" title="下移 5 层">−5</button>
+        <button data-z="5" title="上移 5 层">+5</button>
+        <button data-z="top">置顶</button>
+        <button data-z="bottom">置底</button>
+        <button id="sbClose" title="取消选中">×</button>
+      </div>
+
+      <div id="noBase">
+        <span>底图未载入（刷新会丢失，图元不会）</span>
+        <button id="nbLoad">重新载入底图</button>
+        <button class="x" id="nbClose" title="知道了">×</button>
+      </div>
+
+      <div id="empty">
+        <div class="box">
+          <h3 id="emptyTitle">把 CAD 图拖进画布</h3>
+          <p>
+            载入后按 <kbd>M</kbd> 画多边形、<kbd>P</kbd> 画点<br>
+            <b>双击 = 结束这个图形</b>，画完按右上 <b>✓ 完成并导出</b><br>
+            精度：误差 5~10 px 足够，<b>相对位置对就行</b>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="status">
+      <span class="k">工具</span><span id="stTool">选择</span>
+      <span class="k">校区</span><span id="stZone">本部</span>
+      <span class="k">坐标</span><span id="stPos">—</span>
+      <span class="k">比例</span><span id="stScale">100%</span>
+      <span class="k">图元</span><span id="stCount">0</span>
+      <span class="saved" id="stSaved">已自动保存</span>
+    </div>
+  </main>
+</div>
+
+<div id="mask"><div id="modal">
+  <h3>画完了？</h3>
+  <p class="sub" id="modalSub">— · 坐标为底图像素，原点左上</p>
+  <table id="sumTable"></table>
+  <div class="warns" id="sumWarn" style="display:none"></div>
+  <div class="acts">
+    <button class="btn" id="mClose">再改改</button>
+    <button class="btn primary" id="mSave">导出 JSON</button>
+  </div>
+</div></div>
+
+<script>
+'use strict';
+/* ══════════════════════════════════════════════════════════
+   校园矢量地图编辑器
+   交互原则：画图不打断。图完即成，改名可选。
+   ══════════════════════════════════════════════════════════ */
+
+const KIND_LABELS = {
+  building:{ teaching:'教学楼', dorm:'宿舍', library:'图书馆', canteen:'食堂',
+             office:'办公', lab:'实验/实训', training:'培训', other:'其他' },
+  road:    { main:'主干道', branch:'支路', path:'小径' },
+  poi:     { gate:'校门', canteen:'食堂', library:'图书馆', teaching:'教学楼',
+             dorm:'宿舍', sport:'运动场', parking:'停车场', other:'其他' }
+};
+const KINDS = {
+  building:['teaching','dorm','library','canteen','office','lab','training','other'],
+  road:    ['main','branch','path'],
+  poi:     ['gate','canteen','library','teaching','dorm','sport','parking','other']
+};
+const LAYERS = {
+  bounds:   { label:'校园边界', short:'边界', kind:null,      named:false, fill:'rgba(232,146,124,.08)', stroke:'#E03E20', lw:3,   dashed:false, single:true,  target:1  },
+  sports:   { label:'运动场',   short:'运动', kind:null,      named:true,  z:10,  fill:'rgba(236,150,104,.50)', stroke:'#B8501F', lw:2.5, dashed:false, single:false, target:4  },
+  buildings:{ label:'建筑',     short:'建筑', kind:'building', named:true,  z:30,  fill:'rgba(252,232,186,.62)', stroke:'#8A6B3E', lw:2, dashed:false, single:false, target:20 },
+  roads:    { label:'道路',     short:'道路', kind:'road',     named:true,  z:20,  fill:'rgba(255,252,244,.82)', stroke:'#A8967A', lw:2,   dashed:false, single:false, target:10 },
+  greens:   { label:'绿地',     short:'绿地', kind:null,      named:false,  z:0,   fill:'rgba(150,196,118,.50)', stroke:'#4E7A38', lw:2.5, dashed:false, single:false, target:6  },
+  pois:     { label:'POI',      short:'POI',  kind:'poi',     named:true,  fill:'#E8927C',                stroke:'#FFFFFF', lw:2,   dashed:false, single:false, target:10 }
+};
+// 侧栏/列表顺序：与 ORDER 一致
+const ORDER = ['bounds','sports','greens','roads','buildings','pois'];
+// 画布绘制顺序（由底到顶）：边界 → 绿地 → 运动场 → 道路 → 建筑 → POI
+const PAINT_ORDER = ['greens','sports','roads','buildings'];
+
+/* 小程序实际渲染配色（对应 theme.json + 地图样式规范） */
+const THEME = {
+  light:{
+    bg:'#F2EFE6', campus:'#F2EFE6',
+    sportFill:'#F2D6C4', sportStroke:'#C79272',
+    buildingFill:'#F5EBD8', buildingStroke:'#D9C4A3',
+    roadFill:'#FBF7F0', roadStroke:'#E5DCC8', greenFill:'#DDE8CE', greenStroke:'#A8C08A',
+    label:'#5A4A42', boundary:'#E8927C', poi:'#E8927C', panel:'#FFFFFF'
+  },
+  dark:{
+    bg:'#1B1816', campus:'#1B1816',
+    sportFill:'#3A2E27', sportStroke:'#6E5344',
+    buildingFill:'#2A2622', buildingStroke:'#4A433C',
+    roadFill:'#332E2A', roadStroke:'#4A433C', greenFill:'#242C22', greenStroke:'#3D4A35',
+    label:'#C9BFB6', boundary:'#E8927C', poi:'#F0A48F', panel:'#2A2622'
+  }
+};
+
+const HINT = {
+  bounds:'校园边界（红线）一圈，后续所有点都在它里面',
+  sports:'操场 / 球场 / 篮球场 —— 画成多边形，用户点进去能知道选在运动场',
+  buildings:'优先：图书馆 / 教学楼 / 学生食堂 / 实训中心 / 实验楼 / 办公楼',
+  roads:'主干道 + 通往宿舍区、食堂、图书馆的路',
+  greens:'成片大绿地，零碎树丛不用画 · 不用起名，只管形状对就行',
+  pois:'校门 / 食堂 / 图书馆 / 操场 —— 名字取自 CAD 图标注'
+};
+const TOOLNAME = { select:'选择', poly:'画多边形', point:'画点', delete:'删除' };
+
+const $ = s => document.querySelector(s);
+const LS_KEY = 'campus-map-editor-v2';
+const LS_LAST = LS_KEY + '::last';
+
+/**
+ * 校区。写法与小程序 pages/index 的 campusOptions 一致：本部 / 东区 / 西区 / 南区。
+ *
+ * file = 导出文件名，落到 miniprogram/images/campus-map/ 下（一个校区一份），
+ * 小程序组件按校区 require 对应底图 —— 加新校区在这里加一行 + 组件侧加一份。
+ * 存档也按校区分开（localStorage 键带校区后缀），画东区不会覆盖本部草稿。
+ */
+const ZONES = [
+  { name:'本部', file:'campus-map.js' },
+  { name:'东区', file:'campus-map-north.js' },
+  { name:'西区', file:'campus-map-south.js' },
+  { name:'南区', file:'campus-map-haizhu.js' }
+];
+/** 表里没有的校区（比如导入的文件写了「东区」）按名字补一条，导出名直接用它 */
+function ensureZone(name){
+  let z = ZONES.find(x=>x.name===name);
+  if(!z){ z = { name, file:'campus-map-' + name + '.js' }; ZONES.push(z); }
+  return z;
+}
+const zoneFile = name => ensureZone(name || '本部').file;
+const lsKey = name => LS_KEY + '::' + name;
+const blankData = name => ({ campusZone:name, mapVersion:1, imageSize:[0,0],
+                             bounds:[], sports:[], buildings:[], roads:[], greens:[], pois:[] });
+
+const S = {
+  img:null, imgW:0, imgH:0, imgName:'',
+  data:blankData('本部'),
+  view:{ x:0,y:0,k:1 },
+  tool:'select', activeLayer:'buildings',
+  cur:null, sel:null, drag:null, panning:false, panStart:null, space:false,
+  mouseX:0, mouseY:0, mouseImg:null,
+  vis:{}, showGrid:true, showLabels:true, undo:[], seq:{},
+  preview:false, dark:false, sampleCat:null,
+  snap:false, snapStep:5, showMini:true
+};
+
+const cv=$('#cv'), ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){
+  const r=$('#stage').getBoundingClientRect();
+  DPR=window.devicePixelRatio||1; W=r.width; H=r.height;
+  cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0); render();
+}
+window.addEventListener('resize',resize);
+
+const toS = p => ({ x:p.x*S.view.k+S.view.x, y:p.y*S.view.k+S.view.y });
+const toI = (x,y) => ({ x:(x-S.view.x)/S.view.k, y:(y-S.view.y)/S.view.k });
+
+/** 数据实际占用的包围盒 —— 预览模式下没有底图，只能靠它定位 */
+function dataBBox(){
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  const eat=(x,y)=>{ if(x<x0)x0=x; if(y<y0)y0=y; if(x>x1)x1=x; if(y>y1)y1=y; };
+  const scanPts=pts=>{ if(Array.isArray(pts)&&pts.length) pts.forEach(p=>eat(p[0],p[1])); };
+  scanPts(S.data.bounds);
+  ['sports','buildings','roads','greens'].forEach(k=>(S.data[k]||[]).forEach(f=>scanPts(f.p)));
+  (S.data.pois||[]).forEach(p=>eat(p.x,p.y));
+  if(!isFinite(x0)) return null;
+  return { x0,y0,x1,y1,w:x1-x0,h:y1-y0 };
+}
+
+function fit(){
+  // 有底图就按底图适配；否则按数据范围适配（预览模式走这条）
+  if(S.img){
+    const pad=36, k=Math.min((W-pad*2)/S.imgW,(H-pad*2)/S.imgH);
+    S.view.k=k; S.view.x=(W-S.imgW*k)/2; S.view.y=(H-S.imgH*k)/2;
+    render(); return;
+  }
+  const bb = dataBBox();
+  if(!bb || bb.w<=0 || bb.h<=0){ render(); return; }
+  const pad=40;
+  const k=Math.min((W-pad*2)/bb.w,(H-pad*2)/bb.h);
+  S.view.k=k;
+  S.view.x=(W-bb.w*k)/2 - bb.x0*k;
+  S.view.y=(H-bb.h*k)/2 - bb.y0*k;
+  render();
+}
+
+/* ── 渲染 ─────────────────────────────────── */
+function render(){
+  if(typeof refreshSelbar==='function') refreshSelbar();
+  ctx.clearRect(0,0,W,H);
+  drawMini();
+
+  // ── 预览模式：完全模拟小程序渲染 ──
+  if(S.preview){ renderPreview(); return; }
+
+  if(S.img){
+    ctx.save();
+    ctx.imageSmoothingEnabled = S.view.k<1;
+    ctx.drawImage(S.img,S.view.x,S.view.y,S.imgW*S.view.k,S.imgH*S.view.k);
+    ctx.restore();
+  }
+  if(S.showGrid && S.view.k>.12) drawGrid();
+
+  if(S.vis.bounds && S.data.bounds.length) drawPoly(S.data.bounds, LAYERS.bounds, false);
+  // 由底到顶：绿地 → 运动场 → 道路 → 建筑
+  // （早前这里是硬编码的 ['greens','roads','buildings']，加 sports 时漏掉，
+  //   导致运动场在列表里计数正常但画布上从不渲染）
+  // 所有多边形收齐后按层号统一排序绘制，取代固定数组。
+  // 每块图元可用 f.z 单独覆盖所属图层的基准层号。
+  const _polys=[];
+  ['sports','roads','greens','buildings'].forEach(k=>{
+    if(!S.vis[k]) return;
+    (S.data[k]||[]).forEach((f,i)=>{
+      if(!f || !f.p) return;
+      _polys.push({ f:f, L:LAYERS[k], sel: selKey()===k+':'+i,
+                    z: (typeof f.z==='number' ? f.z : LAYERS[k].z) });
+    });
+  });
+  _polys.sort((a,b)=> a.z-b.z);
+  _polys.forEach(o=>drawPoly(o.f.p, o.L, selKey()===o.L._k+':'+0 || false, o.f.name));
+  if(S.vis.pois) S.data.pois.forEach((f,i)=>drawPoi(f, selKey()==='pois:'+i));
+
+  if(S.cur && S.cur.length) drawDrawing();
+
+  if(S.sel && S.sel.layer!=='pois') drawHandles();
+  if(S.sel) drawRenameBadge();
+  if(typeof refreshSelbar==='function') refreshSelbar();
+
+  if(S.tool==='poly'||S.tool==='point'){
+    const m=toS(S.mouseImg||{x:0,y:0});
+    ctx.strokeStyle='rgba(232,146,124,.6)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(m.x-10,m.y); ctx.lineTo(m.x+10,m.y);
+    ctx.moveTo(m.x,m.y-10); ctx.lineTo(m.x,m.y+10);
+    ctx.stroke();
+  }
+}
+function selKey(){ return S.sel ? S.sel.layer+':'+S.sel.idx : null; }
+
+/* ══════════════════════════════════════════════════════════
+   预览渲染 —— 与小程序 campus-map 组件保持同一套配色与图层顺序
+   图层：绿地 → 道路 → 建筑 → 边界 → POI → 猫标记 → 选点预览
+   ══════════════════════════════════════════════════════════ */
+function renderPreview(){
+  const T = S.dark ? THEME.dark : THEME.light;
+  const w = S.data.imageSize[0] || S.imgW || 1000;
+  const h = S.data.imageSize[1] || S.imgH || 1000;
+
+  // 校园底
+  ctx.fillStyle = T.bg;
+  ctx.fillRect(0,0,W,H);
+
+  // 1) 运动场
+  (S.data.sports||[]).forEach(f=>{
+    if(!f.p||f.p.length<3) return;
+    previewPoly(f.p, T.sportFill, T.sportStroke, 1.5);
+    previewLabel(f.p, f.name, T.label);
+  });
+// 1) 绿地
+  (S.data.greens||[]).forEach(f=>{
+    if(!f.p||f.p.length<3) return;
+    previewPoly(f.p, T.greenFill, T.greenStroke, 1.5);
+  });
+  // 3) 道路
+  (S.data.roads||[]).forEach(f=>{
+    if(!f.p||f.p.length<3) return;
+    previewPoly(f.p, T.roadFill, T.roadStroke, 1.5);
+  });
+  // 4) 建筑（带 kind 着色微差，模拟小程序按类型分色）
+  (S.data.buildings||[]).forEach(f=>{
+    if(!f.p||f.p.length<3) return;
+    previewPoly(f.p, T.buildingFill, T.buildingStroke, 1.5);
+    if(S.view.k*S.view.k>0) previewLabel(f.p, f.name, T.label);
+  });
+  // 5) 边界
+  if(S.data.bounds&&S.data.bounds.length>=3){
+    previewPoly(S.data.bounds, 'transparent', T.boundary, 2.5, [8,5]);
+  }
+  // 6) POI
+  (S.data.pois||[]).forEach(f=>previewPoi(f, T));
+
+  // 7) 猫标记（示例）
+  if(S.sampleCat) previewCat(S.sampleCat, T);
+
+  // 8) 顶栏遮罩模拟（小程序自带导航栏）
+  ctx.fillStyle = S.dark?'#1B1816':'#E8927C';
+  ctx.fillRect(0,0,W,34);
+  ctx.fillStyle='#fff'; ctx.font='600 13px -apple-system,"PingFang SC",sans-serif';
+  ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText('校园寻猫地图', 14, 17);
+  ctx.textAlign='right';
+  ctx.fillText(S.dark?'🌙 暗色':'☀️ 亮色', W-14, 17);
+}
+
+function previewPoly(p, fill, stroke, lw, dash){
+  ctx.beginPath();
+  ctx.moveTo(p[0][0]*S.view.k+S.view.x, p[0][1]*S.view.k+S.view.y);
+  for(let i=1;i<p.length;i++) ctx.lineTo(p[i][0]*S.view.k+S.view.x, p[i][1]*S.view.k+S.view.y);
+  ctx.closePath();
+  if(fill && fill!=='transparent'){ ctx.fillStyle=fill; ctx.fill(); }
+  if(dash) ctx.setLineDash(dash);
+  ctx.strokeStyle=stroke; ctx.lineWidth=lw; ctx.stroke();
+  ctx.setLineDash([]);
+}
+function previewLabel(p, name, color){
+  if(!name||!S.showLabels) return;
+  const s=toS(centroid(p));
+  // 缩得太小就不画标签，避免糊成一团
+  if(S.view.k<0.5) return;
+  const fs = Math.max(9, Math.min(13, 12*S.view.k));
+  ctx.font='500 '+fs+'px -apple-system,"PingFang SC",sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const w=ctx.measureText(name).width;
+  ctx.fillStyle = S.dark?'rgba(42,38,34,.82)':'rgba(255,255,255,.86)';
+  rr(s.x-w/2-4, s.y-fs/2-3, w+8, fs+6, 4); ctx.fill();
+  ctx.fillStyle=color; ctx.fillText(name, s.x, s.y);
+}
+function previewPoi(f, T){
+  const s=toS({x:f.x,y:f.y});
+  ctx.beginPath(); ctx.arc(s.x,s.y,7,0,Math.PI*2);
+  ctx.fillStyle=T.poi; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+  if(f.name&&S.showLabels&&S.view.k>=0.5){
+    ctx.font='600 11px -apple-system,"PingFang SC",sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    const w=ctx.measureText(f.name).width;
+    ctx.fillStyle=T.panel; rr(s.x+10,s.y-8,w+8,16,4); ctx.fill();
+    ctx.strokeStyle=T.boundary; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle=T.label; ctx.fillText(f.name, s.x+14, s.y);
+  }
+}
+function previewCat(c, T){
+  const s=toS({x:c.x,y:c.y});
+  // 珊瑚色光晕 + 猫爪圆标
+  ctx.beginPath(); ctx.arc(s.x,s.y,17,0,Math.PI*2);
+  ctx.fillStyle='rgba(232,146,124,.22)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(s.x,s.y,10,0,Math.PI*2);
+  ctx.fillStyle=T.poi; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+  // 简化猫爪：4 趾 + 掌垫
+  ctx.fillStyle='#fff';
+  const paw=(dx,dy,r)=>{ ctx.beginPath(); ctx.ellipse(s.x+dx,s.y+dy,r,r*1.25,0,0,Math.PI*2); ctx.fill(); };
+  paw(-4.6,-3.4,1.7); paw(-1.5,-5.2,1.7); paw(1.6,-5.2,1.7); paw(4.7,-3.4,1.7);
+  paw(0,0.6,3.5);
+  // 选点预览（虚线圈）
+  if(c.sel){
+    ctx.beginPath(); ctx.arc(s.x,s.y,23,0,Math.PI*2);
+    ctx.setLineDash([4,4]); ctx.strokeStyle=T.boundary; ctx.lineWidth=2; ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // 卡片
+  if(S.view.k>=0.5){
+    ctx.font='600 11.5px -apple-system,"PingFang SC",sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    const nm=c.name;
+    const w=ctx.measureText(nm).width;
+    ctx.fillStyle=T.panel; rr(s.x-w/2-8, s.y+26, w+16, 20, 6); ctx.fill();
+    ctx.strokeStyle='rgba(232,146,124,.5)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle=T.label; ctx.fillText(nm, s.x, s.y+36);
+  }
+}
+
+function drawDrawing(){
+  const L=LAYERS[S.activeLayer], p=S.cur;
+  ctx.beginPath();
+  const a=toS({x:p[0][0],y:p[0][1]});
+  ctx.moveTo(a.x,a.y);
+  for(let i=1;i<p.length;i++){ const s=toS({x:p[i][0],y:p[i][1]}); ctx.lineTo(s.x,s.y); }
+  // 橡皮筋到光标
+  if(S.mouseImg){
+    const m=toS(S.mouseImg); ctx.lineTo(m.x,m.y);
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#E8927C'; ctx.lineWidth=1.6;
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(m.x,m.y,3,0,Math.PI*2); ctx.fillStyle='#E8927C'; ctx.fill();
+  } else { ctx.closePath(); ctx.fillStyle=L.fill; ctx.fill(); ctx.strokeStyle=L.stroke; ctx.lineWidth=L.lw; ctx.stroke(); }
+  if(p.length>2){ ctx.closePath(); ctx.fillStyle=L.fill; ctx.fill(); ctx.strokeStyle=L.stroke; ctx.lineWidth=L.lw; ctx.stroke(); }
+  // 顶点 + 序号
+  p.forEach((v,i)=>{
+    const s=toS({x:v[0],y:v[1]});
+    ctx.beginPath(); ctx.arc(s.x,s.y,5.5,0,Math.PI*2);
+    ctx.fillStyle=i===0?'#E8927C':'#fff'; ctx.fill();
+    ctx.strokeStyle='#E8927C'; ctx.lineWidth=2; ctx.stroke();
+    ctx.font='700 10px Consolas,monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillStyle='#8A4B2C'; ctx.fillText(String(i+1), s.x, s.y-7);
+  });
+}
+
+function tracePath(p){
+  ctx.beginPath();
+  ctx.moveTo(p[0][0]*S.view.k+S.view.x, p[0][1]*S.view.k+S.view.y);
+  for(let i=1;i<p.length;i++) ctx.lineTo(p[i][0]*S.view.k+S.view.x, p[i][1]*S.view.k+S.view.y);
+  ctx.closePath();
+}
+function drawPoly(p,L,isSel,name){
+  if(!p||p.length<2) return;
+  tracePath(p); ctx.fillStyle=L.fill; ctx.fill();
+  ctx.setLineDash(L.dashed?[7,5]:[]);
+  ctx.strokeStyle=isSel?'#E8927C':L.stroke; ctx.lineWidth=isSel?L.lw+1.4:L.lw;
+  ctx.stroke(); ctx.setLineDash([]);
+  if(isSel){
+    ctx.fillStyle='#fff'; ctx.strokeStyle='#E8927C'; ctx.lineWidth=1.6;
+    p.forEach(v=>{ const s=toS({x:v[0],y:v[1]}); ctx.beginPath(); ctx.rect(s.x-3.5,s.y-3.5,7,7); ctx.fill(); ctx.stroke(); });
+  }
+  if(name&&S.showLabels){
+    const s=toS(centroid(p));
+    ctx.font='600 12px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    const w=ctx.measureText(name).width;
+    ctx.fillStyle='rgba(253,248,245,.93)';
+    rr(s.x-w/2-6,s.y-10,w+12,20,6); ctx.fill();
+    ctx.strokeStyle=isSel?'#E8927C':L.stroke; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='#3D3D3D'; ctx.fillText(name,s.x,s.y);
+  }
+}
+function drawPoi(f,isSel){
+  const s=toS({x:f.x,y:f.y}), r=isSel?12:10;
+  // 外圈白底 + 深色描边：航拍照片上深色比白色更压得住
+  ctx.beginPath(); ctx.arc(s.x,s.y,r+3.5,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,.92)'; ctx.fill();
+  ctx.strokeStyle=isSel?'#8A2F10':'#5C4632'; ctx.lineWidth=isSel?3:2; ctx.stroke();
+  // 内芯
+  ctx.beginPath(); ctx.arc(s.x,s.y,r,0,Math.PI*2);
+  ctx.fillStyle=LAYERS.pois.fill; ctx.fill();
+  if(S.showLabels&&f.name){
+    ctx.font='700 13px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    const w=ctx.measureText(f.name).width;
+    ctx.fillStyle='rgba(255,255,255,.97)';
+    rr(s.x+r+7,s.y-11,w+12,22,6); ctx.fill();
+    ctx.strokeStyle='#B8501F'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#3D3D3D'; ctx.fillText(f.name,s.x+r+13,s.y);
+  }
+}
+function drawHandles(){
+  if(S.sel.vtx==null||S.sel.vtx<0) return;
+  const pts = ptsOf(S.sel.layer, S.sel.idx);
+  if(!pts||!pts[S.sel.vtx]) return;
+  const s=toS({x:pts[S.sel.vtx][0],y:pts[S.sel.vtx][1]});
+  ctx.beginPath(); ctx.rect(s.x-5.5,s.y-5.5,11,11);
+  ctx.fillStyle='#E8927C'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+}
+
+/**
+ * 选中图元时在角上画一个 ✎ 角标 —— 让「改名」在画布上看得见，
+ * 而不是只靠用户自己猜双击。左栏列表的 ✎ 是同一件事的第二个入口。
+ */
+function drawRenameBadge(){
+  const key=S.sel.layer;
+  if(!LAYERS[key] || !LAYERS[key].named) return;   // 边界匿名，不给角标
+  const f=featOf(key, S.sel.idx);
+  if(!f || (!f.p && f.x==null)) return;
+  const pts = ptsOf(key, S.sel.idx);
+  let anchor;
+  if(key==='pois') anchor={x:f.x,y:f.y};
+  else {
+    if(!pts.length) return;
+    // 用包围盒右上角，而不是形心：凹多边形的形心可能落在图形外
+    let bx=-1/0, by=-1/0;
+    pts.forEach(p=>{ if(p[0]>bx) bx=p[0]; if(p[1]<by) by=p[1]; });
+    anchor={x:bx, y:by};
+  }
+  const s=toS(anchor);
+  ctx.beginPath(); ctx.arc(s.x+9, s.y-9, 9, 0, Math.PI*2);
+  ctx.fillStyle='#E8927C'; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 11px sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('✎', s.x+9, s.y-8);
+}
+function drawGrid(){
+  let step=50;
+  while(step*S.view.k<26) step*=2;
+  while(step*S.view.k>110) step/=2;
+  const x0=Math.floor((-S.view.x/S.view.k)/step)*step, y0=Math.floor((-S.view.y/S.view.k)/step)*step;
+  ctx.strokeStyle='rgba(139,109,79,.13)'; ctx.lineWidth=1; ctx.beginPath();
+  for(let x=x0;x*S.view.k+S.view.x<W;x+=step){ if(x<0)continue; const sx=Math.round(x*S.view.k+S.view.x)+.5; ctx.moveTo(sx,0); ctx.lineTo(sx,H); }
+  for(let y=y0;y*S.view.k+S.view.y<H;y+=step){ if(y<0)continue; const sy=Math.round(y*S.view.k+S.view.y)+.5; ctx.moveTo(0,sy); ctx.lineTo(W,sy); }
+  ctx.stroke();
+}
+function rr(x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function centroid(p){ let x=0,y=0; p.forEach(v=>{x+=v[0];y+=v[1];}); return {x:x/p.length,y:y/p.length}; }
+
+/* ══════════════════════════════════════════════════════════
+   覆盖率缩略图 —— 画到哪了，一眼看到
+   ══════════════════════════════════════════════════════════ */
+const mcv=$('#miniCv'), mctx=mcv.getContext('2d');
+function drawMini(){
+  if(!S.showMini) return;
+  const MW=mcv.width, MH=mcv.height;
+  mctx.clearRect(0,0,MW,MH);
+  const bb=dataBBox();
+  if(!bb){ $('#miniCap').textContent='暂无数据'; return; }
+  const pad=4;
+  const k=Math.min((MW-pad*2)/bb.w,(MH-pad*2)/bb.h);
+  const ox=(MW-bb.w*k)/2-bb.x0*k, oy=(MH-bb.h*k)/2-bb.y0*k;
+  const P=v=>[v[0]*k+ox, v[1]*k+oy];
+
+  // 边界填充（= 校园范围）
+  if(S.data.bounds.length>=3){
+    mctx.beginPath();
+    const b=S.data.bounds;
+    let p=P(b[0]); mctx.moveTo(p[0],p[1]);
+    for(let i=1;i<b.length;i++){ p=P(b[i]); mctx.lineTo(p[0],p[1]); }
+    mctx.closePath();
+    mctx.fillStyle='#EFE4DA'; mctx.fill();
+  }
+  // 绿地
+  mctx.fillStyle='rgba(143,169,122,.55)';
+  mctx.fillStyle='rgba(199,146,114,.6)';
+  (S.data.sports||[]).forEach(f=>{ if(f.p&&f.p.length>2) miniPoly(f.p,P,mctx); });
+  mctx.fillStyle='rgba(143,169,122,.55)';
+  (S.data.greens||[]).forEach(f=>{ if(f.p&&f.p.length>2) miniPoly(f.p,P,mctx); });
+  // 道路
+  mctx.fillStyle='rgba(207,195,172,.75)';
+  (S.data.roads||[]).forEach(f=>{ if(f.p&&f.p.length>2) miniPoly(f.p,P,mctx); });
+  // 建筑
+  mctx.fillStyle='#B99B6B';
+  (S.data.buildings||[]).forEach(f=>{ if(f.p&&f.p.length>2) miniPoly(f.p,P,mctx); });
+  // POI
+  mctx.fillStyle='#E8927C';
+  (S.data.pois||[]).forEach(f=>{ const p=P(f); mctx.beginPath(); mctx.arc(p[0],p[1],1.8,0,Math.PI*2); mctx.fill(); });
+  // 边界线
+  if(S.data.bounds.length>=3){
+    mctx.beginPath();
+    const b=S.data.bounds;
+    let p=P(b[0]); mctx.moveTo(p[0],p[1]);
+    for(let i=1;i<b.length;i++){ p=P(b[i]); mctx.lineTo(p[0],p[1]); }
+    mctx.closePath();
+    mctx.strokeStyle='#E8927C'; mctx.lineWidth=1.2; mctx.stroke();
+  }
+  // 覆盖率
+  const cov = coveragePct();
+  $('#miniCap').textContent = `建筑覆盖 ${cov}%`;
+  mctx.fillStyle = cov>=70?'#5E9C6B':(cov>=40?'#B0703C':'#E87C7C');
+  mctx.font='700 9px Consolas,monospace';
+  mctx.textAlign='right'; mctx.textBaseline='top';
+  mctx.fillText(cov+'%', MW-3, 3);
+}
+function miniPoly(pts,P,c){
+  c.beginPath();
+  let p=P(pts[0]); c.moveTo(p[0],p[1]);
+  for(let i=1;i<pts.length;i++){ p=P(pts[i]); c.lineTo(p[0],p[1]); }
+  c.closePath(); c.fill();
+}
+/** 建筑在校园内的投影面积占比 —— 真正的「画了多少」 */
+function coveragePct(){
+  const b=S.data.bounds;
+  if(!b||b.length<3) return 0;
+  const total=Math.abs(polyArea(b));
+  if(total<1) return 0;
+  let sum=0;
+  for(const k of ['sports','buildings','roads','greens']){
+    (S.data[k]||[]).forEach(f=>{
+      if(!f.p||f.p.length<3) return;
+      sum += Math.abs(polyArea(f.p));   // 近似：不扣重叠，够用
+    });
+  }
+  return Math.min(100, Math.round(sum/total*100));
+}
+
+/* ── 命中 ─────────────────────────────────── */
+function inPoly(px,py,p){
+  let c=false;
+  for(let i=0,j=p.length-1;i<p.length;j=i++){
+    const xi=p[i][0],yi=p[i][1],xj=p[j][0],yj=p[j][1];
+    if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi)) c=!c;
+  }
+  return c;
+}
+function hitVertex(img){
+  if(!S.sel||S.sel.layer==='pois'||S.sel.vtx==null||S.sel.vtx<0) return null;
+  const pts = ptsOf(S.sel.layer, S.sel.idx);
+  if(!pts || !pts.length) return null;
+  for(let i=0;i<pts.length;i++){
+    const s=toS({x:pts[i][0],y:pts[i][1]});
+    if(Math.hypot(s.x-S.mouseX,s.y-S.mouseY)<=8) return i;
+  }
+  return null;
+}
+function pickAt(img){
+  const tol=7/S.view.k;
+  if(S.vis.pois) for(let i=S.data.pois.length-1;i>=0;i--){
+    const f=S.data.pois[i];
+    if(Math.hypot(f.x-img.x,f.y-img.y)<=tol) return {layer:'pois',idx:i};
+  }
+  for(const key of ['buildings','roads','sports','greens','bounds']){
+    if(!S.vis[key]) continue;
+    const L=LAYERS[key], lim=L.single?1:S.data[key].length;
+    for(let i=0;i<lim;i++){
+      const pts=ptsOf(key, i);
+      if(!pts||pts.length<3) continue;
+      if(inPoly(img.x,img.y,pts)) return {layer:key,idx:i};
+    }
+  }
+  return null;
+}
+
+/* ── 撤销 ─────────────────────────────────── */
+function pushUndo(){ S.undo.push(JSON.stringify(S.data)); if(S.undo.length>80) S.undo.shift(); $('#btnUndo').disabled=false; }
+function undo(){
+  if(!S.undo.length) return;
+  S.data=JSON.parse(S.undo.pop()); S.sel=null; S.cur=null;
+  $('#btnUndo').disabled=!S.undo.length; closeInline(); render(); refreshAll();
+}
+
+/* ── 画图主流程 ─────────────────────────────── */
+function beginPoly(){ S.cur=[]; S.tool='poly'; syncTool(); updHint(); render(); }
+
+/** 吸附：优先吸到已有顶点（相邻建筑共墙），否则吸网格 */
+function snapPt(img){
+  if(!S.snap || S.snapStep<=0) return img;
+  const tol = 7/S.view.k;
+  let best=null, bd=tol;
+  // 已画图元的顶点
+  const pools = [];
+  if(S.data.bounds.length) pools.push(S.data.bounds);
+  ['sports','buildings','roads','greens'].forEach(k=>(S.data[k]||[]).forEach(f=>pools.push(f.p)));
+  for(const p of pools){
+    for(const v of p){
+      const d=Math.hypot(v[0]-img.x, v[1]-img.y);
+      if(d<bd){ bd=d; best=v; }
+    }
+  }
+  if(best) return { x:best[0], y:best[1] };
+  // 网格
+  const s=S.snapStep;
+  return { x:Math.round(img.x/s)*s, y:Math.round(img.y/s)*s };
+}
+
+function addPoint(img){
+  if(!S.cur) S.cur=[];
+  const p = snapPt(img);
+  S.cur.push([+p.x.toFixed(1), +p.y.toFixed(1)]);
+  updHint(); validateCur(); render();
+}
+/** 新图元大部分跑到画面外时自动挪过去（画完了却「看不见」多半是这个） */
+function autoFocusIfOffscreen(layer, idx){
+  const pts = ptsOf(layer, idx);
+  if(!pts || !pts.length) return;
+  let inside=0;
+  pts.forEach(p=>{ const s=toS({x:p[0],y:p[1]}); if(s.x>=0&&s.y>=0&&s.x<W&&s.y<H) inside++; });
+  if(inside < pts.length/2){ focusOn(layer, idx); toast('新图元在画面外，已自动定位'); }
+}
+function popPoint(){ if(S.cur&&S.cur.length){ S.cur.pop(); validateCur(); updHint(); render(); } }
+
+/** 绘制中实时校验：自相交 / 跑出边界 / 面积过小 */
+function validateCur(){
+  const box=$('#valid'), txt=$('#validTxt');
+  const p=S.cur;
+  if(!p || p.length<3 || S.tool!=='poly'){ box.classList.remove('on'); return; }
+  const n=p.length;
+  // 自相交（相邻边不检查）
+  let selfX=false;
+  outer:
+  for(let i=0;i<n;i++){
+    for(let j=i+2;j<n;j++){
+      if(i===0 && j===n-1) continue;
+      if(segX(p[i],p[(i+1)%n],p[j],p[(j+1)%n])){ selfX=true; break outer; }
+    }
+  }
+  if(selfX){
+    box.classList.add('on'); txt.textContent='自相交 —— 边线交叉了，回退一点或用「撤回上一点」';
+    return;
+  }
+  const ar=Math.abs(polyArea(p));
+  if(ar<120){
+    box.classList.add('on'); txt.textContent=`面积仅 ${ar.toFixed(0)}px² —— 可能是误点`;
+    return;
+  }
+  const bp=S.data.bounds;
+  if(bp && bp.length>=3){
+    let out=0;
+    p.forEach(v=>{ if(!inPoly(v[0],v[1],bp)) out++; });
+    if(out){
+      box.classList.add('on');
+      txt.textContent=`${out}/${n} 个点在校园边界外`;
+      return;
+    }
+  }
+  box.classList.remove('on');
+}
+function polyArea(p){
+  let a=0;
+  for(let i=0;i<p.length;i++){
+    const [x1,y1]=p[i], [x2,y2]=p[(i+1)%p.length];
+    a+=x1*y2-x2*y1;
+  }
+  return a/2;
+}
+function segX(a,b,c,d){
+  const d1=cross(b,a,c), d2=cross(b,a,d), d3=cross(d,c,a), d4=cross(d,c,b);
+  return ((d1>0&&d2<0)||(d1<0&&d2>0)) && ((d3>0&&d4<0)||(d3<0&&d4>0));
+}
+function cross(o,a,b){
+  return (a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+}
+/** 去掉双击闭合留下的重复末点 —— 编辑器层面的根因修复 */
+function stripClose(pts){
+  if(pts && pts.length>=4 &&
+     Math.hypot(pts[0][0]-pts[pts.length-1][0], pts[0][1]-pts[pts.length-1][1])<3){
+    return pts.slice(0,-1);
+  }
+  return pts;
+}
+
+function finishPoly(){
+  if(!S.cur||S.cur.length<3){ toast('至少要 3 个点','warn'); return; }
+  const L=LAYERS[S.activeLayer];
+  if(L.single && S.data.bounds.length){ toast('校园边界只能有一个','warn'); S.cur=null; syncTool(); updHint(); render(); return; }
+  const pts=stripClose(S.cur); S.cur=null;
+  if(pts.length<3){ toast('去掉重复点后不足 3 点，已取消','warn'); syncTool(); updHint(); render(); return; }
+  $('#valid').classList.remove('on');
+  const def=defaultName(S.activeLayer);
+  let idx;
+  if(L.single){ S.data.bounds=pts; idx=0; }
+  else { S.data[S.activeLayer].push({name:def,kind:KINDS[L.kind]?KINDS[L.kind][0]:'',p:pts}); idx=S.data[S.activeLayer].length-1; }
+  S.sel={layer:S.activeLayer,idx,vtx:-1};
+  S.tool='select'; syncTool(); updHint(); render(); refreshAll();
+  if(L.named) openInline(S.activeLayer, idx, toS({x:pts[pts.length-1][0], y:pts[pts.length-1][1]}));
+  else toast('已添加'+def,'ok');
+  autoFocusIfOffscreen(S.activeLayer, idx);
+  updateEmptyState();
+}
+function defaultName(layer){
+  S.seq[layer]=(S.seq[layer]||0)+1;
+  return LAYERS[layer].label+' '+S.seq[layer];
+}
+
+function addPoi(img){
+  pushUndo();
+  const p = snapPt(img);
+  const def='POI '+((S.seq.poi=(S.seq.poi||0)+1));
+  S.data.pois.push({ name:def, kind:'other', x:+p.x.toFixed(1), y:+p.y.toFixed(1) });
+  const idx=S.data.pois.length-1;
+  S.sel={layer:'pois',idx,vtx:-1};
+  S.tool='select'; syncTool(); render(); refreshAll();
+  openInline('pois', idx, toS({x:p.x,y:p.y}));
+}
+
+function cancelCur(){ S.cur=null; S.pushed=false; S.tool='select'; syncTool(); $('#valid').classList.remove('on'); updHint(); render(); }
+
+/* ── 内联命名器 ─────────────────────────────── */
+let inTarget=null;
+function openInline(layer, idx, screenPt){
+  const L=LAYERS[layer];
+  inTarget={layer,idx};
+  const box=$('#inline');
+  box.classList.add('on');
+  const bw=216, bh=layer==='greens'?96:136;
+  let x=screenPt.x+14, y=screenPt.y-18;
+  if(x+bw>W-8) x=screenPt.x-bw-14;
+  if(y+bh>H-8) y=H-bh-8;
+  if(y<8) y=8;
+  box.style.left=Math.max(8,x)+'px'; box.style.top=y+'px';
+  $('#inTip').textContent = L.named ? (L.kind ? '给它起个名（回车确认 / Esc 跳过）' : '给它起个名（可不填）') : '不需要名称，直接确定';
+  $('#inName').style.display = L.named?'block':'none';
+  $('#inKind').style.display  = L.kind ?'block':'none';
+  $('#inName').value='';
+  if(L.kind){
+    $('#inKind').innerHTML = KINDS[L.kind].map(k=>`<option value="${k}">${KIND_LABELS[L.kind][k]||k}</option>`).join('');
+  }
+  setTimeout(()=>{ if(L.named) $('#inName').focus(); else $('#inOk').focus(); },20);
+}
+function closeInline(){ $('#inline').classList.remove('on'); inTarget=null; }
+function commitInline(){
+  if(!inTarget) return;
+  const {layer,idx}=inTarget, L=LAYERS[layer];
+  closeInline();
+  // 防御：弹窗开着时图元可能已被删
+  const f = featOf(layer,idx);
+  if(!f || (!f.p && f.x==null)){ render(); refreshAll(); return; }
+  const nm=$('#inName').value.trim();
+  if(layer==='pois'){
+    if(nm) S.data.pois[idx].name=nm;
+    if(L.kind) S.data.pois[idx].kind=$('#inKind').value;
+  } else if(!L.single){
+    if(nm) S.data[layer][idx].name=nm;
+    if(L.kind) S.data[layer][idx].kind=$('#inKind').value;
+  } else {
+    toast('校园边界无需名称','ok');
+  }
+  render(); refreshAll();
+  toast(nm? `已改名为「${nm}」` : '已更新类型', 'ok');
+}
+$('#inOk').onclick=commitInline;
+$('#inSkip').onclick=()=>{ closeInline(); render(); refreshAll(); toast('已添加，可稍后双击改名'); };
+$('#inName').addEventListener('keydown',e=>{ if(e.key==='Enter') commitInline(); });
+
+/* ── 交互 ─────────────────────────────────── */
+function localPt(e){ const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+
+cv.addEventListener('mousedown',e=>{
+  const p=localPt(e); const img=toI(p.x,p.y);
+  if(S.space||e.button===1||e.shiftKey){
+    S.panning=true; S.panStart={mx:p.x,my:p.y,vx:S.view.x,vy:S.view.y}; return;
+  }
+  if(e.button===2){ if(S.cur) cancelCur(); else {S.sel=null;render();refreshList();} return; }
+
+  if(S.tool==='poly'){
+    if(!S.cur) beginPoly();
+    if(!S.pushed){ pushUndo(); S.pushed=true; }
+    addPoint(img); return;
+  }
+  if(S.tool==='point'){ addPoi(img); return; }
+  if(S.tool==='delete'){
+    const h=pickAt(img); if(h){ pushUndo(); removeAt(h); render(); refreshAll(); }
+    return;
+  }
+  // select
+  const v=hitVertex(img);
+  if(v!=null){ S.sel.vtx=v; S.drag={mode:'vtx'}; return; }
+  let h=pickAt(img);
+  // 与双击同理：命中边界时优先认最近的建筑。凹多边形形心在图形外，
+  // 用户「看着楼中间」点一下却选中了校园边界，非常费解。
+  if(!h || h.layer==='bounds'){
+    const near=nearestBuilding(img, 40);
+    if(near) h=near;
+  }
+  if(h){
+    if(!S.sel||S.sel.layer!==h.layer||S.sel.idx!==h.idx){ S.sel={...h,vtx:-1}; }
+    S.drag={ mode:'move', sx:img.x, sy:img.y,
+      snap: h.layer==='pois' ? {...S.data.pois[h.idx]} : JSON.parse(JSON.stringify(featOf(h.layer,h.idx))) };
+  } else { S.sel=null; }
+  render(); refreshList();
+});
+
+window.addEventListener('mousemove',e=>{
+  const p=localPt(e); S.mouseX=p.x; S.mouseY=p.y; S.mouseImg=toI(p.x,p.y);
+  if(S.panning&&S.panStart){
+    S.view.x=S.panStart.vx+(p.x-S.panStart.mx); S.view.y=S.panStart.vy+(p.y-S.panStart.my); render();
+  } else if(S.drag&&S.sel){
+    const dx=S.mouseImg.x-S.drag.sx, dy=S.mouseImg.y-S.drag.sy, snap=S.drag.snap;
+    if(S.drag.mode==='vtx'){
+      const pts=ptsOf(S.sel.layer, S.sel.idx);
+      if(pts.length && S.sel.vtx>=0) pts[S.sel.vtx]=[+(snap[S.sel.vtx][0]+dx).toFixed(1),+(snap[S.sel.vtx][1]+dy).toFixed(1)];
+    } else if(S.sel.layer==='pois'){
+      const f=S.data.pois[S.sel.idx]; f.x=+(snap.x+dx).toFixed(1); f.y=+(snap.y+dy).toFixed(1);
+    } else {
+      const pts=ptsOf(S.sel.layer, S.sel.idx);
+      if(pts.length) pts.forEach((v,i)=>{ v[0]=+(snap[i][0]+dx).toFixed(1); v[1]=+(snap[i][1]+dy).toFixed(1); });
+    }
+    render();
+  } else if(S.cur){ render(); }
+  updStatus();
+});
+window.addEventListener('mouseup',()=>{ S.panning=false; S.drag=null; S.pushed=false; save(); });
+
+cv.addEventListener('dblclick',e=>{
+  e.preventDefault();
+  if(S.tool==='poly'){ S.pushed=false; finishPoly(); return; }
+  // 选择工具下双击图元 = 改名（提示条里承诺过的功能）
+  if(S.tool==='select' && !S.preview){
+    const p=localPt(e), img=toI(p.x,p.y);
+    let h=pickAt(img);
+    // 精确命中失败时退而求其次找最近的建筑（屏幕 40px 内）。
+    // 不少楼是凹多边形，形心落在图形外，用户「看着楼中间」双击反而点不到。
+    if(!h || h.layer==='bounds'){
+      const near=nearestBuilding(img, 40);
+      if(near) h=near;
+    }
+    if(h && h.layer!=='bounds'){ setLayer(h.layer); renameAt(h.layer, h.idx); }
+  }
+});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const p=localPt(e), before=toI(p.x,p.y);
+  const f=e.deltaY<0?1.12:1/1.12;
+  S.view.k=Math.max(.04,Math.min(14,S.view.k*f));
+  S.view.x=p.x-before.x*S.view.k; S.view.y=p.y-before.y*S.view.k;
+  render(); updStatus();
+},{passive:false});
+
+/**
+ * 取图元的「点数组」。
+ *   bounds  在 S.data.bounds 里直接就是 [[x,y],...]
+ *   其它层  是对象 {name,kind,p:[[x,y],...]}，点要取 .p
+ *
+ * 早前有五处把整个对象当数组用（inPoly / forEach / f[i]），对象上没有 length，
+ * 循环直接不执行 → 静默返回 false/null：选中、拖动、顶点编辑、删除、多边形双击
+ * 全部失效，只有 POI 那种带 x/y 的能用。统一走这个函数，别再手写 S.data[layer][idx]。
+ */
+function ptsOf(layer, idx){
+  if(LAYERS[layer].single) return S.data[layer] || [];
+  const f = S.data[layer] && S.data[layer][idx];
+  return (f && f.p) ? f.p : [];
+}
+
+/**
+ * 双击容错用：找离点击位置最近的一栋楼。
+ * 按建筑形心算距离，限 maxPx 个屏幕像素（内部换算成地图像素，与视图缩放无关）。
+ * 命中返回 {layer:'buildings', idx, data}，否则 null。
+ */
+function nearestBuilding(img, maxPx){
+  const limit = maxPx / S.view.k;
+  let best=null, bd=limit;
+  (S.data.buildings||[]).forEach((f,i)=>{
+    if(!f || !f.p || f.p.length<3) return;
+    const c=centroid(f.p);
+    const d=Math.hypot(c.x-img.x, c.y-img.y);
+    if(d<bd){ bd=d; best={layer:'buildings', idx:i, data:f}; }
+  });
+  return best;
+}
+/**
+ * 把视图移到指定图元上。
+ * zoom：'fit' 只居中不缩放；给数字则强制用该缩放（用于图元很小的情况）。
+ */
+function focusOn(layer, idx, zoom){
+  const pts = ptsOf(layer, idx);
+  let x0=1/0,y0=1/0,x1=-1/0,y1=-1/0;
+  if(pts && pts.length){
+    pts.forEach(p=>{ if(p[0]<x0)x0=p[0]; if(p[1]<y0)y0=p[1]; if(p[0]>x1)x1=p[0]; if(p[1]>y1)y1=p[1]; });
+  } else {
+    const f=featOf(layer,idx);
+    if(!f || f.x==null) return;
+    x0=x1=f.x; y0=y1=f.y;
+  }
+  const w=Math.max(x1-x0, 1), h=Math.max(y1-y0, 1);
+  if(typeof zoom==='number') S.view.k=zoom;
+  else {
+    const pad=70;
+    S.view.k=Math.max(0.2, Math.min((W-pad*2)/w, (H-pad*2)/h, 4));
+  }
+  S.view.x = W/2 - (x0+w/2)*S.view.k;
+  S.view.y = H/2 - (y0+h/2)*S.view.k;
+  render();
+}
+/** 图元的有效层号：f.z 优先，否则用图层基准 */
+function zOf(layer, idx){
+  const f = featOf(layer, idx);
+  if (f && typeof f.z === 'number') return f.z;
+  return (LAYERS[layer] && typeof LAYERS[layer].z === 'number') ? LAYERS[layer].z : 0;
+}
+function bumpZ(layer, idx, dz){
+  const f = featOf(layer, idx);
+  if(!f) return;
+  f.z = (typeof f.z==='number' ? f.z : zOf(layer,idx)) + dz;
+  render(); refreshSelbar(); refreshList();
+}
+function refreshSelbar(){
+  const bar = $('#selbar');
+  if(!S.sel || !S.sel.layer || LAYERS[S.sel.layer].single){
+    bar.classList.remove('on'); return;
+  }
+  bar.classList.add('on');
+  const f = featOf(S.sel.layer, S.sel.idx);
+  $('#sbName').textContent = (f && (f.name||'')) || '（未命名）';
+  $('#sbZ').textContent = zOf(S.sel.layer, S.sel.idx);
+}
+function featOf(layer,idx){ return LAYERS[layer].single ? S.data.bounds : S.data[layer][idx]; }
+function removeAt(h){
+  if(LAYERS[h.layer].single) S.data.bounds=[];
+  else S.data[h.layer].splice(h.idx,1);
+  if(S.sel&&S.sel.layer===h.layer&&S.sel.idx===h.idx) S.sel=null;
+}
+
+/* ── 提示条 ─────────────────────────────────── */
+function updHint(){
+  const el=$('#hint'), t=$('#hintTxt'), ab=$('#actbar');
+  if(S.tool==='poly'){
+    el.classList.add('live');
+    const n=S.cur?S.cur.length:0;
+    t.innerHTML = `正在画 <b>${LAYERS[S.activeLayer].label}</b> · 已点 <span class="n">${n}</span> 个点 · 至少 3 个 · <b>双击画布或回车 = 结束</b>`;
+    ab.classList.add('on');
+  } else if(S.tool==='point'){
+    el.classList.add('live');
+    t.innerHTML = `正在画 <b>POI</b> · 在画布上点一下`;
+    ab.classList.remove('on');
+  } else {
+    el.classList.remove('live');
+    const tot=totalCount();
+    if(S.preview){
+      t.innerHTML = `<b>预览模式</b> · 你现在看到的就是小程序里的样子 · 点画布空白处挪示例猫标记 · 顶部可切暗色`;
+    } else {
+      t.innerHTML = S.img
+        ? (tot? `空闲 · 共 <span class="n">${tot}</span> 个图元 · <kbd>M</kbd> 继续画多边形 · <kbd>P</kbd> 画点 · <b>双击图元改名</b> · 右上「✓ 完成并导出」`
+               : `已载入底图 · 按 <kbd>M</kbd> 画第一个多边形（建议先画校园边界 <kbd>V</kbd> 再按 <kbd>M</kbd>）`)
+        : '载入底图后，按 <kbd>M</kbd> 画多边形 · <kbd>P</kbd> 画点';
+    }
+    ab.classList.remove('on');
+  }
+}
+
+/* ── 工具 ─────────────────────────────────── */
+function syncTool(){
+  document.querySelectorAll('.tool[data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===S.tool));
+  const L=LAYERS[S.activeLayer];
+  $('#curLayer').innerHTML = `<span class="sw" style="background:${L.fill};border-color:${L.stroke}"></span>${L.label}`;
+  updStatus();
+}
+function setTool(t){
+  S.tool=t;
+  if(t!=='poly'){ S.cur=null; S.pushed=false; }
+  if(t!=='select') closeInline();
+  syncTool(); updHint(); render();
+}
+document.querySelectorAll('.tool[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+$('#btnFit').onclick=fit;
+$('#btnUndo').onclick=undo;
+
+/* ── 预览模式 ─────────────────────────────────── */
+$('#btnPreview').onclick = ()=>{
+  S.preview = !S.preview;
+  $('#btnPreview').classList.toggle('on', S.preview);
+  $('#btnDark').style.display = S.preview ? 'inline-block' : 'none';
+  document.querySelectorAll('.tool[data-tool]').forEach(b=>b.disabled = S.preview);
+  $('#curLayer').style.display = S.preview ? 'none' : '';
+  if(S.preview){
+    // 示例猫标记：放在第一个建筑上，看效果用
+    const fb = (S.data.buildings||[]).find(b=>b.p&&b.p.length>=3);
+    if(fb){
+      const c = centroid(fb.p);
+      S.sampleCat = { x:+c.x.toFixed(1), y:+c.y.toFixed(1), name: fb.name||'小猫', sel:true };
+    }
+    // 关键：预览没有底图，必须按数据范围重新 fit，否则视图变换是旧的
+    fit();
+    updHint();
+    toast('预览模式 · 空白处点一下可移动示例猫标记');
+  } else {
+    S.sampleCat = null; updHint();
+  }
+  render();
+};
+$('#btnDark').onclick = ()=>{
+  S.dark = !S.dark;
+  $('#btnDark').textContent = S.dark ? '☀️ 亮色' : '🌙 暗色';
+  render();
+};
+// 预览模式下点画布 = 挪示例猫标记
+cv.addEventListener('click', e=>{
+  if(!S.preview || !S.sampleCat) return;
+  const p = localPt(e), img = toI(p.x, p.y);
+  S.sampleCat.x = +img.x.toFixed(1);
+  S.sampleCat.y = +img.y.toFixed(1);
+  // 命中最近的建筑，自动改名，模拟真实标记的归属
+  let best=null, bd=1e9;
+  (S.data.buildings||[]).forEach(b=>{
+    if(!b.p||b.p.length<3) return;
+    const c=centroid(b.p);
+    const d=Math.hypot(c.x-img.x, c.y-img.y);
+    if(d<bd){ bd=d; best=b; }
+  });
+  if(best && bd<200) S.sampleCat.name = best.name||'小猫';
+  render();
+});
+$('#abOk').onclick=()=>{ S.pushed=false; finishPoly(); };
+$('#abUndo').onclick=popPoint;
+$('#abCancel').onclick=cancelCur;
+$('#ckGrid').onchange=e=>{ S.showGrid=e.target.checked; render(); };
+$('#ckLabels').onchange=e=>{ S.showLabels=e.target.checked; drawMini(); render(); };
+$('#ckMini').onchange=e=>{ S.showMini=e.target.checked;
+  $('#mini').classList.toggle('hide',!S.showMini); if(S.showMini) drawMini(); };
+$('#ckSnap').onchange=e=>{
+  S.snap=e.target.checked; S.snapStep=+$('#selSnap').value;
+  if(S.snap&&S.snapStep<=0){ S.snapStep=5; $('#selSnap').value='5'; }
+  toast(S.snap?`吸附已开 · ${S.snapStep}px` : '吸附已关');
+};
+$('#selSnap').onchange=e=>{ S.snapStep=+e.target.value; };
+
+// 点缩略图 = 快速定位到那块区域
+mcv.addEventListener('click',e=>{
+  const r=mcv.getBoundingClientRect();
+  const bb=dataBBox(); if(!bb) return;
+  const k=Math.min((r.width-8)/bb.w,(r.height-8)/bb.h);
+  const ox=(r.width-bb.w*k)/2-bb.x0*k, oy=(r.height-bb.h*k)/2-bb.y0*k;
+  const ix=(e.clientX-r.left-ox)/k, iy=(e.clientY-r.top-oy)/k;
+  S.view.x=W/2-ix*S.view.k; S.view.y=H/2-iy*S.view.k;
+  render();
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  if($('#mask').classList.contains('on')){ if(e.key==='Escape') $('#mClose').click(); return; }
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); return; }
+  if(e.key==='Escape'){ if($('#inline').classList.contains('on')){ closeInline(); render(); refreshAll(); } else if(S.cur) cancelCur(); else { S.sel=null; render(); refreshList(); } return; }
+  if(e.key==='Enter'&&S.tool==='poly'){ e.preventDefault(); S.pushed=false; finishPoly(); return; }
+  if(e.key==='Delete'||e.key==='Backspace'){
+    if(S.sel){ e.preventDefault(); pushUndo(); removeAt(S.sel); render(); refreshAll(); } return;
+  }
+  if(e.key===' ') S.space=true;
+  const k=e.key.toLowerCase();
+const L={ v:'bounds', a:'sports', b:'buildings', r:'roads', g:'greens', p:'pois' };
+  if(L[k]){ setLayer(L[k]); if(k==='p') setTool('point'); }
+  else if(k==='m') setTool('poly');
+  else if(k==='o') setTool('select');
+  else if(k==='d') setTool('delete');
+  else if(k==='f2' || e.key==='F2'){ if(S.sel){ setLayer(S.sel.layer); renameAt(S.sel.layer, S.sel.idx); } }
+  else if(e.key==='F4'){ if(S.sel){ setLayer(S.sel.layer); focusOn(S.sel.layer, S.sel.idx); toast('已定位'); } }
+  else if(k==='p' && !S.preview){ setTool('point'); }
+});
+document.addEventListener('keyup',e=>{ if(e.key===' ') S.space=false; });
+
+/* 点内联命名框外面 = 确认（比按 Esc 取消更符合直觉） */
+document.addEventListener('mousedown',e=>{
+  if(!$('#inline').classList.contains('on')) return;
+  if(e.target.closest('#inline')) return;
+  if($('#mask').classList.contains('on')) return;
+  commitInline();
+}, true);
+
+function setLayer(k){ S.activeLayer=k; refreshLayers(); syncTool(); updHint(); }
+
+/* ── 侧栏 ─────────────────────────────────── */
+function refreshLayers(){
+  $('#layers').innerHTML = ORDER.map(k=>{
+    const L=LAYERS[k], n=countOf(k);
+    return `<div class="layer ${S.activeLayer===k?'active':''} ${S.vis[k]?'':'off'}" data-k="${k}" title="${HINT[k]}">
+      <button class="eye" data-eye="${k}">${S.vis[k]?'👁':'🚫'}</button>
+      <span class="sw" style="background:${L.fill};border-color:${L.stroke}"></span>
+      <span class="nm">${L.label}</span><span class="ct">${n}</span>
+    </div>`;
+  }).join('');
+  $('#layers').querySelectorAll('.layer').forEach(el=>{
+    el.onclick=e=>{
+      if(e.target.dataset.eye){ S.vis[e.target.dataset.eye]=!S.vis[e.target.dataset.eye]; refreshLayers(); render(); return; }
+      setLayer(el.dataset.k);
+    };
+  });
+}
+function countOf(k){ const L=LAYERS[k]; return L.single ? (S.data[k].length?1:0) : S.data[k].length; }
+function totalCount(){ return ORDER.reduce((s,k)=>s+countOf(k),0); }
+
+/* ── 校区 ─────────────────────────────────── */
+/** 该校区草稿里已有多少图元 —— 只用来在按钮上点个数，不打开文档就不会污染存档 */
+function zoneCount(name){
+  try{
+    const raw = localStorage.getItem(lsKey(name)) || (name==='本部' ? localStorage.getItem(LS_KEY) : null);
+    if(!raw) return 0;
+    const d = JSON.parse(raw);
+    return ORDER.reduce((s,k)=> s + (Array.isArray(d[k]) ? (LAYERS[k].single ? (d[k].length?1:0) : d[k].length) : 0), 0);
+  }catch(e){ return 0; }
+}
+function refreshZones(){
+  const cur = S.data.campusZone || '本部';
+  $('#zones').innerHTML = ZONES.map(z=>{
+    const n = zoneCount(z.name);
+    return `<button class="zchip ${z.name===cur?'active':''}" data-z="${esc(z.name)}"
+      title="${esc(z.name)} · 导出 ${z.file}${n?` · 草稿已有 ${n} 个图元`:''}">${esc(z.name)}${n?`<span class="zc">${n}</span>`:''}</button>`;
+  }).join('');
+  $('#zones').querySelectorAll('.zchip').forEach(el=>{ el.onclick = ()=> switchZone(el.dataset.z); });
+}
+
+/**
+ * 切校区：先把当前草稿落盘，再载入目标校区草稿。
+ * 底图不跟着走 —— 「一张图对一个校区」，切过去要重新拖入那校区的 CAD/航拍。
+ */
+function switchZone(name){
+  const cur = S.data.campusZone || '本部';
+  if(!name || name===cur) return;
+  ensureZone(name);
+  if(!confirm(`切到「${name}」？\n\n· 当前「${cur}」的草稿已自动保存，切回即可继续\n· 底图不跟随切换，需要重新拖入「${name}」的底图`)) return;
+  saveNow();
+  dropImg();
+  S.data = blankData(name);
+  try{
+    const raw = localStorage.getItem(lsKey(name));
+    if(raw) S.data = Object.assign(S.data, JSON.parse(raw));
+  }catch(e){}
+  S.data.campusZone = name;
+  ['bounds','sports','buildings','roads','greens','pois'].forEach(k=>{ if(!Array.isArray(S.data[k])) S.data[k]=[]; });
+  S.undo=[]; $('#btnUndo').disabled=true; S.sel=null; S.cur=null; closeInline();
+  S.seq={}; ORDER.forEach(k=>{ if(S.data[k].length) S.seq[k]=S.data[k].length; });
+  S.nbDismissed=false;
+  try{ localStorage.setItem(LS_LAST, name); }catch(e){}
+  refreshAll(); fit();
+  toast(`已切到「${name}」· 拖入该校区底图后开始画`,'ok');
+}
+
+/** 底图只是描图参照：不进存档，也不跟着校区切换走 */
+function dropImg(){ S.img=null; S.imgW=0; S.imgH=0; S.imgName=''; }
+
+function refreshProgress(){
+  $('#progress').innerHTML = ORDER.map(k=>{
+    const L=LAYERS[k], n=countOf(k), done=n>=L.target;
+    return `<div class="prog ${done?'done':''}" title="${HINT[k]}">
+      <div class="row"><span>${L.label}</span><b>${n} / ${L.target}</b></div>
+      <div class="bar"><i style="width:${Math.min(100,Math.round(n/L.target*100))}%"></i></div></div>`;
+  }).join('');
+}
+function refreshList(){
+  const box=$('#flist'); const items=[];
+  ORDER.forEach(k=>{
+    const L=LAYERS[k];
+    const arr = L.single ? (S.data[k].length?[S.data[k]]:[]) : S.data[k];
+    arr.forEach((f,i)=>{
+      if(!f||(!f.p&&f.x==null)) return;
+      // 匿名图层（绿地）按序号显示，比「（未命名）」好认
+      const L0=LAYERS[k];
+      items.push({k,i,nm:f.name || (L0.named ? '（未命名）' : (L0.label+' '+(i+1))), kind:f.kind, poly:!!f.p});
+    });
+  });
+  if(!items.length){ box.innerHTML='<div class="empty">还没有图元</div>'; return; }
+  box.innerHTML = items.map(o=>{
+    const sel=S.sel&&S.sel.layer===o.k&&S.sel.idx===o.i;
+    const kl=LAYERS[o.k].kind;
+    const kn=kl?(KIND_LABELS[kl][o.kind]||''):'';
+    const canRename = !!LAYERS[o.k].named;
+    return `<div class="fitem ${sel?'sel':''}" data-k="${o.k}" data-i="${o.i}" title="${canRename?'双击改名':'校园边界无需命名'}">
+      <span class="dot" style="background:${LAYERS[o.k].stroke}"></span>
+      <span class="tx">${esc(o.nm)}${kn?` <span style="color:var(--text-tertiary)">· ${kn}</span>`:''}</span>
+      <button class="fo" data-fo="1" title="定位到它">◎</button>
+      ${canRename?`<button class="rn" data-rn="1" title="改名">✎</button>`:''}
+      <button class="dl" data-del="1" title="删除">×</button></div>`;
+  }).join('');
+  box.querySelectorAll('.fitem').forEach(el=>{
+    el.onclick=e=>{
+      const k=el.dataset.k, i=+el.dataset.i;
+      if(e.target.dataset.del){ pushUndo(); removeAt({layer:k,idx:i}); render(); refreshAll(); return; }
+      if(e.target.dataset.fo){ S.sel={layer:k,idx:i,vtx:-1}; setLayer(k); setTool('select');
+        focusOn(k,i); refreshList(); return; }
+      if(e.target.dataset.rn){ setLayer(k); renameAt(k,i); return; }
+      S.sel={layer:k,idx:i,vtx:-1}; setTool('select'); render(); refreshList();
+    };
+    el.ondblclick=function(e){
+      if(e.target.dataset.del||e.target.dataset.rn) return;
+      const k=this.dataset.k; setLayer(k); renameAt(k,+this.dataset.i);
+    };
+  });
+  box.querySelectorAll('.fitem').ondblclick=function(e){
+    if(e.target.dataset.del||e.target.dataset.rn) return;
+    const k=this.dataset.k; setLayer(k); renameAt(k,+this.dataset.i);
+  };
+}
+function renameAt(layer,idx){
+
+  const L=LAYERS[layer];
+  if(L.single){ toast('校园边界无需命名','warn'); return; }
+  // 防御：图元可能已被删除
+  const f = featOf(layer,idx);
+  if(!f || (!f.p && f.x==null)){ toast('该图元已不存在','warn'); return; }
+  S.sel={layer,idx,vtx:-1}; S.tool='select'; syncTool(); render(); refreshList();
+  // 注意：f 是图元对象，坐标在 f.p 上；直接传 f 给 centroid 会抛错
+  const anchor = layer==='pois' ? toS({x:f.x,y:f.y}) : toS(centroid(f.p));
+  openInline(layer, idx, anchor);
+  if(L.kind && $('#inName').style.display!=='none') $('#inName').value = f.name||'';
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function updStatus(){
+  $('#stTool').textContent=TOOLNAME[S.tool];
+  $('#stZone').textContent=S.data.campusZone||'本部';
+  $('#stPos').textContent=S.mouseImg?`${Math.round(S.mouseImg.x)}, ${Math.round(S.mouseImg.y)}`:'—';
+  $('#stScale').textContent=Math.round(S.view.k*100)+'%';
+  $('#stCount').textContent=totalCount();
+}
+function refreshAll(){ refreshLayers(); refreshZones(); refreshProgress(); refreshList(); updStatus(); updHint(); save(); updateEmptyState(); }
+
+/**
+ * 空态判定：
+ *   有底图            -> 什么都不显示
+ *   没底图 + 有图元   -> 只显示左上角小提示条，绝不占画布中央
+ *   没底图 + 没图元   -> 才显示中央大框
+ */
+function updateEmptyState(){
+  const big=$('#empty'), small=$('#noBase');
+  const cur=S.data.campusZone||'本部';
+  const has = totalCount() > 0;
+  big.style.display  = (!S.img && !has) ? 'flex' : 'none';
+  small.classList.toggle('on', !S.img && has && !S.nbDismissed);
+  $('#emptyTitle').textContent = `把「${cur}」的 CAD 图拖进画布`;
+  $('#baseInfo').textContent = S.img
+    ? S.imgName + ' · ' + S.imgW + '×' + S.imgH + ' px'
+    : `「${cur}」底图未载入 · 也可把图拖进画布`;
+}
+function dismissNoBase(){ S.nbDismissed=true; updateEmptyState(); }
+
+/* ── Toast ─────────────────────────────────── */
+function toast(msg,kind){
+  const el=document.createElement('div');
+  el.className='toast'+(kind?' '+kind:''); el.textContent=msg;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='.25s'; setTimeout(()=>el.remove(),260); },2100);
+}
+
+/* ── 底图 ─────────────────────────────────── */
+$('#btnLoad').onclick=()=>{
+  const i=document.createElement('input'); i.type='file'; i.accept='image/*';
+  i.onchange=()=>{ if(i.files[0]) loadImg(i.files[0]); }; i.click();
+};
+$('#stage').addEventListener('dragover',e=>e.preventDefault());
+$('#stage').addEventListener('drop',e=>{ e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) loadImg(f); });
+// 拖底图时先把空态框撤掉，免得挡住落点
+
+function loadImg(file){
+  if(!/^image\//.test(file.type)){ alert('请选择图片'); return; }
+  const url=URL.createObjectURL(file), im=new Image();
+  im.onload=()=>{
+    URL.revokeObjectURL(url);
+    S.img=im; S.imgW=im.naturalWidth; S.imgH=im.naturalHeight; S.imgName=file.name;
+    S.data.imageSize=[im.naturalWidth,im.naturalHeight];
+    $('#baseInfo').textContent=`${file.name} · ${im.naturalWidth}×${im.naturalHeight} px`;
+S.nbDismissed=false;
+fit(); refreshAll(); toast('底图已载入，开始画吧','ok');
+  };
+  im.onerror=()=>{ URL.revokeObjectURL(url); alert('图片读取失败'); };
+  im.src=url;
+}
+
+/* ── 完成 & 导出 ─────────────────────────────── */
+$('#btnDone').onclick=()=>{
+  const t=totalCount();
+  const zone=S.data.campusZone||'本部';
+  $('#modalSub').textContent = `${zoneFile(zone)} · ${zone} · 坐标为底图像素，原点左上`;
+  $('#sumTable').innerHTML = ORDER.map(k=>{
+    const L=LAYERS[k], n=countOf(k);
+    return `<tr><td>${L.label}</td><td>${n} ${n<L.target?`<span style="color:var(--text-tertiary);font-weight:400"> / 建议 ${L.target}</span>`:''}</td></tr>`;
+  }).join('')+`<tr><td><b>建筑覆盖</b></td><td><b>${coveragePct()}%</b></td></tr>
+              <tr><td><b>合计</b></td><td><b>${t}</b></td></tr>`;
+
+  const w=[];
+  if(!S.data.bounds.length) w.push('校园边界还没画 —— 选点校验要用，建议先补');
+  const noname=S.data.pois.filter(p=>!p.name||/^POI \d+$/.test(p.name)).length;
+  if(noname) w.push(`${noname} 个 POI 还是默认名，双击图元或列表里的 ✎ 改名`);
+  const dn = dupNames();
+  if(dn.length) w.push('有重名：'+dn.map(x=>`「${x}」`).join('、')+' —— 地图上会分不清，合并或改个名');
+  const cov=coveragePct();
+  if(cov<40) w.push(`建筑覆盖才 ${cov}%，右半边基本还没画（缩略图能看）`);
+  if(!S.img) w.push('当前没载入底图 —— 导出不受影响，但没法对着图核对');
+  if(!S.data.imageSize||!S.data.imageSize[0]) w.push('缺少 imageSize，小程序里无法换算坐标');
+
+  $('#sumWarn').style.display = w.length?'block':'none';
+  $('#sumWarn').innerHTML = w.length ? '<b>建议补一下</b>'+w.map(x=>'· '+x).join('<br>') : '✓ 没有发现问题，可以导出了';
+  $('#mask').classList.add('on');
+};
+function dupNames(){
+  const seen={}, dup=new Set();
+  ['buildings','pois'].forEach(k=>(S.data[k]||[]).forEach(f=>{
+    const n=(f.name||'').trim();
+    if(!n) return;
+    if(seen[n]) dup.add(n); else seen[n]=1;
+  }));
+  return [...dup];
+}
+$('#mClose').onclick=()=>$('#mask').classList.remove('on');
+$('#mask').addEventListener('mousedown',e=>{ if(e.target.id==='mask') $('#mask').classList.remove('on'); });
+$('#mSave').onclick=doExport;
+
+function doExport(){
+  const zone = S.data.campusZone || '本部';
+  const file = zoneFile(zone);
+  const out={
+    campusZone:zone, mapVersion:S.data.mapVersion||1,
+    imageSize:S.data.imageSize&&S.data.imageSize[0]?S.data.imageSize:[S.imgW,S.imgH],
+    bounds:stripClose(S.data.bounds), sports:S.data.sports, buildings:S.data.buildings, roads:S.data.roads,
+greens:S.data.greens.map(g=>({name:g.name||'', p:stripClose(g.p)})), pois:S.data.pois
+  };
+  // 导出前最后一道：去掉闭合重复末点
+  ['sports','buildings','roads'].forEach(k=>out[k].forEach(f=>{ f.p=stripClose(f.p); }));
+  // greens 导出时保留 z（层号），否则草地压在操场上的关系会丢
+  // greens 不带 name：原定 schema 就是 {p, z?}
+  out.greens = S.data.greens.map(g=>{ const o={p:stripClose(g.p)}; if(typeof g.z==='number') o.z=g.z; return o; });
+  // 导出为 .js 而不是 .json：微信小程序不支持 require('.json')，
+  // 地图数据必须是 JS 模块才能被组件引到。
+  const txt=mapModule(out, file, zone);
+  const blob=new Blob([txt],{type:'text/javascript'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=file; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  $('#mask').classList.remove('on');
+  toast(`已导出 ${file}（${zone} · ${totalCount()} 个图元）`,'ok');
+}
+
+/** 包成 JS 模块：module.exports = {…}; 头部写明校区与目标文件名，落到仓库才对得上 */
+function mapModule(obj, file, zone){
+  return `// ${file} - ${zone}校园底图，由 tools/campus-map-editor 导出，勿手改\n`
+       + '// 微信小程序不支持 require(\'.json\')，所以地图数据必须落成 JS 模块。\n'
+       + '// 导入本文件请用编辑器的「导入」（能同时吃 .json 与 .js）。\n\n'
+       + 'module.exports = ' + JSON.stringify(obj,null,2) + ';\n';
+}
+
+/** 解析 .json，或剥掉 module.exports 包装的 .js —— 两种格式都能吃 */
+function parseMapFile(text){
+  const t = String(text).trim();
+  if (t.charAt(0)==='{') return JSON.parse(t);
+  const m = t.match(/module\.exports\s*=\s*/);
+  if (m) return JSON.parse(t.slice(m.index+m[0].length).replace(/;\s*$/,''));
+  return JSON.parse(t);
+}
+
+$('#btnImport').onclick=()=>$('#fileIn').click();
+$('#fileIn').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=parseMapFile(r.result);
+      // 导入的文件自带校区：跨校区导入就先切过去（该校区草稿会被文件内容替代）
+      const z = typeof d.campusZone==='string' ? d.campusZone.trim() : '';
+      if(z && z!==S.data.campusZone){
+        if(!confirm(`这个文件是「${z}」的底图。切到「${z}」并导入？\n\n· 当前「${S.data.campusZone}」的草稿已自动保存\n· 底图不跟随切换，需要重新拖入`)){ e.target.value=''; return; }
+        saveNow(); dropImg();
+        S.data = blankData(z);
+        S.undo=[]; $('#btnUndo').disabled=true; S.sel=null; S.cur=null;
+      }
+      S.data=Object.assign(S.data,d);
+      ensureZone(S.data.campusZone||z||'本部');
+      S.data.campusZone = S.data.campusZone||z||'本部';
+      ['bounds','sports','buildings','roads','greens','pois'].forEach(k=>{ if(!Array.isArray(S.data[k])) S.data[k]=[]; });
+      const n = cleanImported();
+      try{ localStorage.setItem(LS_LAST, S.data.campusZone); }catch(err){}
+      refreshAll(); fit();
+      toast(n? `已导入「${S.data.campusZone}」· 自动清洗 ${n} 处脏数据` : `已导入「${S.data.campusZone}」`, 'ok');
+    }catch(err){ alert('JSON 解析失败：'+err.message); }
+  };
+  r.readAsText(f); e.target.value='';
+};
+
+/** 导入时自动清洗：闭合重复末点 + 按名称修正 kind */
+const KIND_FIX=[['宿舍','dorm'],['图书馆','library'],['图书','library'],['食堂','canteen'],
+                ['实验','lab'],['实训','lab'],['培训','training'],['办公','office'],['教学楼','teaching']];
+function cleanImported(){
+  let n=0;
+  if(S.data.bounds.length) S.data.bounds=stripClose(S.data.bounds);
+  for(const k of ['sports','buildings','roads','greens']){
+    for(const f of S.data[k]){
+      if(f.p){ const before=f.p.length; f.p=stripClose(f.p); if(f.p.length!==before) n++; }
+      const nm=f.name||'';
+      for(const [kw,kk] of KIND_FIX){
+        if(nm.includes(kw) && f.kind!==kk){ f.kind=kk; n++; break; }
+      }
+    }
+  }
+  for(const f of S.data.pois){
+    const nm=f.name||'';
+    for(const [kw,kk] of KIND_FIX){
+      if(nm.includes(kw) && f.kind!==kk){ f.kind=kk; n++; break; }
+    }
+  }
+  return n;
+}
+$('#btnClear').onclick=()=>{
+  if(!confirm('清空全部图元？（可用 Ctrl+Z 撤销）')) return;
+  pushUndo();
+  S.data.bounds=[]; S.data.sports=[]; S.data.buildings=[]; S.data.roads=[]; S.data.greens=[]; S.data.pois=[];
+  S.sel=null; refreshAll();
+};
+
+/* ── 存档（按校区各存一份，互不覆盖） ─────────── */
+let st=null;
+function saveNow(){
+  clearTimeout(st); st=null;
+  try{
+    localStorage.setItem(lsKey(S.data.campusZone||'本部'), JSON.stringify(S.data));
+    // 迁移收尾：本部一旦有了自己的存档位，旧的单档键就退休（避免两处数据打架）
+    if((S.data.campusZone||'本部')==='本部') localStorage.removeItem(LS_KEY);
+  }catch(e){}
+}
+function save(){ clearTimeout(st); st=setTimeout(saveNow,500); }
+function restore(){
+  let zone='本部';
+  try{ const last=localStorage.getItem(LS_LAST); if(last && ZONES.some(z=>z.name===last)) zone=last; }catch(e){}
+  try{
+    // 迁移：旧版本只有一个存档位，那里面存的就是本部
+    const raw = localStorage.getItem(lsKey(zone)) || (zone==='本部' ? localStorage.getItem(LS_KEY) : null);
+    if(raw) S.data=Object.assign(S.data, JSON.parse(raw));
+  }catch(e){}
+  // 存档里的校区以存档为准；存档没写或写了别的（比如早期文件）就以本次载入的校区为准
+  if(!S.data.campusZone || !ZONES.some(z=>z.name===S.data.campusZone)) S.data.campusZone = zone;
+  ensureZone(S.data.campusZone);
+  return S.data.campusZone;
+}
+
+/* ── 启动 ─────────────────────────────────── */
+$('#selbar').addEventListener('click', e=>{
+  const z = e.target.dataset && e.target.dataset.z;
+  if(!S.sel || z==null) return;
+  const L=S.sel.layer, i=S.sel.idx;
+  if(z==='top') bumpZ(L,i,9999);
+  else if(z==='bottom') bumpZ(L,i,-9999);
+  else bumpZ(L,i, +z);
+});
+$('#sbClose').onclick = ()=>{ S.sel=null; refreshSelbar(); render(); refreshList(); };
+$('#nbLoad').onclick = ()=>$('#btnLoad').click();
+$('#nbClose').onclick = dismissNoBase;
+ORDER.forEach(k=>S.vis[k]=true);
+// 版本自检：磁盘上的文件变了但浏览器跑的还是缓存，就在这里说清楚
+(function(){
+  const KEY='campus-map-editor-build';
+  try{
+    const prev=localStorage.getItem(KEY);
+    localStorage.setItem(KEY, 'v3.4·20261019');
+    if(prev && prev!=='v3.4·20261019'){
+      const d=document.createElement('div');
+      d.style.cssText='position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:99;'
+        +'background:#E03E20;color:#fff;font-size:12.5px;padding:8px 16px;border-radius:8px;'
+        +'box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:80vw;text-align:center;';
+      d.textContent='你打开的是旧缓存版本（'+prev+'），当前应为 v3.4·20261019 —— 请按 Ctrl+Shift+R 强制刷新';
+      document.body.appendChild(d);
+      setTimeout(()=>d.remove(), 12000);
+    }
+  }catch(e){}
+})();
+const startZone = restore();
+ORDER.forEach(k=>{ if(S.data[k]&&S.data[k].length) S.seq[k]=S.data[k].length; });
+refreshAll(); resize(); syncTool(); updHint();
+$('#btnUndo').disabled=!S.undo.length;
+// 刷新后先按数据范围适配视图（底图不会被 localStorage 保存，需要重拖）
+if(!S.img && dataBBox()) fit();
+toast(`当前校区「${startZone}」· 每个校区独立存档`, 'ok');
+</script>
+</body>
+</html>

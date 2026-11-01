@@ -1,0 +1,22 @@
+# 依赖
+node_modules/
+package-lock.json
+
+# 工作区临时目录（被 .gitignore 排除，但 eslint 不会自动跟随 .gitignore）
+# 曾因这里残留的一次性扫描脚本（scan-*.js）产生 no-unused-vars error，
+# 把 npm run lint / npm run check 打成红灯，而 CI 的干净检出反而是绿的 ——
+# 同一个仓库两套门禁结论。扫描类脚本请放 scripts/（纳入 lint）。
+tmp/
+temp/
+
+# 微信小程序生成文件
+*.min.js
+*.min.wxss
+
+# 云函数
+cloudfunctions/**/node_modules/
+cloudfunctions/**/miniprogram_npm/
+
+# 其他
+.DS_Store
+Thumbs.db

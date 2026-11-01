@@ -1,0 +1,92 @@
+/* components/guide-card/guide-card.wxss - 底部卡片式导览 */
+.gcard-root {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-coach, 1050);
+  box-sizing: border-box;
+  padding: 0 24rpx calc(24rpx + env(safe-area-inset-bottom));
+}
+
+.gcard-card {
+  padding: 28rpx 30rpx 24rpx;
+  border: 2rpx solid var(--primary-tint-20);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-warm-lg3),
+    0 12rpx 40rpx var(--overlay-black-15);
+  background: var(--bg-primary);
+  animation: gcardIn 0.22s ease both;
+}
+
+@keyframes gcardIn {
+  from { opacity: 0; transform: translateY(24rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.gcard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.gcard-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.gcard-progress {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.gcard-desc {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.gcard-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.gcard-skip {
+  padding: 8rpx 4rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+}
+
+.gcard-skip-hover {
+  opacity: 0.6;
+}
+
+.gcard-done {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 150rpx;
+  height: 60rpx;
+  padding: 0 26rpx;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 6rpx 16rpx var(--primary-tint-30);
+  background: var(--primary-cta-gradient);
+  color: var(--primary-cta-text);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.gcard-done-hover {
+  opacity: 0.85;
+}

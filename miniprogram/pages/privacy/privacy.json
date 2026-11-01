@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "custom-navbar": "../../components/custom-navbar/custom-navbar",
+    "icon": "../../components/icon/icon"
+  },
+  "navigationBarTitleText": "隐私政策",
+  "navigationStyle": "custom",
+  "backgroundColor": "#E8927C",
+  "backgroundColorTop": "#E8927C"
+}

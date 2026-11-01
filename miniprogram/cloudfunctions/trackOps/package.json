@@ -1,0 +1,9 @@
+{
+  "name": "track-ops",
+  "version": "1.0.0",
+  "description": "运营数据面板最小埋点：每日活跃与页面入口使用（匿名用户键，幂等写入）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

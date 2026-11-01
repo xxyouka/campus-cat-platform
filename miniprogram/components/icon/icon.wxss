@@ -1,0 +1,6 @@
+/* components/icon/icon.wxss —— 字形本身的字体/配色在 styles/iconfont.wxss，这里只补内联排版 */
+.cat-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}

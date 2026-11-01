@@ -1,0 +1,25 @@
+<!-- 轻量就地高亮：目标外圈光环 + 气泡；不铺全屏蒙层，整页保持可点 -->
+<view class="cmk-root" wx:if="{{_visible}}">
+  <!-- 光环不吃点击，用户可以直接点真实入口 -->
+  <view class="cmk-ring" style="{{ringStyle}}"></view>
+
+  <view class="cmk-bubble {{bubbleAbove ? 'is-above' : 'is-below'}}" style="{{bubbleStyle}}">
+    <view class="cmk-arrow" wx:if="{{showArrow}}" style="{{arrowStyle}}"></view>
+    <view class="cmk-head">
+      <text class="cmk-title">{{title}}</text>
+      <text class="cmk-progress" wx:if="{{stepText}}">{{stepText}}</text>
+    </view>
+    <text class="cmk-desc">{{desc}}</text>
+    <view class="cmk-actions">
+      <view class="cmk-skip-all" bindtap="onSkipAll" hover-class="cmk-skip-hover" role="button" aria-label="跳过全部引导">
+        <text>全部跳过</text>
+      </view>
+      <view class="cmk-skip" bindtap="onSkip" hover-class="cmk-skip-hover" role="button" aria-label="{{skipText}}">
+        <text>{{skipText}}</text>
+      </view>
+      <view class="cmk-done" bindtap="onDone" hover-class="cmk-done-hover" role="button" aria-label="{{doneText}}">
+        <text>{{doneText}}</text>
+      </view>
+    </view>
+  </view>
+</view>

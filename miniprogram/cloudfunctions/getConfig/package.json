@@ -1,0 +1,1 @@
+{"name": "get-config", "version": "1.0.0", "description": "获取小程序配置信息（敏感数据通过环境变量）", "main": "index.js", "dependencies": {"wx-server-sdk": "~2.6.3"}}

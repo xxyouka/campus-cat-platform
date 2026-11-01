@@ -1,0 +1,472 @@
+/* 全局样式 - 温馨高级感 */
+page {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 32rpx;
+  line-height: 1.6;
+  
+  /* 温馨暖色调主色 */
+  --primary-color: #E8927C;
+  --primary-light: #FDF0EC;
+  --primary-dark: #C47A6A;
+
+  /* --primary-deep（暖栗 #8A4B2C）已于 2026-10-14 晚**物理移除**，请勿再添加新 token。
+     沿革（防止有人把它捡回来）：深一档的珊瑚红三次被否（#A8543F 棕红 → #B54B30 赤陶
+     → #C9401F 鲜珊瑚红）后，曾短暂用过「暖栗 #8A4B2C」，但它在真机复测里仍被嫌为「猪肝红」——
+     报告页是最后三个使用点，当晚已按口径改毕。现行口径：
+     品牌色只做「面」（按钮底 / 徽标底 / 图标 / 大数字）+ 面上白字（--primary-cta-*）；
+     正文与小字一律走暖墨文字色（--text-primary / --text-secondary / --text-tertiary）。 */
+
+  /* 主操作按钮 / 品牌标签（浅色模式）—— 2026-10-14 维护者两轮定案：
+     ① 底色用品牌色本身，不再压深（压深 = 品牌色消失，砖红两次被否）
+     ② 面上文字用白字（不是深可可），按钮 / 标签全站统一这一套「品牌面 + 白字」
+     品牌珊瑚 #E8927C 上白字实测 2.4:1：**这是维护者看过对比度色带后仍选定的观感口径**，
+     不再按 4.5:1 小字门槛返工（如需回退：把 --primary-cta-text 改 #4A2B22，即 5.3:1）。
+     渐变随之改「品牌主色 → 品牌加深」(#E8927C → #D67B65)，让白字在深端更稳（3.05:1）。
+       · --primary-cta-bg（实色）给按钮、标签、徽标底
+       · --primary-cta-gradient 给大 CTA
+     --primary-cta-text 与底色成套：深色模式下底色是提亮珊瑚 #F5A593，白字只有 1.7:1 不可用，
+     故深色下字色翻回深色（--bg-primary #1B1816，8.99:1）—— 这是唯一的深浅差异，已在预览页说明。 */
+  --primary-cta-bg: var(--primary-color);
+  --primary-cta-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-primary-dark) 100%);
+  --primary-cta-text: #FFF;
+  
+  /* 辅助色 - 温暖大地色系 */
+  --secondary-color: #C4A77D;
+  --secondary-light: #F5EFE5;
+  
+  /* 渐变中间色 */
+  --gradient-primary-mid: #F0B89A;
+  --gradient-primary-dark: #D67B65;
+  
+  /* 功能色 */
+  --success-color: #87C48A;
+  --warning-color: #F0C48A;
+  --danger-color: #E87C7C;
+  --info-color: #8AB8E8;
+
+  /* 深一档信息色：小字号徽标等浅底场景使用（--info-color 在浅底上仅 1.9:1） */
+  --info-dark: #2F6BA8;
+  
+  /* 扩展功能色 */
+  --urgent-color: #FF3B30;
+  --urgent-dark: #E82E2E;
+
+  /* 深一档警报色：白字压 --urgent-color 仅 3.6:1，26rpx 消息类型标签等小字需 4.5:1 */
+  --urgent-deep: #C62222;
+
+  /* 错误色：云函数 / 网络失败文案与「点此重试」用（区别于品牌 --danger-color 的粉红，
+     这是真正的错误红）。此前各处写的是 var(--error-color, #e64340) 兜底 —— 2026-10-12
+     把兜底值提成正式 token，使用点统一改回 var(--error-color) 无兜底口径 */
+  --error-color: #E64340;
+  --error-tint-10: rgb(230 67 64 / 10%);
+  --activity-color: #1890FF;
+  --activity-dark: #1677CC;
+  --accent-gold: #FFD700;
+  --info-light: #7BA8D8;
+  --danger-bright: #FF4D4F;
+  
+  /* 状态色 */
+  --status-healthy: #5A9E7C;
+  --status-adoptable: #28A745;
+
+  /* 深一档「已找回」色：--status-adoptable 在白底上仅 3.1:1，小字标签不达标 */
+  --status-adoptable-deep: #1E7A34;
+  --status-feeding: #D4980E;
+  --status-missing: #8B7B75;
+  
+  /* 健康记录类型色 */
+  --health-vaccine: #52C41A;
+  --health-treatment: #1890FF;
+  --health-surgery: #722ED1;
+  --health-checkup: #FA8C16;
+  --health-medicine: #EB2F96;
+  --health-other: #8C8C8C;
+  
+  /* 健康记录类型浅色 */
+  --health-vaccine-light: #73D13D;
+  --health-treatment-light: #40A9FF;
+  --health-surgery-light: #9254DE;
+  --health-checkup-light: #FFA940;
+  --health-medicine-light: #F759AB;
+  --health-other-light: #BFBFBF;
+  
+  /* 文字色 - 温暖深灰（primary > secondary > tertiary > light 层级递减） */
+  --text-primary: #3D3D3D;
+  --text-secondary: #6B6B6B;
+  --text-tertiary: #8C8C8C;
+  --text-light: #7D7D7D;
+  --text-accent: #8B7E74;
+  
+  /* 背景色 - 温暖米白 */
+  --bg-primary: #FFF;
+  --bg-secondary: #FDF8F5;
+  --bg-tertiary: #F5F2EF;
+  --bg-card: #FFF;
+  --bg-warm: #FAF6F2;
+  --bg-popup: #FFFAF8;
+  --bg-close-active: #F0ECE8;
+  --bg-dashboard-start: #FFFBF8;
+  --bg-dashboard-end: #FFF6F0;
+  --bg-share-end: #F5EDE3;
+  --bg-card-alt: #FAFAFA;
+  --bg-info-tint: #E6F7FF;
+  --bg-danger-tint: #FFF1F0;
+  
+  /* 骨架屏色 */
+  --skeleton-base: #F5F0EB;
+  --skeleton-mid: #EDE8E3;
+  --skeleton-dark: #E8E3DD;
+  --skeleton-highlight: #F0EBE6;
+  
+  /* 边框色 */
+  --border-color: rgb(139 109 79 / 8%);
+  --border-light: rgb(139 109 79 / 6%);
+  
+  /* 阴影 - 柔和温暖 */
+  --shadow-xs: 0 2rpx 6rpx rgb(139 109 79 / 4%);
+  --shadow-sm: 0 4rpx 16rpx rgb(139 109 79 / 6%);
+  --shadow-md: 0 8rpx 32rpx rgb(139 109 79 / 8%);
+  --shadow-lg: 0 16rpx 48rpx rgb(139 109 79 / 12%);
+  --shadow-warm: 0 8rpx 40rpx rgb(232 146 124 / 15%);
+
+  /* 状态徽章微光：可领养（绿）/ 走失（红），与 --adoptable-tint-12 / --danger-tint-12 底色配套 */
+  --shadow-status-adoptable: 0 4rpx 12rpx rgb(40 167 69 / 15%);
+  --shadow-status-lost: 0 4rpx 12rpx rgb(255 59 48 / 18%);
+
+  /* 上抛阴影：贴屏幕底部的面板/操作栏（地图选点栏、详情底部栏） */
+  --shadow-sheet-up: 0 -8rpx 32rpx rgb(139 109 79 / 10%);
+  --shadow-sheet-up-dark: 0 -8rpx 32rpx rgb(0 0 0 / 40%);
+  --shadow-sheet-up-dark-lg: 0 -8rpx 48rpx rgb(0 0 0 / 40%);
+
+  /* ========== 半透明覆盖层（用于彩色背景上的白色覆盖） ========== */
+  --overlay-white-04: rgb(255 255 255 / 4%);
+  --overlay-white-06: rgb(255 255 255 / 6%);
+  --overlay-white-08: rgb(255 255 255 / 8%);
+  --overlay-white-10: rgb(255 255 255 / 10%);
+  --overlay-white-12: rgb(255 255 255 / 12%);
+  --overlay-white-15: rgb(255 255 255 / 15%);
+  --overlay-white-20: rgb(255 255 255 / 20%);
+  --overlay-white-25: rgb(255 255 255 / 25%);
+  --overlay-white-32: rgb(255 255 255 / 32%);
+  --overlay-white-35: rgb(255 255 255 / 35%);
+  --overlay-white-40: rgb(255 255 255 / 40%);
+  --overlay-white-50: rgb(255 255 255 / 50%);
+  --overlay-white-60: rgb(255 255 255 / 60%);
+  --overlay-white-70: rgb(255 255 255 / 70%);
+  --overlay-white-80: rgb(255 255 255 / 80%);
+  --overlay-white-85: rgb(255 255 255 / 85%);
+  --overlay-white-90: rgb(255 255 255 / 90%);
+  --overlay-white-92: rgb(255 255 255 / 92%);
+  --overlay-white-95: rgb(255 255 255 / 95%);
+
+  /* ========== 黑色半透明覆盖层 ========== */
+  --overlay-black-02: rgb(0 0 0 / 2%);
+  --overlay-black-03: rgb(0 0 0 / 3%);
+  --overlay-black-04: rgb(0 0 0 / 4%);
+  --overlay-black-05: rgb(0 0 0 / 5%);
+  --overlay-black-08: rgb(0 0 0 / 8%);
+  --overlay-black-10: rgb(0 0 0 / 10%);
+  --overlay-black-15: rgb(0 0 0 / 15%);
+  --overlay-black-20: rgb(0 0 0 / 20%);
+  --overlay-black-30: rgb(0 0 0 / 30%);
+  --overlay-black-45: rgb(0 0 0 / 45%);
+  --overlay-black-50: rgb(0 0 0 / 50%);
+  --overlay-black-55: rgb(0 0 0 / 55%);
+  --overlay-black-60: rgb(0 0 0 / 60%);
+  --overlay-black-70: rgb(0 0 0 / 70%);
+
+  /* 压深色遮罩 / 深色底上的文案与图标：不随主题翻转 ——
+     遮罩本身是深色（照片上的点赞按钮等），浅色模式的深字口径在这里不适用。
+     2026-10-14 由 detail 的 #fff 提为正式 token。 */
+  --text-on-dark: #FFF;
+
+  /* 深色底栏（详情页底部操作条）：贴深色底 --bg-primary(#1B1816)，留 8% 给 backdrop blur */
+  --overlay-dark-92: rgb(27 24 22 / 92%);
+
+  /* ========== 遮罩层背景 ========== */
+  --mask-bg: rgb(0 0 0 / 50%);
+  --mask-bg-light: rgb(0 0 0 / 45%);
+  --mask-bg-heavy: rgb(0 0 0 / 60%);
+  --mask-bg-dark: rgb(0 0 0 / 55%);
+  --mask-bg-darker: rgb(0 0 0 / 70%);
+  --mask-bg-warm: rgb(58 44 35 / 45%);
+
+  /* 就地高亮的遮罩：比普通弹窗轻一档，保留页面上下文；仍用暖色而不是纯黑 */
+  --coach-mask: rgb(38 29 24 / 52%);
+
+  /* ========== 主题色半透明 ========== */
+  --primary-tint-04: rgb(232 146 124 / 4%);
+  --primary-tint-05: rgb(232 146 124 / 5%);
+  --primary-tint-06: rgb(232 146 124 / 6%);
+  --primary-tint-08: rgb(232 146 124 / 8%);
+  --primary-tint-10: rgb(232 146 124 / 10%);
+  --primary-tint-12: rgb(232 146 124 / 12%);
+  --primary-tint-15: rgb(232 146 124 / 15%);
+  --primary-tint-20: rgb(232 146 124 / 20%);
+  --primary-tint-25: rgb(232 146 124 / 25%);
+  --primary-tint-28: rgb(232 146 124 / 28%);
+  --primary-tint-30: rgb(232 146 124 / 30%);
+  --primary-tint-35: rgb(232 146 124 / 35%);
+  --primary-tint-45: rgb(232 146 124 / 45%);
+  --primary-tint-50: rgb(232 146 124 / 50%);
+  --primary-tint-55: rgb(232 146 124 / 55%);
+  --primary-tint-70: rgb(232 146 124 / 70%);
+  --primary-tint-90: rgb(232 146 124 / 90%);
+
+  /* ========== 暖色半透明（139, 109, 79）========== */
+  --warm-tint-03: rgb(139 109 79 / 3%);
+  --warm-tint-04: rgb(139 109 79 / 4%);
+  --warm-tint-05: rgb(139 109 79 / 5%);
+  --warm-tint-06: rgb(139 109 79 / 6%);
+  --warm-tint-07: rgb(139 109 79 / 7%);
+  --warm-tint-08: rgb(139 109 79 / 8%);
+  --warm-tint-10: rgb(139 109 79 / 10%);
+  --warm-tint-12: rgb(139 109 79 / 12%);
+  --warm-tint-15: rgb(139 109 79 / 15%);
+  --warm-tint-18: rgb(139 109 79 / 18%);
+  --warm-tint-25: rgb(139 109 79 / 25%);
+
+  /* ========== 次要色半透明（196, 167, 125）========== */
+  --secondary-tint-05: rgb(196 167 125 / 5%);
+  --secondary-tint-08: rgb(196 167 125 / 8%);
+  --secondary-tint-12: rgb(196 167 125 / 12%);
+  --secondary-tint-13: rgb(196 167 125 / 13%);
+  --secondary-tint-14: rgb(196 167 125 / 14%);
+  --secondary-tint-20: rgb(196 167 125 / 20%);
+  --secondary-tint-30: rgb(196 167 125 / 30%);
+  --secondary-tint-35: rgb(196 167 125 / 35%);
+
+  /* ========== 状态色半透明 ========== */
+  --success-tint-06: rgb(124 182 157 / 6%);
+  --success-tint-10: rgb(124 182 157 / 10%);
+  --success-tint-12: rgb(124 182 157 / 12%);
+  --success-tint-15: rgb(124 182 157 / 15%);
+  --warning-tint-08: rgb(232 184 124 / 8%);
+  --warning-tint-12: rgb(232 184 124 / 12%);
+  --warning-tint-15: rgb(232 184 124 / 15%);
+  --warning-tint-20: rgb(232 184 124 / 20%);
+  --danger-tint-04: rgb(232 124 124 / 4%);
+  --danger-tint-05: rgb(232 124 124 / 5%);
+  --danger-tint-08: rgb(232 124 124 / 8%);
+  --danger-tint-10: rgb(232 124 124 / 10%);
+  --danger-tint-12: rgb(232 124 124 / 12%);
+  --danger-tint-15: rgb(232 124 124 / 15%);
+  --danger-tint-20: rgb(232 124 124 / 20%);
+  --danger-tint-30: rgb(232 124 124 / 30%);
+  --info-tint-05: rgb(122 168 232 / 5%);
+  --info-tint-12: rgb(122 168 232 / 12%);
+  --info-tint-15: rgb(100 160 255 / 15%);
+
+  /* ========== 浅底状态标签（运营看板入口标签 / 摘要条）==========
+     浅色为实底彩字；深色在 utilities.wxss 翻成 18% 透明底 + 提亮字。
+     2026-10-23 从 pages/admin/ops/ops.wxss 深色块收口，此前 7 个色值直接写在页面里。
+     文字取深一档色：浅底小字需 ≥4.5:1（#C0392B / #8A5A00 / #2E7D4F）。 */
+  --tag-danger-bg: #FDECEC;
+  --tag-danger-text: #C0392B;
+  --tag-warning-bg: #FFF8E8;
+  --tag-warning-text: #8A5A00;
+  --tag-warning-border: #F0D5A8;
+  --tag-success-bg: #EAF7EF;
+  --tag-success-text: #2E7D4F;
+
+  /* ========== 健康记录类型阴影色 ========== */
+  --shadow-health-vaccine: 0 4rpx 12rpx rgb(82 196 26 / 25%);
+  --shadow-health-treatment: 0 4rpx 12rpx rgb(24 144 255 / 25%);
+  --shadow-health-surgery: 0 4rpx 12rpx rgb(114 46 209 / 25%);
+  --shadow-health-checkup: 0 4rpx 12rpx rgb(250 140 22 / 25%);
+  --shadow-health-medicine: 0 4rpx 12rpx rgb(235 47 150 / 25%);
+
+  /* ========== 主题色阴影 ========== */
+  --shadow-primary-sm: 0 4rpx 16rpx rgb(232 146 124 / 10%);
+  --shadow-primary: 0 8rpx 24rpx rgb(232 146 124 / 15%);
+  --shadow-primary-md: 0 8rpx 28rpx rgb(232 146 124 / 35%);
+  --shadow-primary-lg: 0 8rpx 32rpx rgb(232 146 124 / 10%);
+  --shadow-primary-xl: 0 12rpx 48rpx rgb(232 146 124 / 45%);
+  --shadow-primary-2xl: 0 16rpx 48rpx rgb(232 146 124 / 10%);
+  --shadow-primary-3xl: 0 16rpx 80rpx rgb(232 146 124 / 20%);
+
+  /* ========== 暖色阴影 ========== */
+  --shadow-warm-2xs: 0 1px 4px rgb(0 0 0 / 4%);
+  --shadow-warm-xs2: 0 2rpx 6rpx rgb(139 109 79 / 3%);
+  --shadow-warm-sm2: 0 4rpx 16rpx rgb(139 109 79 / 5%);
+  --shadow-warm-sm3: 0 4rpx 20rpx rgb(139 109 79 / 4%);
+  --shadow-warm-sm4: 0 4rpx 24rpx rgb(139 109 79 / 4%);
+  --shadow-warm-sm5: 0 4rpx 24rpx rgb(139 109 79 / 6%);
+  --shadow-warm-md2: 0 4rpx 24rpx rgb(139 109 79 / 12%);
+  --shadow-warm-md3: 0 6rpx 20rpx rgb(139 109 79 / 8%);
+  --shadow-warm-lg2: 0 8rpx 32rpx rgb(139 109 79 / 6%);
+  --shadow-warm-lg3: 0 8rpx 32rpx rgb(139 109 79 / 7%);
+  --shadow-warm-lg4: 0 8rpx 32rpx rgb(139 109 79 / 10%);
+  --shadow-warm-xl2: 0 8rpx 40rpx rgb(139 109 79 / 5%);
+  --shadow-warm-xl3: 0 8rpx 40rpx rgb(139 109 79 / 6%);
+  --shadow-warm-xl4: 0 8rpx 40rpx rgb(139 109 79 / 8%);
+  --shadow-warm-2xl: 0 12rpx 56rpx rgb(139 109 79 / 12%);
+  --shadow-warm-2xl2: 0 12rpx 48rpx rgb(139 109 79 / 8%);
+  --shadow-warm-3xl: 0 16rpx 56rpx rgb(139 109 79 / 15%);
+  --shadow-warm-4xl: 0 16rpx 80rpx rgb(139 109 79 / 12%);
+  --shadow-warm-5xl: 0 20rpx 60rpx rgb(139 109 79 / 25%);
+  --shadow-warm-6xl: 0 40rpx 120rpx rgb(139 109 79 / 18%);
+
+  /* ========== 深色阴影 ========== */
+  --shadow-dark-sm: 0 2rpx 16rpx rgb(0 0 0 / 4%);
+  --shadow-dark-md: 0 16rpx 48rpx rgb(0 0 0 / 30%);
+
+  /* ========== 状态边框色 ========== */
+  --border-success: rgb(67 160 71 / 15%);
+  --border-warning: rgb(230 81 0 / 15%);
+  --border-danger: rgb(198 40 40 / 15%);
+  --border-info: rgb(21 101 192 / 15%);
+  --border-adopted: rgb(46 125 50 / 15%);
+  --border-deceased: rgb(117 117 117 / 15%);
+
+  /* ========== 骨架屏边框 ========== */
+  --skeleton-border: rgb(245 240 235 / 80%);
+
+  /* ========== 特殊装饰色 ========== */
+  --glow-gold: rgb(255 200 80 / 60%);
+  --gold-tint-30: rgb(255 215 0 / 30%);
+  --gold-tint-50: rgb(255 215 0 / 50%);
+  --danger-overlay: rgb(220 53 69 / 85%);
+  --urgent-tint-10: rgb(255 59 48 / 10%);
+  --activity-tint-10: rgb(0 122 255 / 10%);
+  --gray-tint-15: rgb(150 150 150 / 15%);
+  --missing-tint-12: rgb(200 190 185 / 12%);
+  --adoptable-tint-12: rgb(52 199 89 / 12%);
+  --blue-tint-25: rgb(100 160 255 / 25%);
+  --blue-tint-12: rgb(93 173 226 / 12%);
+  --blue-tint-13: rgb(93 173 226 / 13%);
+  --green-tint-12: rgb(130 224 170 / 12%);
+  --green-tint-13: rgb(130 224 170 / 13%);
+  --bluegray-tint-06: rgb(139 169 191 / 6%);
+  --bluegray-tint-15: rgb(139 169 191 / 15%);
+
+  /* ========== 扩展主题色半透明 ========== */
+  --primary-tint-03: rgb(232 146 124 / 3%);
+  --primary-tint-22: rgb(232 146 124 / 22%);
+  --primary-tint-40: rgb(232 146 124 / 40%);
+
+  /* ========== 扩展暖色半透明 ========== */
+  --warm-text-45: rgb(139 109 79 / 45%);
+  --warm-text-50: rgb(139 109 79 / 50%);
+  --warm-text-70: rgb(139 109 79 / 70%);
+
+  /* ========== 扩展警告色半透明 ========== */
+  --warning-tint-04: rgb(232 184 124 / 4%);
+  --warning-tint-10: rgb(232 184 124 / 10%);
+  --warning-tint-30: rgb(232 184 124 / 30%);
+
+  /* ========== 扩展成功色半透明（浅色变体 135, 196, 138） ========== */
+  --success-light-tint-06: rgb(135 196 138 / 6%);
+  --success-light-tint-10: rgb(135 196 138 / 10%);
+  --success-light-tint-15: rgb(135 196 138 / 15%);
+  --success-light-tint-20: rgb(135 196 138 / 20%);
+
+  /* ========== 扩展信息蓝色半透明（138, 184, 232） ========== */
+  --info-blue-tint-12: rgb(138 184 232 / 12%);
+  --info-blue-tint-15: rgb(138 184 232 / 15%);
+  --info-blue-tint-30: rgb(138 184 232 / 30%);
+
+  /* ========== 扩展白色覆盖层 ========== */
+  --overlay-white-55: rgb(255 255 255 / 55%);
+  --overlay-white-65: rgb(255 255 255 / 65%);
+  --overlay-white-72: rgb(255 255 255 / 72%);
+  --overlay-white-75: rgb(255 255 255 / 75%);
+
+  /* ========== 扩展暖色背景半透明 ========== */
+  --warm-bg-60: rgb(253 248 245 / 60%);
+  --warm-bg-92: rgb(253 248 245 / 92%);
+
+  /* ========== 扩展深色文字（暖色背景上） ========== */
+  --dark-warm-text-70: rgb(60 40 20 / 70%);
+  --dark-warm-text-80: rgb(80 60 40 / 80%);
+  --dark-warm-text-85: rgb(60 40 20 / 85%);
+
+  /* ========== 扩展遮罩层 ========== */
+  --mask-bg-38: rgb(0 0 0 / 38%);
+  --mask-bg-40: rgb(0 0 0 / 40%);
+  --mask-bg-48: rgb(0 0 0 / 48%);
+
+  /* ========== 奖牌色半透明 ========== */
+  --gold-tint-35: rgb(255 215 0 / 35%);
+  --gray-tint-30: rgb(150 150 150 / 30%);
+  --bronze-tint-30: rgb(255 152 0 / 30%);
+
+  /* ========== 词云风格背景 ========== */
+  --wf-style2-bg-start: rgb(255 254 248 / 96%);
+  --wf-style2-bg-end: rgb(255 246 236 / 92%);
+  --wf-style3-bg-start: rgb(248 252 255 / 96%);
+  --wf-style3-bg-end: rgb(240 248 255 / 92%);
+  --wf-style4-bg-start: rgb(250 256 252 / 96%);
+  --wf-style4-bg-end: rgb(242 254 248 / 92%);
+
+  /* ========== 渐变组合 ========== */
+  --gradient-warm-tint: linear-gradient(135deg, rgb(232 146 124 / 8%) 0%, rgb(196 167 125 / 8%) 100%);
+  --gradient-warm-tint-light: linear-gradient(135deg, rgb(232 146 124 / 6%) 0%, rgb(196 167 125 / 5%) 100%);
+  --gradient-danger-tint: linear-gradient(135deg, rgb(232 124 124 / 10%) 0%, rgb(255 200 200 / 10%) 100%);
+  --gradient-shimmer-white: linear-gradient(90deg, transparent, rgb(255 255 255 / 40%), transparent);
+  --gradient-shimmer-white-light: linear-gradient(90deg, transparent, rgb(255 255 255 / 15%), transparent);
+  --gradient-photo-overlay: linear-gradient(to top, rgb(0 0 0 / 60%) 0%, transparent 100%);
+  --gradient-map-overlay: linear-gradient(to bottom, rgb(0 0 0 / 40%), transparent);
+
+  /* 地图组件（activity-map / campus-map）：纸质底图与遮罩文字，两个组件共用。
+     地图刻意保持固定「纸色」观感，不随深浅色切换（与上面的 --gradient-map-overlay 同层）。 */
+  --map-paper: #dfd8c9;
+  --map-chip-bg: rgb(255 255 255 / 94%);
+  --map-chip-text: #5a4a42;
+  --map-chip-border: rgb(139 109 79 / 22%);
+  --map-chip-shadow: 0 4rpx 12rpx rgb(96 74 52 / 14%);
+  --map-mask-title: #6b6b6b;
+  --map-mask-sub: #9a938c;
+
+  /* 圆角 */
+  --radius-xs: 8rpx;
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 28rpx;
+  --radius-xl: 40rpx;
+  --radius-full: 50%;
+
+  /* 真胶囊：非正方形元素必须用这个。
+     --radius-full(50%) 是按「宽高各自的 50%」圆角，非正方形会被渲染成椭圆（蛋形）——
+     2026-10-12「公告」徽标、2026-10-14「木鱼版」徽标都栽在这上面；
+     999rpx 会把四角半径统一压到短边的一半，得到上下平直、两端半圆的胶囊。 */
+  --radius-pill: 999rpx;
+
+  /* 间距 */
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 40rpx;
+  --space-xxl: 48rpx;
+
+  /* 层级 */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 900;
+  --z-coach: 1050;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}
+
+/* ========== 深色模式：本次新增「深一档」变量的翻转 ==========
+ * 深色下品牌色已被 utilities.wxss 提亮（--primary-color #F5A593、--urgent-color #FF6B6B、
+ * --status-adoptable #60C060），按钮/标签文字用深色 #1B1816（--bg-primary）压在提亮色上，
+ * 对比度 8~10:1，本身达标。
+ * 因此这几个「仅供浅色模式压白字」的深一档变量，在深色下直接指回对应的提亮色即可，
+ * 既不用另写色值，也不会出现深色模式下的深底深字。
+ * --primary-cta-text 同理：浅色模式是白字压品牌珊瑚，深色下底色变提亮珊瑚 #F5A593，
+ * 白字只有 1.7:1 → 字色翻回深色（--bg-primary #1B1816，8.99:1）。
+ * 变量值里的 var() 在使用处解析（晚于本文件声明），故不影响与 utilities.wxss 的先后顺序。 */
+@media (prefers-color-scheme: dark) {
+  page {
+    --primary-cta-bg: var(--primary-color);
+    --primary-cta-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    --primary-cta-text: var(--bg-primary);
+    --urgent-deep: var(--urgent-color);
+    --status-adoptable-deep: var(--status-adoptable);
+  }
+}

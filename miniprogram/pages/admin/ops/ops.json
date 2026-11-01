@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "custom-navbar": "/components/custom-navbar/custom-navbar",
+    "icon": "/components/icon/icon"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

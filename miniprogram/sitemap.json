@@ -1,0 +1,85 @@
+{
+  "desc": "关于本文件的更多信息，请参考文档 https://developers.weixin.qq.com/miniprogram/dev/framework/sitemap.html",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "pages/admin/admin"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/add-cat/add-cat"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/cat-manage/cat-manage"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/edit-cat/edit-cat"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/photo-manage/album-detail"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/photo-manage/photo-manage"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/notice-manage/notice-manage"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/relation-manage/relation-manage"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/manage-admins/manage-admins"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/operation-logs/operation-logs"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/meet-rank/meet-rank"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/fav-rank/fav-rank"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/cat-activity/cat-activity"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/cat-activity/activity-detail"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/cat-activity/activity-all"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/media-review/media-review"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/ops/ops"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/report-manage/report-manage"
+    },
+    {
+      "action": "disallow",
+      "page": "subpackages/feedback/report/report"
+    },
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

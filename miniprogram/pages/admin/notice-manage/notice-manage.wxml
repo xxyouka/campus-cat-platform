@@ -1,0 +1,105 @@
+<!-- 公告管理页面 -->
+<view class="page page-enter">
+  <custom-navbar title="公告管理" theme="warm" showBack="{{true}}" />
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-list" wx:if="{{loading}}">
+    <view class="skeleton-card" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton-header">
+        <view class="skeleton-text title"></view>
+        <view class="skeleton-text time"></view>
+      </view>
+      <view class="skeleton-text content"></view>
+      <view class="skeleton-text content short"></view>
+      <view class="skeleton-actions">
+        <view class="skeleton-btn"></view>
+        <view class="skeleton-btn"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 公告列表 -->
+  <view class="notice-list" wx:if="{{!loading && notices.length > 0}}">
+    <view class="notice-card" wx:for="{{notices}}" wx:key="_id">
+      <view class="card-header">
+        <text class="card-title">{{item.title}}</text>
+        <text class="card-time">{{item.createTimeStr}}</text>
+      </view>
+      <text class="card-content">{{item.content}}</text>
+      <view class="card-actions">
+        <view class="action-btn edit" bindtap="onEdit" data-notice="{{item}}" hover-class="btn-hover">
+          <text>编辑</text>
+        </view>
+        <!-- 入口已由 guardPermission('notice') 把关：能进本页即可删除，不再按角色隐藏 -->
+        <view class="action-btn delete" bindtap="onDelete" data-id="{{item._id}}" hover-class="btn-hover">
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载失败态（与「暂无公告」区分） -->
+  <empty-state
+    wx:if="{{!loading && loadFailed && notices.length === 0}}"
+    icon="warning"
+    title="加载失败了"
+    subtitle="网络似乎不太顺畅，稍后再试试"
+    showAction="{{true}}"
+    actionText="重新加载"
+    bindaction="onRetryLoad"
+  />
+
+  <!-- 空状态 -->
+  <empty-state
+    wx:if="{{!loading && !loadFailed && notices.length === 0}}"
+    icon="announce"
+    title="暂无公告"
+    subtitle="点击下方按钮发布第一条公告吧"
+  />
+
+  <!-- 发布按钮 -->
+  <view class="fab" bindtap="onAdd" hover-class="btn-hover">
+    <text class="fab-icon">+</text>
+  </view>
+
+  <!-- 弹窗 -->
+  <view class="modal-mask" wx:if="{{modalShow}}" bindtap="onModalClose">
+    <view class="modal-box" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text>{{isEdit ? '编辑公告' : '发布公告'}}</text>
+        <view class="modal-close" bindtap="onModalClose" hover-class="btn-hover">
+          <text>×</text>
+        </view>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <view class="form-label-row">
+            <text class="form-label">标题</text>
+            <text class="char-count">{{form.title.length}}/{{titleMaxLength}}</text>
+          </view>
+          <input class="form-input {{formErrors.title ? 'input-error' : ''}}" placeholder="请输入公告标题" value="{{form.title}}" bindinput="onTitleInput" maxlength="{{titleMaxLength}}" confirm-type="next" />
+          <text class="error-hint" wx:if="{{formErrors.title}}">{{formErrors.title}}</text>
+        </view>
+        <view class="form-item">
+          <view class="form-label-row">
+            <text class="form-label">内容</text>
+            <text class="char-count">{{form.content.length}}/{{contentMaxLength}}</text>
+          </view>
+          <view class="textarea-wrap">
+            <textarea class="form-textarea {{formErrors.content ? 'input-error' : ''}}" placeholder="请输入公告内容" value="{{form.content}}" bindinput="onContentInput" maxlength="{{contentMaxLength}}" adjust-position="{{true}}" />
+            <text class="textarea-char-count">{{form.content.length}}/{{contentMaxLength}}</text>
+          </view>
+          <text class="error-hint" wx:if="{{formErrors.content}}">{{formErrors.content}}</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="btn-cancel" bindtap="onModalClose" hover-class="btn-hover">取消</view>
+        <view class="btn-confirm {{submitting ? 'disabled' : ''}}" bindtap="onSubmit" hover-class="btn-hover" aria-busy="{{submitting}}">{{submitting ? '提交中…' : (isEdit ? '保存' : '发布')}}</view>
+      </view>
+    </view>
+  </view>
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+</view>

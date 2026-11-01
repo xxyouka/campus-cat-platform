@@ -1,0 +1,9 @@
+{
+  "name": "recordView",
+  "version": "1.0.0",
+  "description": "记录猫咪浏览量",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "getCatPhotoCounts",
+  "version": "1.0.0",
+  "description": "获取每只猫咪的照片数量",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "node-cache": "^5.1.2"
+  }
+}

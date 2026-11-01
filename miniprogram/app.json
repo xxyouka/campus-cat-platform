@@ -1,0 +1,111 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/detail/detail",
+    "pages/gallery/gallery",
+    "pages/gallery/cat-album",
+    "pages/profile/profile",
+    "pages/favorites/favorites",
+    "pages/meets/meets",
+    "pages/rank/rank",
+    "pages/privacy/privacy",
+    "pages/help/help",
+    "pages/notice/notice",
+    "pages/notifications/notifications"
+  ],
+  "subpackages": [
+    {
+      "root": "subpackages/map",
+      "name": "map",
+      "pages": [
+        "campus-map/campus-map"
+      ]
+    },
+    {
+      "root": "subpackages/feedback",
+      "name": "feedback",
+      "pages": [
+        "report/report"
+      ]
+    },
+    {
+      "root": "pages/admin",
+      "name": "admin",
+      "pages": [
+        "admin",
+        "add-cat/add-cat",
+        "cat-manage/cat-manage",
+        "edit-cat/edit-cat",
+        "photo-manage/album-detail",
+        "photo-manage/photo-manage",
+        "notice-manage/notice-manage",
+        "relation-manage/relation-manage",
+        "manage-admins/manage-admins",
+        "operation-logs/operation-logs",
+        "meet-rank/meet-rank",
+        "fav-rank/fav-rank",
+        "cat-activity/cat-activity",
+        "cat-activity/activity-detail",
+        "cat-activity/activity-all",
+        "media-review/media-review",
+        "ops/ops",
+        "report-manage/report-manage"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["map", "feedback"]
+    },
+    "pages/detail/detail": {
+      "network": "wifi",
+      "packages": ["map", "feedback"]
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "@backgroundTextStyle",
+    "navigationBarBackgroundColor": "@navBackgroundColor",
+    "navigationBarTitleText": "校园猫猫",
+    "navigationBarTextStyle": "@navTextStyle",
+    "backgroundColor": "@backgroundColor",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "color": "@tabBarColor",
+    "selectedColor": "@tabBarSelectedColor",
+    "backgroundColor": "@tabBarBackgroundColor",
+    "borderStyle": "@tabBarBorderStyle",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "@iconPathHome",
+        "selectedIconPath": "@selectedIconPathHome"
+      },
+      {
+        "pagePath": "pages/gallery/gallery",
+        "text": "相册",
+        "iconPath": "@iconPathGallery",
+        "selectedIconPath": "@selectedIconPathGallery"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "@iconPathUser",
+        "selectedIconPath": "@selectedIconPathUser"
+      }
+    ]
+  },
+  "style": "v2",
+  "darkmode": true,
+  "themeLocation": "theme.json",
+  "sitemapLocation": "sitemap.json",
+  "cloud": true,
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "coach-mark": "/components/coach-mark/coach-mark",
+    "guide-card": "/components/guide-card/guide-card"
+  },
+  "__usePrivacyCheck__": true
+}

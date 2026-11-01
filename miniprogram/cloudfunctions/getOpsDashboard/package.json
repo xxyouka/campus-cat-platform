@@ -1,0 +1,9 @@
+{
+  "name": "get-ops-dashboard",
+  "version": "1.0.0",
+  "description": "运营数据面板：新用户激活 / 首个打卡完成率 / 关注后回访率（管理端只读）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

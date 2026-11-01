@@ -1,0 +1,13 @@
+{
+  "domain": "your-cloud-env-id-1415019211.ap-shanghai.app.tcloudbase.com",
+  "routes": [
+    {"path": "/updateDonation", "upstreamResourceType": "SCF", "upstreamResourceName": "updateDonation"},
+    {"path": "/deleteDonation", "upstreamResourceType": "SCF", "upstreamResourceName": "deleteDonation"},
+    {"path": "/getCatAvatars", "upstreamResourceType": "SCF", "upstreamResourceName": "getCatAvatars"},
+    {"path": "/generateAdminSignature", "upstreamResourceType": "SCF", "upstreamResourceName": "generateAdminSignature"},
+    {"path": "/checkAdminStatus", "upstreamResourceType": "SCF", "upstreamResourceName": "checkAdminStatus"},
+    {"path": "/exportData", "upstreamResourceType": "SCF", "upstreamResourceName": "exportData"},
+    {"path": "/importDonationsFromExcel", "upstreamResourceType": "SCF", "upstreamResourceName": "importDonationsFromExcel"},
+    {"path": "/backupData", "upstreamResourceType": "SCF", "upstreamResourceName": "backupData"}
+  ]
+}

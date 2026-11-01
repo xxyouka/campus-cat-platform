@@ -1,0 +1,118 @@
+<!-- 相册详情 - 上传/删除照片 -->
+<view class="page page-enter">
+  <custom-navbar title="相册详情" theme="warm" showBack="{{true}}" />
+
+  <!-- 上传卡片 -->
+  <view class="upload-card" bindtap="onUploadPhoto" hover-class="card-hover">
+    <view class="upload-icon-wrap">
+      <text class="upload-icon">+</text>
+    </view>
+    <view class="upload-text-wrap">
+      <text class="upload-title">上传照片</text>
+      <text class="upload-desc">为 {{catName}} 添加新照片</text>
+    </view>
+    <text class="upload-arrow">›</text>
+  </view>
+
+  <!-- 上传进度遮罩 -->
+  <view class="upload-overlay" wx:if="{{uploading}}">
+    <view class="upload-progress-card">
+      <view class="upload-progress-icon"><icon name="share" size="48" /></view>
+      <view class="upload-progress-title">正在上传</view>
+      <view class="upload-progress-file">{{uploadFileName}}</view>
+      
+      <!-- 新增：当前阶段提示 -->
+      <view class="upload-stage-hint" wx:if="{{uploadStage === 'compressing'}}">
+        <text class="stage-dot compressing"></text>
+        <text>正在压缩图片…</text>
+      </view>
+      <view class="upload-stage-hint" wx:if="{{uploadStage === 'uploading'}}">
+        <text class="stage-dot uploading"></text>
+        <text>正在上传到云端…</text>
+      </view>
+      <view class="upload-stage-hint" wx:if="{{uploadStage === 'saving'}}">
+        <text class="stage-dot saving"></text>
+        <text>正在保存记录…</text>
+      </view>
+      <view class="upload-stage-hint" wx:if="{{uploadStage === 'done'}}">
+        <icon class="stage-dot done" name="check" size="28" />
+        <text>上传完成！</text>
+      </view>
+      
+      <!-- 进度条 -->
+      <view class="progress-bar-wrap">
+        <view class="progress-bar-bg">
+          <view class="progress-bar-fill {{uploadProgress >= 100 ? 'completed' : ''}}" style="width: {{uploadProgress}}%"></view>
+        </view>
+        <text class="progress-text {{uploadProgress >= 100 ? 'completed' : ''}}">{{uploadProgress}}%</text>
+      </view>
+      
+      <!-- 总体进度 -->
+      <view class="upload-progress-total">
+        <text>总体进度: {{uploadCurrent}}/{{uploadTotal}}</text>
+      </view>
+
+      <!-- 新增：取消按钮（可选） -->
+      <view class="upload-cancel-btn" bindtap="onCancelUpload" hover-class="btn-hover" wx:if="{{uploadStage !== 'saving' && uploadStage !== 'done'}}">
+        <text>取消上传</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-photo-section" wx:if="{{loading}}">
+    <view class="skeleton-photo-grid">
+      <view class="skeleton-photo-item" wx:for="{{skeletonItems}}" wx:key="*this"></view>
+    </view>
+  </view>
+
+  <!-- 照片网格 -->
+  <view class="photo-section" wx:if="{{!loading}}">
+    <view class="section-title" wx:if="{{photos.length > 0}}">
+      <text>照片列表</text>
+    </view>
+
+    <view class="photo-grid" wx:if="{{photos.length > 0}}">
+      <view class="photo-item" wx:for="{{photos}}" wx:key="_id" bindtap="onPreviewPhoto" data-photo="{{item}}" hover-class="card-hover">
+        <!-- 使用懒加载组件 -->
+        <lazy-image
+          class="photo-img"
+          src="{{item._cloudFileID || item.url}}"
+          type="thumbnail"
+          lazy="{{true}}"
+          mode="aspectFill"
+          radius="12"
+          showLoading="{{true}}"
+        />
+        <view class="photo-time">{{item.formatDate}}</view>
+        <!-- 入口已由 guardPermission('photo') 把关：能进本页即可删除，不再按角色隐藏 -->
+        <view class="delete-btn" catchtap="onDeletePhoto" data-photo="{{item}}" hover-class="btn-hover">
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <empty-state
+      wx:if="{{photos.length === 0}}"
+      icon="camera-outline"
+      title="还没有照片"
+      subtitle="点击上方按钮为 {{catName}} 添加第一张照片吧"
+    />
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore && photos.length > 0 && !loadingMore}}">
+      <text bindtap="onLoadMore" class="load-more-btn" hover-class="btn-hover">加载更多</text>
+    </view>
+    <view class="load-more loading" wx:if="{{loadingMore}}">
+      <text>加载中…</text>
+    </view>
+    <view class="load-more no-more" wx:if="{{!hasMore && photos.length > 0}}">
+      <text>已加载全部照片</text>
+    </view>
+  </view>
+  <!-- 回到顶部 -->
+  <view class="back-to-top {{showBackToTop ? 'visible' : ''}}" bindtap="onBackToTop" hover-class="btn-hover">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+</view>

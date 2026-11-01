@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "icon": "../../../components/icon/icon",
+    "custom-navbar": "../../../components/custom-navbar/custom-navbar"
+  },
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#FDF8F5",
+  "backgroundTextStyle": "dark"
+}

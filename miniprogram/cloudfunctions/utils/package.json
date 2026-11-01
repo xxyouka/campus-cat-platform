@@ -1,0 +1,10 @@
+{
+  "name": "utils",
+  "version": "1.0.0",
+  "description": "云函数工具库",
+  "main": "index.js",
+  "dependencies": {
+    "node-cache": "^5.1.2",
+    "wx-server-sdk": "~2.6.3"
+  }
+}

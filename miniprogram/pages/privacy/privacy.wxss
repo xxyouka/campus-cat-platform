@@ -1,0 +1,194 @@
+/* 隐私政策页面样式 */
+
+.privacy-page {
+  min-height: 100vh;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+  background: var(--bg-secondary);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cellipse cx='40' cy='48' rx='12' ry='11' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='23' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='57' cy='31' rx='6' ry='7' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='32' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3Cellipse cx='48' cy='24' rx='5' ry='6' fill='%23E8927C' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 160rpx 160rpx;
+  background-blend-mode: normal;
+}
+
+/* .header-paw-bg 已抽到 styles/utilities.wxss 全局复用 */
+
+.header {
+  position: relative;
+  padding: 0 40rpx 50rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--bg-primary);
+  text-align: center;
+}
+
+.intro {
+  margin: 30rpx 30rpx 0;
+  padding: 30rpx;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.intro-text {
+  display: block;
+  margin-bottom: 16rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  line-height: 1.8;
+}
+
+.intro-text:last-child {
+  margin-bottom: 0;
+}
+
+.sections {
+  margin: 20rpx 30rpx 0;
+}
+
+.section {
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.section-number {
+  min-width: 40rpx;
+  height: 40rpx;
+  margin-right: 16rpx;
+
+  /* 两位数时高 40、宽 > 40：用 --radius-pill，50% 会变椭圆 */
+  border-radius: var(--radius-pill);
+
+  /* 品牌面 + 白字（口径同主按钮，2026-10-14 维护者定） */
+  background: var(--primary-cta-bg);
+  color: var(--primary-cta-text);
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.section-title {
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.section-arrow {
+  color: var(--text-light);
+  font-size: 22rpx;
+}
+
+.section-body {
+  padding: 0 30rpx 30rpx;
+  border-top: 2rpx solid var(--border-light);
+}
+
+.info-list {
+  margin-top: 8rpx;
+}
+
+.info-item {
+  margin-bottom: 20rpx;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.info-desc {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.notice-box {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-left: 6rpx solid var(--primary-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-warm);
+}
+
+.notice-text {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.contact-list {
+  margin-top: 16rpx;
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+}
+
+.contact-label {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.contact-value {
+  max-width: 60%;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  text-align: right;
+}
+
+.footer {
+  margin: 40rpx 30rpx 0;
+  padding: 30rpx;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  text-align: center;
+}
+
+.footer-text {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: 26rpx;
+  line-height: 1.8;
+}
+
+/* ========== 深色模式 ========== */
+@media (prefers-color-scheme: dark) {
+  .section-title { color: var(--text-primary); }
+  .section-body { color: var(--text-secondary); }
+
+  /* 章节序号已铺品牌底：底色/字色随 --primary-cta-* 自动翻转 */
+}
