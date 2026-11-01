@@ -1,5 +1,11 @@
 # 校园猫猫
 
+<p align="center">
+  <a href="https://github.com/xxyouka/campus-cat-platform/actions/workflows/ci.yml"><img src="https://github.com/xxyouka/campus-cat-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/license-AGPL--3.0-orange" alt="License">
+  <img src="https://img.shields.io/badge/platform-微信小程序-blue" alt="Platform">
+</p>
+
 **校园猫咪信息管理平台 · 微信小程序 + 云开发**
 
 一个可以长期维护的校园猫咪档案系统：猫咪图鉴、档案详情、相册、相遇打卡、关注、排行榜、公告、寻猫地图和完整的管理后台。
